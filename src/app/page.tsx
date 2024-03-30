@@ -4,7 +4,6 @@ import CoverParticles from '../components/cover-particles';
 import Introduction from '@/components/introduction';
 
 
-
 export default function Home() {
   return (
     <main>
@@ -12,6 +11,7 @@ export default function Home() {
         <TransitionPage/>
         <CoverParticles/>
         <Introduction/>
+        
       </div>
     </main>
   );

@@ -24,6 +24,7 @@ const PageAboutMe = () => {
         {/* <Avatar/> */}
         <Team/>
       </ContainerPage>
+      
     </>
   )
 }

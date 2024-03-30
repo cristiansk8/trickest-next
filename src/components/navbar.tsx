@@ -1,11 +1,7 @@
 'use client'
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-
-
 import { itemsNavbar } from "../../data";
-
-
 import MotionTransition from "./transition-component";
 
 const Navbar = () => {
