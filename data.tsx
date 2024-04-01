@@ -1,7 +1,7 @@
 import { BookText, CodeSquare, HomeIcon, UserRound, Linkedin, Twitter, Rss, Instagram, Youtube, Crop, Pencil, Computer, Book, Rocket, Speech } from "lucide-react";
 
 export const socialNetworks = [
-  
+
     {
         id: 1,
         logo: <Linkedin size={30} strokeWidth={1} />,
@@ -255,8 +255,8 @@ export const dataTeam = [
         role: "Desarrollador Web",
         experience: "5 años de experiencia",
         education: "Licenciatura en Ciencias de la Computación",
-        skills: [ "Tailwind", "JavaScript", "React.js", "Node.js","Nextjs"],
-        socialNetworks:[
+        skills: ["Tailwind", "JavaScript", "React.js", "Node.js", "Nextjs"],
+        socialNetworks: [
             {
                 id: 1,
                 logo: <Linkedin size={20} strokeWidth={1} />,
@@ -283,7 +283,7 @@ export const dataTeam = [
         experience: "3 años de experiencia",
         education: "Diplomado en Diseño de Experiencia de Usuario",
         skills: ["Diseño de interfaz de usuario", "Prototipado", "Usabilidad", "Adobe XD", "Figma"],
-        socialNetworks:[
+        socialNetworks: [
             {
                 id: 1,
                 logo: <Linkedin size={20} strokeWidth={1} />,
@@ -302,4 +302,42 @@ export const dataTeam = [
         ],
         description: "Soy un diseñador UX/UI apasionado por crear experiencias digitales atractivas y fáciles de usar. Me esfuerzo por diseñar interfaces que no solo sean hermosas, sino también funcionales y centradas en el usuario. ¡Espero poder ayudarte a llevar tu proyecto al siguiente nivel!",
     },
+]
+
+
+export const dataTrickets = [
+    {
+        id: 1,
+        name: "cristian",
+        imgURl: "/tricket-1.jpg",        
+        likes : 2,
+        share:2,
+        skills: ["U", "Steet"],
+    },
+    {
+        id: 2,
+        name: "cristian",
+        imgURl: "/tricket-2.jpg",
+        likes : 2,
+        share:2,
+        skills: ["U", "Steet"],
+    },
+    {
+        id: 3,
+        name: "cristian",
+        imgURl: "/tricket-3.jpg",
+        likes : 2,
+        share:2,
+        skills: ["U", "Steet"],
+    },
+    {
+        id: 4,
+        name: "cristian",
+        imgURl: "/tricket-4.jpg",
+        likes : 2,
+        share:2,
+        skills: ["U", "Steet"],
+    }
+
+
 ]
