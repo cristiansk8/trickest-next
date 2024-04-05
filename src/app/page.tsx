@@ -4,6 +4,7 @@ import CoverParticles from '../components/cover-particles';
 import Introduction from '@/components/introduction';
 import GalerryLevels from '@/components/GalerryLevels';
 import { FaMagnifyingGlass } from "react-icons/fa6";
+import HowWin from '@/components/howToWin';
 
 
 export default function Home() {
@@ -20,7 +21,7 @@ export default function Home() {
             <li className='my-2 text-sm md:text-2xl font-bold'>Todos</li>
             <li className='my-2 text-sm md:text-2xl font-bold'>Mas Likes</li>
             <li className='my-2 text-sm md:text-2xl font-bold'>Mas Recientes</li>
-            <li className='my-2 text-sm md:text-2xl font-bold flex flex-row'>              
+            <li className='my-2 text-sm md:text-2xl font-bold flex flex-row'>
               <FaMagnifyingGlass />
               <div className='hiden md:block border-2 border-black w-64 h-10 mx-auto'></div>
             </li>
@@ -32,7 +33,10 @@ export default function Home() {
         </div>
       </div>
       <div className='pt-28 text-center'>
-        como participar
+        <div className='flex flex-col h-full py-5 md:pt-28 text-center bg-[#2e2257]'>
+          <h1 className='text-slate-200 my-6 text-2xl md:text-4xl font-bold'>Top 3</h1>
+          <HowWin />
+        </div>
       </div>
       <div className='pt-28 text-center'>
         high scores

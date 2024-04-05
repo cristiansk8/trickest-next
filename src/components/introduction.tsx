@@ -10,7 +10,7 @@ const myFont = localFont({
 
 const Introduction = () => {
     return (
-        <div className="z-20 w-full grid items-center  p-6 py-20 md:py-0 grid-cols-2 md:grid-cols-3 justify-center bg-[#2e2257] bg-[url('/bg-city-game-plataform.jpg')] bg-cover bg-repeat bg-top    ">
+        <div className="z-20 w-full grid items-center  p-6 py-20 md:py-0 grid-cols-2 md:grid-cols-3 justify-center bg-[#2e2257] bg-[url('/png-big-city.png')] bg-cover bg-repeat bg-top    ">
             <div className="flex flex-col w-full justify-center md:max-w-md mx-auto">
                 <p className={`mx-auto mb-2 text-xl
                 text-center md:text-6xl md:mx-0 md:mb-8 ${myFont.className}`}>

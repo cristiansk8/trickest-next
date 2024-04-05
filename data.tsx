@@ -341,3 +341,22 @@ export const dataTrickets = [
 
 
 ]
+
+export const howToWin = [
+    {
+      imagen: "/trick-est.webp",
+      titulo: "patina",
+      caption: "¡Prepárate para deslizarte y dominar las calles! Encuentra las mejores líneas, realiza trucos asombrosos y siente la libertad sobre tu tabla."
+    },
+    {
+      imagen: "/graba.png",
+      titulo: "graba",
+      caption: "Captura tus mejores momentos sobre la tabla y comparte tu estilo único con el mundo. ¡Graba tus trucos más locos y muestra tu pasión por el skateboarding!"
+    },
+    {
+      imagen: "/postea.png",
+      titulo: "postea",
+      caption: "Haz que tus amigos se sientan parte de la acción compartiendo tus sesiones de skate más épicas en línea. ¡Postea tus clips y fotos para inspirar a otros skaters y fortalecer la comunidad!"
+    }
+  ]
+  
