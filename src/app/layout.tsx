@@ -26,11 +26,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={urbanist.className}>
-        <Header/>
-        <Navbar/>  
-        {children}
-      </body>
+        <body className={urbanist.className}>
+          <Header />
+          <Navbar />
+          {children}
+        </body>
     </html>
   );
 }

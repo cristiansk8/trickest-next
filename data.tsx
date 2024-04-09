@@ -342,6 +342,35 @@ export const dataTrickets = [
 
 ]
 
+export const highScore = [
+    {
+        id: 1,
+        name: "cristian",
+        imgURl: "/tricket-1.jpg",        
+        likes : 2,
+        share:2,
+        skills: ["U", "Steet"],
+    },
+    {
+        id: 2,
+        name: "cristian",
+        imgURl: "/tricket-2.jpg",
+        likes : 2,
+        share:2,
+        skills: ["U", "Steet"],
+    },
+    {
+        id: 3,
+        name: "cristian",
+        imgURl: "/tricket-3.jpg",
+        likes : 2,
+        share:2,
+        skills: ["U", "Steet"],
+    }
+
+
+]
+
 export const howToWin = [
     {
       imagen: "/trick-est.webp",

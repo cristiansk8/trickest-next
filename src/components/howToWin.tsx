@@ -1,6 +1,7 @@
 import React from 'react'
 import { howToWin } from "../../data";
 import localFont from 'next/font/local';
+import {Button} from "@nextui-org/react";
 
 const myFont = localFont({
     src: './fonts/blox.woff',
@@ -26,6 +27,9 @@ const HowWin = () => {
                             )
                         })
                     }
+                </div>
+                <div className='flex justify-center items-center'>
+                    <Button color="primary" variant="light">Participar</Button>
                 </div>
             </div>
         </div>

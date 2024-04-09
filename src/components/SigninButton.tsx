@@ -105,9 +105,9 @@ const SigninButton = () => {
                         type="text"
                         id="email"
                         name="email"
-                        value={session.user.email}
+                        value={session && session.user && session.user.email ? session.user.email : ""}
                         onChange={handleChange}
-                      />
+                      />  
                     </div>
                     <div className="flex items-center justify-between">
                       <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">Enviar</button>
@@ -122,11 +122,11 @@ const SigninButton = () => {
                   className='h-8 px-2 text-sm rounded-md bg-gray-700 text-white'
                   onClick={handleModal}
                 >
-                  Close
+                  Cerrar
                 </button>
               </div>
             </div>
-          </div>
+          </div>  
         }
 
 
