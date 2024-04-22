@@ -2,6 +2,7 @@
 import TransitionPage from '@/components/transition-page'
 import React from 'react'
 import HighScore from '@/components/highScore';
+import { TbSkateboarding } from "react-icons/tb";
 
 
 const TestimonialPage = () => {
@@ -35,6 +36,16 @@ const TestimonialPage = () => {
                                             </span>  </a>
                                     </div>
                                     <p>Equipo: Trium company</p>
+                                </div>
+                                <div>
+                                    <h1>Equipamiento</h1>
+                                    <div>
+                                    <a className="flex items-center mb-2 mr-5 text-secondary-dark hover:text-primary" href="javascript:void(0)">
+                                            <span className="mr-1">
+                                            <TbSkateboarding size={50} />
+
+                                            </span> Cali, CO </a>
+                                    </div>
                                 </div>
                                 <div className="flex flex-wrap my-auto">
                                     <a href="javascript:void(0)" className="inline-block px-6 py-3 mr-3 text-base font-medium leading-normal text-center align-middle transition-colors duration-150 ease-in-out border-0 shadow-none cursor-pointer rounded-2xl text-muted bg-light border-light hover:bg-light-dark active:bg-light-dark focus:bg-light-dark "> Follow </a>
