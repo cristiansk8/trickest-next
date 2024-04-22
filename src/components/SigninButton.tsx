@@ -20,11 +20,11 @@ const SigninButton = () => {
     biografia: '',
     redes: '',
     score: 0,
-    email: session?.user?.email || 'prueba@prueba.com',
+    email: session?.user?.email,
     team_id: 1
   });
 
-  const preRegister =  () => {
+  const preRegister = () => {
     console.log("pre Registro");
   };
 
@@ -32,6 +32,7 @@ const SigninButton = () => {
     const { name, value } = e.target;
     setFormData(prevFormData => ({
       ...prevFormData,
+      email: session?.user?.email, // Establecer email antes del spread
       [name]: value
     }));
     console.log(value);
@@ -72,15 +73,20 @@ const SigninButton = () => {
     const checkProfile = async () => {
       if (session && session.user && session.user.email) {
         try {
-          const isComplete = await getSkate(session.user.email);
-          console.log(isComplete)
-          //pregnta si el estado del skate esta completo mostrar boton "ver perfil"
-          //pregnta si el estado del skate no esta completo mostrar boton "completar registro"
-          setProfileComplete(isComplete);
+          if (!porfileComplete) {
+            // Llamar a la función para verificar el perfil
+            const isComplete = await getSkate(session.user.email);
+            if (isComplete.phone) {
+              setProfileComplete(true);
+            } else {
+              preRegister();
+            }
+          }
         } catch (error) {
-          console.error('Error al verificar el perfil:', error);
           // En caso de error, establecer profileComplete en false
-          setProfileComplete(false);
+          // Llamar a preRegister() si no se encuentra el skate
+          preRegister();
+          console.error('Error al verificar el perfil:', error);
         }
       }
     };
@@ -88,8 +94,9 @@ const SigninButton = () => {
     checkProfile();
   }, [session]);
 
-  const getSkate = async (email:String) => {
-    console.log(email)
+
+  const getSkate = async (email: String) => {
+    /* console.log(email) */
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/search-by-email?email=${email}`, {
         method: 'get',
@@ -97,7 +104,7 @@ const SigninButton = () => {
           'Content-Type': 'application/json',
         },
       });
-      
+
       const responseData = await response.json();
       // Verificar si el perfil está completo
       return responseData; // Si responseData no está vacío, el perfil está completo
@@ -114,17 +121,17 @@ const SigninButton = () => {
     return (
       <div className="flex gap-4 ml-auto">
         {
-          porfileComplete ? 
-          <button
-          type='button'
-          className='h-10 px-4 font-medium text-sm rounded-md text-white bg-gray-900'
-          onClick={()=>console.log("ver perfil")}
-        >ver perfil</button> :
-           <button
-            type='button'
-            className='h-10 px-4 font-medium text-sm rounded-md text-white bg-gray-900'
-            onClick={handleModal}
-          >completar registro</button>
+          porfileComplete ?
+            <button
+              type='button'
+              className='h-10 px-4 font-medium text-sm rounded-md text-white bg-gray-900'
+              onClick={() => console.log("ver perfil")}
+            >ver perfil</button> :
+            <button
+              type='button'
+              className='h-10 px-4 font-medium text-sm rounded-md text-white bg-gray-900'
+              onClick={handleModal}
+            >completar registro</button>
         }
 
         {
