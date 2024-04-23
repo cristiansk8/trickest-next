@@ -24,7 +24,31 @@ const SigninButton = () => {
     team_id: 1
   });
 
-  const preRegister = () => {
+  const preRegister = async () => {
+    console.log('entramos preRegister')
+
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/skates`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name:'juan',
+          email:'toryskateshop@gmail.com'
+        }),
+      });
+
+      const responseData = await response.json();
+      console.log("registro completado", responseData);
+      setProfileComplete(true);
+      handleModal();
+      // Aquí puedes manejar la respuesta del servidor según lo necesites
+    } catch (error) {
+      console.error('Error:', error);
+      // Aquí puedes manejar los errores que puedan ocurrir durante el request
+    }
+
     console.log("pre Registro");
   };
 
@@ -79,13 +103,12 @@ const SigninButton = () => {
             if (isComplete.phone) {
               setProfileComplete(true);
             } else {
-              preRegister();
             }
           }
         } catch (error) {
+          console.log('aqui preRegistra')
           // En caso de error, establecer profileComplete en false
           // Llamar a preRegister() si no se encuentra el skate
-          preRegister();
           console.error('Error al verificar el perfil:', error);
         }
       }

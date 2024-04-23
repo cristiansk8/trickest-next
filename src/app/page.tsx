@@ -7,6 +7,7 @@ import { FaMagnifyingGlass } from "react-icons/fa6";
 import HowWin from '@/components/howToWin';
 import HighScore from '@/components/highScore';
 import Footer from '@/components/footer';
+import Partners from '@/components/partners/partners';
 
 
 export default function Home() {
@@ -46,7 +47,9 @@ export default function Home() {
           </div>
         </div>
       </div>
-
+      <div>
+      <Partners />
+      </div>
       <div>
         <Footer />
       </div>
