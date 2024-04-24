@@ -1,11 +1,12 @@
 'use client'
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import React from "react";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { useEffect } from 'react';
 
 const SigninButton = () => {
-  const [porfileComplete, setProfileComplete] = useState(false);
+  const firstRender = useRef(true);
+  const [profileComplete, setProfileComplete] = useState(false);
   const { data: session } = useSession();
   const [openModal, setModal] = useState(false);
   const handleModal = () => {
@@ -24,9 +25,27 @@ const SigninButton = () => {
     team_id: 1
   });
 
-  const preRegister = async () => {
-    console.log('entramos preRegister')
+  const getSkate = async (email: string) => {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/search-by-email?email=${email}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      if (!response.ok) {
+        throw new Error('Error en la solicitud');
+      }
+      const responseData = await response.json();
+      return responseData;
+    } catch (error) {
+      return null; // Devuelve un objeto vacío en caso de error
+    }
+  };
 
+
+  const preRegister = async (name: string, email: string) => {
+    console.log(name, email)
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/skates`, {
         method: 'POST',
@@ -34,23 +53,59 @@ const SigninButton = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          name:'juan',
-          email:'toryskateshop@gmail.com'
+          name: name,
+          email: email,
         }),
       });
-
+      console.log(response);
+      
       const responseData = await response.json();
       console.log("registro completado", responseData);
-      setProfileComplete(true);
-      handleModal();
-      // Aquí puedes manejar la respuesta del servidor según lo necesites
     } catch (error) {
       console.error('Error:', error);
-      // Aquí puedes manejar los errores que puedan ocurrir durante el request
     }
-
     console.log("pre Registro");
   };
+
+  useEffect(() => {
+    // Verificar si es la primera renderización
+    if (firstRender.current) {
+      // Marcar que ya no es la primera renderización
+      firstRender.current = false;
+      return; // Salir del useEffect sin hacer nada en la primera renderización
+    }
+    const checkProfile = async () => {
+      try {
+        if (session && session.user && session.user.email) {
+          const result = await getSkate(session.user.email);
+          if (result) {
+            if (result.phone) {
+              console.log(result);
+              setProfileComplete(true);
+            } else {
+              console.log("no tiene telefono");
+              setProfileComplete(false);
+            }
+          } else {
+            setProfileComplete(false);
+            preRegister(session.user.email, session.user.email);
+          }
+        } else {
+          setProfileComplete(false);
+          console.log('No se ha iniciado sesión');
+        }
+      } catch (error) {
+        console.error('Hubo un fallo al verificar el perfil:', error);
+        setProfileComplete(false);
+      }
+    };
+
+    checkProfile();
+  }, [session]);
+
+
+
+
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -62,7 +117,6 @@ const SigninButton = () => {
     console.log(value);
   };
 
-  //completar registro
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -91,60 +145,11 @@ const SigninButton = () => {
     }
   };
 
-  //confirmar correo
-
-  useEffect(() => {
-    const checkProfile = async () => {
-      if (session && session.user && session.user.email) {
-        try {
-          if (!porfileComplete) {
-            // Llamar a la función para verificar el perfil
-            const isComplete = await getSkate(session.user.email);
-            if (isComplete.phone) {
-              setProfileComplete(true);
-            } else {
-            }
-          }
-        } catch (error) {
-          console.log('aqui preRegistra')
-          // En caso de error, establecer profileComplete en false
-          // Llamar a preRegister() si no se encuentra el skate
-          console.error('Error al verificar el perfil:', error);
-        }
-      }
-    };
-
-    checkProfile();
-  }, [session]);
-
-
-  const getSkate = async (email: String) => {
-    /* console.log(email) */
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/search-by-email?email=${email}`, {
-        method: 'get',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      const responseData = await response.json();
-      // Verificar si el perfil está completo
-      return responseData; // Si responseData no está vacío, el perfil está completo
-    } catch (error) {
-      console.error('Error:', error);
-      throw error; // Lanzar error para manejarlo en el useEffect
-    }
-  };
-
-
-
-
   if (session && session.user) {
     return (
       <div className="flex gap-4 ml-auto">
         {
-          porfileComplete ?
+          profileComplete ?
             <button
               type='button'
               className='h-10 px-4 font-medium text-sm rounded-md text-white bg-gray-900'
@@ -164,7 +169,7 @@ const SigninButton = () => {
               <h2 className='text-sm font-medium text-gray-900 border-b border-gray-300 py-3 px-4 mb-4'>Completa tu registro</h2>
               <div className='px-4 pb-4'>
                 <div className="p-4 md:p-5 space-y-4">
-                  <form className="flex grid grid-cols-2 bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 " onSubmit={handleSubmit}>
+                  <form className="grid grid-cols-2 bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 " onSubmit={handleSubmit}>
                     <div className="mb-4">
                       <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="name">Name:</label>
                       <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
@@ -244,8 +249,6 @@ const SigninButton = () => {
             </div>
           </div>
         }
-
-
         <p className="text-sky-600">{session.user.name}</p>
         <button onClick={() => signOut()} className="text-red-600">
           Salir
