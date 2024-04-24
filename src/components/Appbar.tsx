@@ -1,27 +1,11 @@
 import React from "react";
 import SigninButton from "./SigninButton";
-import Link from "next/link";
-import { socialNetworks } from "../../data";
-
-
 
 const Appbar = () => {
   return (
-    <div className="flex items-center justify-center gap-7">
+    <header className="flex gap-4 p-4 bg-gradient-to-b from-white to-gray-200 shadow">
       <SigninButton />
-      <div className="flex items-center justify-center gap-7">
-                        {socialNetworks.map(({ logo, src, id }) => (
-                            <Link
-                                key={id}
-                                href={src}
-                                target="_blank"
-                                className="transition-all duration-300 hover:text-watermelon"
-                            >
-                                {logo}
-                            </Link>
-                        ))}
-                    </div>
-    </div>
+    </header>
   );
 };
 
