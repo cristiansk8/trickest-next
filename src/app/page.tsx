@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
 import TransitionPage from '@/components/transition-page';
-import CoverParticles from '../components/cover-particles';
 import Introduction from '@/components/introduction';
 import GalerryLevels from '@/components/GalerryLevels';
 import { FaMagnifyingGlass } from "react-icons/fa6";

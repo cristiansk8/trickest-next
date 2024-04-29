@@ -3,6 +3,8 @@ import { useRef, useState } from 'react';
 import React from "react";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { useEffect } from 'react';
+import Link from 'next/link';
+
 
 const SigninButton = () => {
   const firstRender = useRef(true);
@@ -55,6 +57,7 @@ const SigninButton = () => {
         body: JSON.stringify({
           name: name,
           email: email,
+          team_id: 1
         }),
       });
       console.log(response);
@@ -92,7 +95,7 @@ const SigninButton = () => {
           }
         } else {
           setProfileComplete(false);
-          console.log('No se ha iniciado sesión');
+           //si no trae un skate mire si es juez
         }
       } catch (error) {
         console.error('Hubo un fallo al verificar el perfil:', error);
@@ -122,8 +125,8 @@ const SigninButton = () => {
 
     try {
       console.log(formData);
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/skates`, {
-        method: 'POST',
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/update-by-email/${session?.user?.email}`, {
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
           /*           'X-Requested-With':
@@ -150,11 +153,13 @@ const SigninButton = () => {
       <div className="flex gap-4 ml-auto">
         {
           profileComplete ?
+          <Link href="/dashboard/skaters/profile">
             <button
               type='button'
               className='h-10 px-4 font-medium text-sm rounded-md text-white bg-gray-900'
               onClick={() => console.log("ver perfil")}
-            >ver perfil</button> :
+            >ver perfil</button>
+            </Link> :
             <button
               type='button'
               className='h-10 px-4 font-medium text-sm rounded-md text-white bg-gray-900'
