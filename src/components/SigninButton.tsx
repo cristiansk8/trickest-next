@@ -29,7 +29,8 @@ const SigninButton = () => {
 
   const getSkate = async (email: string) => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/search-by-email?email=${email}`, {
+      const response = 
+      await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/skates/search-by-email/${email}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -83,10 +84,8 @@ const SigninButton = () => {
           const result = await getSkate(session.user.email);
           if (result) {
             if (result.phone) {
-              console.log(result);
               setProfileComplete(true);
             } else {
-              console.log("no tiene telefono");
               setProfileComplete(false);
             }
           } else {
@@ -125,20 +124,15 @@ const SigninButton = () => {
 
     try {
       console.log(formData);
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/update-by-email/${session?.user?.email}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/skates/update-by-email/${session?.user?.email}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          /*           'X-Requested-With':
-                      'XMLHttpRequest' */
-          // Si necesitas enviar algún token de autenticación, aquí es donde lo incluirías
-          // 'Authorization': 'Bearer ' + token,
         },
         body: JSON.stringify(formData),
       });
 
       const responseData = await response.json();
-      console.log("registro completado", responseData);
       setProfileComplete(true);
       handleModal();
       // Aquí puedes manejar la respuesta del servidor según lo necesites
