@@ -5,11 +5,14 @@ import { signIn, signOut, useSession } from "next-auth/react";
 import { useEffect } from 'react';
 import Link from 'next/link';
 import { getSkate, preRegister } from '@/utils/helpers/skate';
+import { getJudge } from '@/utils/helpers/juez';
 
 
 const SigninButton = () => {
   const firstRender = useRef(true);
   const [profileComplete, setProfileComplete] = useState(false);
+  const [typeUser, setTypeUser] = useState("")
+
   const { data: session } = useSession();
   const [openModal, setModal] = useState(false);
   const handleModal = () => {
@@ -27,7 +30,7 @@ const SigninButton = () => {
     email: session?.user?.email,
     team_id: 1
   });
-  
+
   useEffect(() => {
     // Verificar si es la primera renderización
     if (firstRender.current) {
@@ -38,27 +41,35 @@ const SigninButton = () => {
     const checkProfile = async () => {
       try {
         if (session && session.user && session.user.email) {
-          const result = await getSkate(session.user.email);
-          if (result) {
-            if (result.phone) {
-              setProfileComplete(true);
+          const judge = await getJudge(session.user.email)
+          if (judge) {
+            setTypeUser("judge")
+          } else {
+            const result = await getSkate(session.user.email);
+            if (result) {
+              if (result.phone) {
+                setProfileComplete(true);
+                setTypeUser('skate')
+              } else {
+                setProfileComplete(false);
+                setTypeUser('skate')
+              }
             } else {
               setProfileComplete(false);
+              setTypeUser('skate')
+              preRegister(session.user.email, session.user.email);
             }
-          } else {
-            setProfileComplete(false);
-            preRegister(session.user.email, session.user.email);
           }
         } else {
           setProfileComplete(false);
-           //si no trae un skate mire si es juez
+          setTypeUser("")
         }
       } catch (error) {
         console.error('Hubo un fallo al verificar el perfil:', error);
         setProfileComplete(false);
+        setTypeUser("")
       }
     };
-
     checkProfile();
   }, [session]);
 
@@ -100,19 +111,23 @@ const SigninButton = () => {
     return (
       <div className="flex gap-4 ml-auto">
         {
-          profileComplete ?
-          <Link href="/dashboard/skaters/profile">
-            <button
-              type='button'
-              className='h-10 px-4 font-medium text-sm rounded-md text-white bg-gray-900'
-              onClick={() => console.log("ver perfil")}
-            >ver perfil</button>
+          profileComplete && typeUser === 'skate' ?
+            <Link href="/dashboard/skaters/profile">
+              <button
+                type='button'
+                className='h-10 px-4 font-medium text-sm rounded-md text-white bg-gray-900'
+                onClick={() => console.log("ver perfil")}
+              >ver perfil</button>
             </Link> :
             <button
               type='button'
               className='h-10 px-4 font-medium text-sm rounded-md text-white bg-gray-900'
               onClick={handleModal}
             >completar registro</button>
+        }
+        {
+          typeUser === 'judge' ?
+            <h1 className='bg-red-500 p-4 text-white'>{typeUser}</h1> : null
         }
 
         {
