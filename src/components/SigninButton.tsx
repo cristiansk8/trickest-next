@@ -6,6 +6,7 @@ import { useEffect } from 'react';
 import Link from 'next/link';
 import { getSkate, preRegister } from '@/utils/helpers/skate';
 import { getJudge } from '@/utils/helpers/juez';
+import { SkateProfileCompletionModal } from './SkateProfileCompletionModal';
 
 
 const SigninButton = () => {
@@ -73,7 +74,6 @@ const SigninButton = () => {
     checkProfile();
   }, [session]);
 
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prevFormData => ({
@@ -86,7 +86,6 @@ const SigninButton = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
     try {
       console.log(formData);
       const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/skates/update-by-email/${session?.user?.email}`, {
@@ -96,7 +95,6 @@ const SigninButton = () => {
         },
         body: JSON.stringify(formData),
       });
-
       const responseData = await response.json();
       setProfileComplete(true);
       handleModal();
@@ -140,8 +138,15 @@ const SigninButton = () => {
             </div>
             : null
         }
+        <SkateProfileCompletionModal
+          openModal={openModal}
+          handleModal={handleModal}
+          handleSubmit={handleSubmit}
+          formData={formData}
+          handleChange={handleChange}
+        />
 
-        {
+        {/* {
           openModal &&
           <div className='fixed top-0 left-0 w-full h-full bg-gray-300 flex justify-center items-center'>
             <div className='max-w-[460px] bg-white shadow-lg py-2 rounded-md'>
@@ -227,7 +232,7 @@ const SigninButton = () => {
               </div>
             </div>
           </div>
-        }
+        } */}
         <p className="text-sky-600">{session.user.name}</p>
         <button onClick={() => signOut()} className="text-red-600">
           Salir
