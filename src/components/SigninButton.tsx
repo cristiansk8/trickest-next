@@ -111,23 +111,34 @@ const SigninButton = () => {
     return (
       <div className="flex gap-4 ml-auto">
         {
-          profileComplete && typeUser === 'skate' ?
-            <Link href="/dashboard/skaters/profile">
-              <button
-                type='button'
-                className='h-10 px-4 font-medium text-sm rounded-md text-white bg-gray-900'
-                onClick={() => console.log("ver perfil")}
-              >ver perfil</button>
-            </Link> :
+          typeUser === 'skate' ?
             <button
               type='button'
               className='h-10 px-4 font-medium text-sm rounded-md text-white bg-gray-900'
               onClick={handleModal}
             >completar registro</button>
+            :
+            profileComplete ?
+              <Link href="/dashboard/skaters/profile">
+                <button
+                  type='button'
+                  className='h-10 px-4 font-medium text-sm rounded-md text-white bg-gray-900'
+                  onClick={() => console.log("ver perfil")}
+                >ver perfil</button>
+              </Link> : null
         }
         {
           typeUser === 'judge' ?
-            <h1 className='bg-red-500 p-4 text-white'>{typeUser}</h1> : null
+            <div>
+              <Link href="/dashboard/judge/profile">
+                <button
+                  type='button'
+                  className='h-10 px-4 font-medium text-sm rounded-md text-white bg-blue-600'
+                  onClick={() => console.log("ver perfil")}
+                >Ver perfil Juez</button>
+              </Link>
+            </div>
+            : null
         }
 
         {
