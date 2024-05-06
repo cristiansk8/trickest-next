@@ -5,7 +5,7 @@ import { signIn, signOut, useSession } from "next-auth/react";
 import { useEffect } from 'react';
 import Link from 'next/link';
 import { getSkate, preRegister } from '@/utils/helpers/skate';
-import { getJudge } from '@/utils/helpers/juez';
+import { getJudge } from '@/utils/helpers/judge';
 import { SkateProfileCompletionModal } from './SkateProfileCompletionModal';
 
 
@@ -108,6 +108,7 @@ const SigninButton = () => {
   if (session && session.user) {
     return (
       <div className="flex gap-4 ml-auto">
+
         {
           typeUser === 'skate' ?
             <button
@@ -115,7 +116,7 @@ const SigninButton = () => {
               className='h-10 px-4 font-medium text-sm rounded-md text-white bg-gray-900'
               onClick={handleModal}
             >completar registro</button>
-            :
+            : 
             profileComplete ?
               <Link href="/dashboard/skaters/profile">
                 <button
@@ -125,6 +126,7 @@ const SigninButton = () => {
                 >ver perfil</button>
               </Link> : null
         }
+
         {
           typeUser === 'judge' ?
             <div>
@@ -240,6 +242,7 @@ const SigninButton = () => {
       </div>
     );
   }
+
   return (
     <button onClick={() => signIn()} className="text-green-600 ml-auto">
       Ingresar
