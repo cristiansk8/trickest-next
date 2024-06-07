@@ -1,4 +1,5 @@
-import { Sidebar } from "../../../components/sidebar/Sidebar";
+import { SidebarJuez } from "@/components/sidebar/SidebarJuez";
+
 
 export default function DashboardLayout({ children }: { children: React.ReactNode; }) {
     return (
@@ -6,7 +7,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
             <div className="flex ">
 
-                <Sidebar />
+                <SidebarJuez />
 
                 <div className="w-full text-slate-900">
                     {children}
