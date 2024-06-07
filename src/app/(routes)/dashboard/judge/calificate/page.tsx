@@ -1,10 +1,10 @@
 
 import { highScore } from "../../../../../../data";
 import { Button } from "@nextui-org/react";
-export const medatada = {
+/* export const medatada = {
     title: "tricks",
     description: "Información general",
-};
+}; */
 
 export default function PorfilePage() {
     return (
