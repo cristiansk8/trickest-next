@@ -1,8 +1,8 @@
-
+/* 
 export const medatada = {
     title: "Dashboard",
     description: "Información general",
-};
+}; */
 
 export default function PorfilePage() {
     return (
