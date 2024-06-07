@@ -4,10 +4,10 @@ import { FaTrophy } from "react-icons/fa";
 
 
 
-export const medatada = {
+/* export const medatada = {
     title: "Logros",
     description: "Información general",
-};
+}; */
 
 export default function PorfilePage() {
     return (
