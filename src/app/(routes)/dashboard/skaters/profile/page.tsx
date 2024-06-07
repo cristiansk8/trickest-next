@@ -1,5 +1,5 @@
-import {getSkate} from '@/components/SigninButton';
-
+/* import {getSkate} from '@/components/SigninButton';
+ */
 /* 
 export const medatada = {
     title: "Dashboard",
