@@ -29,7 +29,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={urbanist.className}>
         <Header/>
-        <Navbar/>  
+        
         {children}
       </body>
     </html>
