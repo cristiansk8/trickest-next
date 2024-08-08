@@ -4,8 +4,8 @@ import styles from "./Partners.module.css"; // Importa tus estilos CSS
 
 const profiles = [
     { name: "Cristian Parra", role: "Founder CEO", imageSrc: "https://tailone.tailwindtemplate.net/src/img/dummy/avatar1.png" },
-    { name: "David Hurtado", role: "BackEnd Develop", imageSrc: "https://tailone.tailwindtemplate.net/src/img/dummy/avatar3.png" },
-    { name: "Pepito", role: "Sales manager", imageSrc: "https://tailone.tailwindtemplate.net/src/img/dummy/avatar2.png" },
+    { name: "Valentina Diaz", role: "Comunicadora social", imageSrc: "https://tailone.tailwindtemplate.net/src/img/dummy/avatar3.png" },
+    { name: "Pepito", role: "BackEnd Develop", imageSrc: "https://tailone.tailwindtemplate.net/src/img/dummy/avatar2.png" },
     { name: "Jhonatan Vargas", role: "UI/UX Designer", imageSrc: "https://tailone.tailwindtemplate.net/src/img/dummy/avatar4.png" }
 ];
 
