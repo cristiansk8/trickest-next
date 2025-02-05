@@ -15,8 +15,21 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
+  id        Int          @id @default(autoincrement())
+  email     String       @unique
   name      String?
-  createdAt DateTime @default(now())
+  phone     String?      // Campo para el número de celular
+  createdAt DateTime     @default(now())
+  socials   SocialMedia[] // Relación con la tabla de redes sociales
+}
+
+model SocialMedia {
+  id       Int    @id @default(autoincrement())
+  userId   Int    @unique
+  facebook String?
+  instagram String?
+  twitter  String?
+  tiktok   String?
+  
+  user User @relation(fields: [userId], references: [id])
 }

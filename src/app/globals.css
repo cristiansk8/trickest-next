@@ -27,3 +27,10 @@ main {
     text-wrap: balance;
   }
 }
+
+.bg-gray-300 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(83 139 223 / 30%);
+}
+
+
