@@ -48,7 +48,7 @@ export const Sidebar = () => {
                     </div>
                     <span>Trickest</span>
                     <span className="text-blue-500">2024 Skaters</span>.</h1>
-                <p className="text-slate-500 text-sm">Patina, graba y postea</p>
+                <p className="text-slate-500 text-sm">score = 0</p>
             </div>
 
             <div id="profile" className="px-6 py-10">
