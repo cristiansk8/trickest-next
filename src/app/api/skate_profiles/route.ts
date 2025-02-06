@@ -36,7 +36,7 @@ export async function POST(req: Request) {
             data: {
                 email,
                 name,
-                phone,
+                phone: phone ?? undefined,
                 createdAt: new Date(),
             },
         });
