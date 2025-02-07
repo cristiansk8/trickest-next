@@ -34,7 +34,6 @@ const menuItems = [
 
 export const Sidebar = () => {
     const { data: session, status } = useSession();
-    if (status === "loading") return <p>Cargando...</p>; // Evita errores de hidratación
 
 
     return (
@@ -55,14 +54,17 @@ export const Sidebar = () => {
             <div id="profile" className="px-6 py-10">
                 <p className="text-slate-500">Bienvenido,</p>
                 <a href="#" className="inline-flex space-x-2 items-center">
+                    {
+                             (status === "loading") ? <p>Cargando...</p>: // Evita errores de hidratación
+
                     <span>
-                        <Image className="rounded-full w-8 h-8" src={session?.user?.image || ""}
+                        <Image className="rounded-full w-8 h-8" src={session?.user?.image || "/logo.png"}
                             alt="User avatar"
                             width={50}
                             height={50} />
-                    </span>
+                    </span>}
                     <span className="text-sm md:text-base font-bold">
-                        
+
                         {session?.user?.name}
                     </span>
                 </a>
