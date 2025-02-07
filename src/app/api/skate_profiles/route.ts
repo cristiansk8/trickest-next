@@ -22,32 +22,6 @@ export async function GET(req: Request) {
     }
 }
 
-// Servicio para obtener la foto del usuario
-export async function GET_PHOTO(req: Request) {
-    try {
-        const { searchParams } = new URL(req.url);
-        const email = searchParams.get('email');
-
-        if (!email) {
-            return NextResponse.json({ error: 'Email requerido' }, { status: 400 });
-        }
-
-        const user = await prisma.user.findUnique({
-            where: { email },
-            select: { photo: true } // Solo traer el campo photo
-        });
-
-        if (!user) {
-            return NextResponse.json({ error: 'Usuario no encontrado' }, { status: 404 });
-        }
-
-        return NextResponse.json({ photo: user.photo }, { status: 200 });
-    } catch (error) {
-        console.error('Error obteniendo la foto del usuario:', error);
-        return NextResponse.json({ error: 'Error en el servidor' }, { status: 500 });
-    }
-}
-
 // Servicio para registrar un nuevo usuario
 export async function POST(req: Request) {
     try {
