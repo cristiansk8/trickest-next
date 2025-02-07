@@ -36,6 +36,7 @@ const SkateProfileCompletionModal: React.FC<ModalProps> = ({ openModal, handleMo
                     email: session.user.email,
                     name: session.user.name,
                     phone: formData.phone,
+                    photo: session.user.image
                 }),
             });
 

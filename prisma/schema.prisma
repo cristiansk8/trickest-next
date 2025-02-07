@@ -19,6 +19,7 @@ model User {
   email     String       @unique
   name      String?
   phone     String?      // Campo para el número de celular
+  photo     String?
   createdAt DateTime     @default(now())
   socials   SocialMedia[] // Relación con la tabla de redes sociales
 }

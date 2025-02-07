@@ -1,3 +1,4 @@
+'use client'
 import React from 'react'
 import Image from 'next/image'
 import { IoLogoReact, IoBrowsersOutline, IoCalculator, IoFootball, IoHeartOutline } from "react-icons/io5"
@@ -5,10 +6,7 @@ import { SidebarMenuItem } from './SidebarMenuItem';
 import { MdOutlineSkateboarding } from "react-icons/md";
 import { GiSkateboard } from "react-icons/gi";
 import { GiTrophy } from "react-icons/gi";
-
-
-
-
+import { useSession } from 'next-auth/react';
 
 
 const menuItems = [
@@ -35,6 +33,9 @@ const menuItems = [
 
 
 export const Sidebar = () => {
+    const { data: session, status } = useSession();
+    if (status === "loading") return <p>Cargando...</p>; // Evita errores de hidratación
+
 
     return (
         <div id="menu"
@@ -55,13 +56,14 @@ export const Sidebar = () => {
                 <p className="text-slate-500">Bienvenido,</p>
                 <a href="#" className="inline-flex space-x-2 items-center">
                     <span>
-                        <Image className="rounded-full w-8 h-8" src="https://images.unsplash.com/photo-1542909168-82c3e7fdca5c"
+                        <Image className="rounded-full w-8 h-8" src={session?.user?.image || ""}
                             alt="User avatar"
                             width={50}
                             height={50} />
                     </span>
                     <span className="text-sm md:text-base font-bold">
-                        Edward Tompson
+                        
+                        {session?.user?.name}
                     </span>
                 </a>
             </div>

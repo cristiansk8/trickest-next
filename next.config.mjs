@@ -19,6 +19,10 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'tailone.tailwindtemplate.net',
       },
+      {
+        protocol: "https",
+        hostname: "lh3.googleusercontent.com",
+      },
 
     ],
   }
