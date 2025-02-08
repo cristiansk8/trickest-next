@@ -9,15 +9,10 @@ import MotionTransition from "./transition-component";
 const Header = () => {
     return (
         <MotionTransition position="bottom" className="absolute z-40 inline-block w-full top-5 md:top-10">
-            <header>
+            <header className="flex gap-4 p-4 bg-gradient-to-b shadow">
                 <Providers>
                     <Appbar />
                 </Providers> 
-                <div className="justify-between">
-                    <Link href='/' className="text-center">
-                        <Image src="/logo.png" priority width="100" height="450" alt="Avatar" className="mx-auto pt--4" />
-                    </Link>
-                </div>
 
             </header>
         </MotionTransition>

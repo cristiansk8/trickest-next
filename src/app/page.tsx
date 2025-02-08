@@ -16,17 +16,17 @@ export default function Home() {
         <TransitionPage />
         <Introduction />
       </div>
-      <div className='pt-28 text-center'>
+      {/* <div className='pt-28 text-center'>
         <h1 className='text-slate-200 my-16 text-2xl md:text-4xl font-bold'>High Scores</h1>
         <HighScore />
-      </div>
-      <div className='pt-28 text-center'>
+      </div> */}
+      {/* <div className='pt-28 text-center'>
         <div className='flex flex-col h-full py-5 md:pt-28 text-center bg-[#2e2257]'>
           <h1 className='text-slate-200 my-16 text-2xl md:text-4xl font-bold'>Sigue los pasos</h1>
           <HowWin />
         </div>
-      </div>
-      <div className='pt-28 text-center'>
+      </div> */}
+      {/* <div className='pt-28 text-center'>
         <div className='flex flex-col h-full py-5 md:pt-28 text-center bg-black'>
           <h1 className='text-slate-200 my-6 text-2xl md:text-4xl font-bold'>Chequea la competencia</h1>
           <div className='px-7 mb-2 md:mb-12 md:w-full md:max-w-3xl md:mx-auto'>
@@ -45,13 +45,13 @@ export default function Home() {
             <GalerryLevels />
           </div>
         </div>
-      </div>
-      <div>
+      </div> */}
+      {/* <div>
       <Partners />
-      </div>
-      <div>
+      </div> */}
+      {/* <div>
         <Footer />
-      </div>
+      </div> */}
     </main>
   );
 }
