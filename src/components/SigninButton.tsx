@@ -1,3 +1,5 @@
+'use client'
+
 import { signIn, signOut, useSession } from "next-auth/react";
 import { useState, useEffect } from "react";
 import SkateProfileCompletionModal from "./SkateProfileCompletionModal";
@@ -28,7 +30,7 @@ const SigninButton = () => {
 
   if (session?.user) {
     return (
-      <div className="fixed bottom-5 left-1/2 transform -translate-x-1/2 flex flex-col items-center gap-4">
+      <div className="fixed bottom-1/4 left-1/2 transform -translate-x-1/2 flex flex-col md:flex-row items-center gap-4 ">
         {isRegistered ? (
           <Link href="/dashboard/skaters/profile">
             <button className="relative px-6 py-3 text-lg font-bold text-white bg-green-600 border-4 border-white rounded-lg shadow-lg hover:scale-110 transition-transform duration-300 animate-pulse">

@@ -12,7 +12,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
 
                 <div className="w-full text-slate-900">
-                    {children}
+                    <Providers>{children}</Providers>
+
                 </div>
 
             </div>

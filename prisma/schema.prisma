@@ -9,28 +9,31 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
 }
 
 model User {
-  id        Int          @id @default(autoincrement())
-  email     String       @unique
-  name      String?
-  phone     String?      // Campo para el número de celular
-  photo     String?
-  createdAt DateTime     @default(now())
-  socials   SocialMedia[] // Relación con la tabla de redes sociales
+  id           Int           @id @default(autoincrement())
+  email        String        @unique
+  name         String?
+  phone        String? // Campo para el número de celular
+  photo        String?
+  estado       String?
+  departamento String?
+  ciudad       String?
+  createdAt    DateTime      @default(now())
+  socials      SocialMedia[] // Relación con la tabla de redes sociales
 }
 
 model SocialMedia {
-  id       Int    @id @default(autoincrement())
-  userId   Int    @unique
-  facebook String?
+  id        Int     @id @default(autoincrement())
+  userId    String  @unique // Cambiado de Int a String (email del usuario)
+  facebook  String?
   instagram String?
-  twitter  String?
-  tiktok   String?
-  
-  user User @relation(fields: [userId], references: [id])
+  twitter   String?
+  tiktok    String?
+
+  user User @relation(fields: [userId], references: [email]) // Relacionado por email
 }
