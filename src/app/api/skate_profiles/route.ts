@@ -38,10 +38,10 @@ export async function POST(req: Request) {
             data: {
                 email,
                 name,
+                phone: phone ?? undefined,
                 photo,
                 departamento,
                 ciudad,
-                phone: phone ?? undefined,
                 createdAt: new Date(),
             },
         });
