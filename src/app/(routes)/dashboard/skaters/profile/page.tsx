@@ -1,20 +1,23 @@
-"use client"; // Agrega esto en la parte superior del archivo
+"use client"; // Asegura que el código solo se ejecute en el cliente
 
 import { useState } from 'react';
-import LocationSelector from '../../../../../components/LocationSelector'; // Asegúrate de que la ruta sea correcta según tu estructura de carpetas.
+import LocationSelector from '../../../../../components/LocationSelector'; // Asegúrate de que la ruta sea correcta
 import { useSession } from 'next-auth/react';
 
-
-export default function PorfilePage() {
-  // Agrega el estado para selectedCity y selectedDepartment
+export default function ProfilePage() {
   const [selectedCity, setSelectedCity] = useState<string>('');
   const [selectedDepartment, setSelectedDepartment] = useState<string>('');
-  const [formData, setFormData] = useState({ userId: '', facebook: '', instagram: '', twitter: '', tiktok: ''});
+  const [formData, setFormData] = useState({
+    facebook: '',
+    instagram: '',
+    twitter: '',
+    tiktok: '',
+  });
   const [loading, setLoading] = useState(false);
   const { data: session } = useSession();
   const [isRegistered, setIsRegistered] = useState(false);
 
-
+  // Maneja el submit del formulario
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
@@ -24,27 +27,39 @@ export default function PorfilePage() {
       setLoading(false);
       return;
     }
+    const jsonData = {
+      userId: session.user.email,
+      facebook: formData.facebook,
+      instagram: formData.instagram,
+      twitter: formData.twitter,
+      tiktok: formData.tiktok,
+    };
+    console.log('Datos JSON a enviar:', jsonData);
 
     try {
-      const response = await fetch('/api/skate_profiles', {
+      const response = await fetch('/api/skate_profiles/social_media', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          userId: session.user.email,
+        body: JSON.stringify({   
           facebook: formData.facebook,
           instagram: formData.instagram,
           twitter: formData.twitter,
           tiktok: formData.tiktok,
+          userId: session.user.email
         }),
       });
-
+    
       const data = await response.json();
-      if (data.error) throw new Error(data.error);
-
+    
+      if (data.error) {
+        throw new Error(data.error);
+      }
+    
       console.log('Registro exitoso:', data);
       setIsRegistered(true);
     } catch (error) {
-      console.error('Error al registrar:', error);
+      console.error('Error al registrar:', error);  // Aquí se captura y muestra el error
+      console.log('Error details:', error);  // Imprime detalles adicionales del error
     } finally {
       setLoading(false);
     }
@@ -175,55 +190,61 @@ export default function PorfilePage() {
         <div>
           <form onSubmit={handleSubmit} className='space-y-4 px-4 pb-4 flex grid-cols-2 bg-white shadow-md rounded  mb-4 '>
             <div className="mb-4">
-              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="name">Facebook:</label>
-              <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="facebook">Facebook:</label>
+              <input
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 type="text"
-                id="name"
+                id="facebook"
                 name="facebook"
                 value={formData.facebook}
                 onChange={(e) => setFormData({ ...formData, facebook: e.target.value })}
-
               />
             </div>
             <div className="mb-4">
-              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="foto">Instagram:</label>
-              <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="instagram">Instagram:</label>
+              <input
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 type="text"
-                id="foto"
+                id="instagram"
                 name="instagram"
                 value={formData.instagram}
                 onChange={(e) => setFormData({ ...formData, instagram: e.target.value })}
-
               />
             </div>
             <div className="mb-4">
-              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="foto">Tiktok:</label>
-              <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="tiktok">Tiktok:</label>
+              <input
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 type="text"
-                id="phone"
+                id="tiktok"
                 name="tiktok"
                 value={formData.tiktok}
                 onChange={(e) => setFormData({ ...formData, tiktok: e.target.value })}
-
               />
             </div>
             <div className="mb-4">
-              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="foto">X:</label>
-              <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="twitter">X:</label>
+              <input
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 type="text"
-                id="location"
-                name="twiter"
+                id="twitter"
+                name="twitter"
                 value={formData.twitter}
                 onChange={(e) => setFormData({ ...formData, twitter: e.target.value })}
-
               />
             </div>
             <div className="flex items-center justify-between">
-              <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit" >Guardar</button>
+              <button
+                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                type="submit"
+              >
+                Guardar
+              </button>
             </div>
           </form>
         </div>
       </div>
+
     </div>
   );
 }

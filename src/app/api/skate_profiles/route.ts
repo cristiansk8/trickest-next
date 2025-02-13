@@ -22,37 +22,52 @@ export async function GET(req: Request) {
     }
 }
 
+// Registro de Usuario y Redes Sociales
 export async function POST(req: Request) {
     try {
-        const { userId, facebook, instagram, twitter, tiktok } = await req.json();
+        // Extraemos los datos del cuerpo de la solicitud
+        const { email, name, phone, photo, departamento, ciudad, facebook, instagram, twitter, tiktok } = await req.json();
 
-        if (!userId) {
-            return NextResponse.json({ error: 'Email (userId) es requerido' }, { status: 400 });
+        // Validamos los campos obligatorios
+        if (!email || !name || !phone || !photo || !departamento || !ciudad) {
+            return NextResponse.json({ error: 'Todos los campos del usuario son requeridos' }, { status: 400 });
         }
 
-        // Verificar si el usuario existe por su email
-        const user = await prisma.user.findUnique({
-            where: { email: userId },
-        });
-
-        if (!user) {
-            return NextResponse.json({ error: 'Usuario no encontrado' }, { status: 404 });
-        }
-
-        // Registrar las redes sociales usando el email como userId
-        const socialMedia = await prisma.socialMedia.create({
+        // Crear el usuario
+        const user = await prisma.user.create({
             data: {
-                userId, // Ahora es el email
-                facebook: facebook ?? null,
-                instagram: instagram ?? null,
-                twitter: twitter ?? null,
-                tiktok: tiktok ?? null,
+                email,
+                name,
+                photo,
+                departamento,
+                ciudad,
+                phone: phone ?? undefined,
+                createdAt: new Date(),
             },
         });
 
-        return NextResponse.json({ message: 'Redes sociales registradas con éxito', socialMedia }, { status: 201 });
+        // Registrar o actualizar las redes sociales con el mismo email (usando email como ID)
+        const socialMedia = await prisma.socialMedia.upsert({
+            where: { userId: email }, // Usamos el correo electrónico como identificador
+            update: {
+                facebook: facebook ?? undefined,
+                instagram: instagram ?? undefined,
+                twitter: twitter ?? undefined,
+                tiktok: tiktok ?? undefined,
+            },
+            create: {
+                userId: email,
+                facebook: facebook ?? undefined,
+                instagram: instagram ?? undefined,
+                twitter: twitter ?? undefined,
+                tiktok: tiktok ?? undefined,
+            },
+        });
+
+        // Responder con éxito
+        return NextResponse.json({ message: 'Usuario y redes sociales creados con éxito', user, socialMedia }, { status: 201 });
     } catch (error) {
-        console.error('Error al registrar redes sociales:', error);
-        return NextResponse.json({ error: 'Error al registrar redes sociales' }, { status: 500 });
+        console.error('Error:', error);
+        return NextResponse.json({ error: 'Hubo un error al crear el usuario y redes sociales' }, { status: 500 });
     }
 }
