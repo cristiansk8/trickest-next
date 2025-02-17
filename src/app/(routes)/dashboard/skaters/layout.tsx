@@ -3,20 +3,23 @@ import { Sidebar } from "@/components/sidebar/Sidebar";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode; }) {
     return (
-        <div className="bg-slate-100 overflow-y-scroll w-screen h-screen antialiased text-slate-300 selection:bg-blue-600 selection:text-white">
+        <div className="bg-slate-100 overflow-y-auto min-h-screen antialiased text-slate-300 selection:bg-blue-600 selection:text-white">
 
-            <div className="flex ">
-                <Providers>
-                    <Sidebar />
-                </Providers>
-
-
-                <div className="w-full text-slate-900">
-                    <Providers>{children}</Providers>
-
-                </div>
-
+        <Providers>
+          <div className="flex flex-col lg:flex-row min-h-screen">
+      
+            {/* Sidebar */}
+            <Sidebar />
+      
+            {/* Contenido principal */}
+            <div className="flex-1 w-full text-slate-900">
+              {children}
             </div>
-        </div>
+      
+          </div>
+        </Providers>
+      
+      </div>
+      
     );
 }

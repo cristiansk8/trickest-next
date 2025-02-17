@@ -4,8 +4,13 @@ import { signIn, signOut, useSession } from "next-auth/react";
 import { useState, useEffect } from "react";
 import SkateProfileCompletionModal from "./SkateProfileCompletionModal";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const SigninButton = () => {
+  const pathname = usePathname(); // Obtiene la ruta actual
+
+  if (pathname !== "/") return null; // Oculta el componente en todas las páginas excepto el home
+
   const { data: session } = useSession();
   const [openModal, setModal] = useState(false);
   const [isRegistered, setIsRegistered] = useState(false);

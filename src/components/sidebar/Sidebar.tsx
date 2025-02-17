@@ -37,48 +37,49 @@ export const Sidebar = () => {
 
 
     return (
-        <div id="menu"
-            style={{ width: '400px' }}
-            className="bg-gray-900 min-h-screen z-10 text-slate-300 w-64  left-0  overflow-y-scroll">
+<div id="menu"
+  className="bg-gray-900 min-h-screen z-10 text-slate-300 w-full max-w-[400px] left-0 overflow-y-auto md:w-64">
 
-            <div id="logo" className="my-4 px-6">
-                <h1 className="flex text-lg md:text-2xl font-bold text-white">
-                    <div className='px-2'>
-                        <IoLogoReact />
-                    </div>
-                    <span>Trickest</span>
-                    <span className="text-blue-500">2024 Skaters</span>.</h1>
-                <p className="text-slate-500 text-sm">score = 0</p>
-            </div>
+  {/* Logo y Título */}
+  <div id="logo" className="my-4 px-4 md:px-6">
+    <h1 className="flex items-center text-lg md:text-2xl font-bold text-white">
+      <IoLogoReact className="text-blue-500 w-6 h-6 md:w-8 md:h-8 mr-2" />
+      <span>Trickest</span>
+      <span className="text-blue-500">2024 Skaters</span>.
+    </h1>
+    <p className="text-slate-500 text-sm">Score = 0</p>
+  </div>
 
-            <div id="profile" className="px-6 py-10">
-                <p className="text-slate-500">Bienvenido,</p>
-                <a href="#" className="inline-flex space-x-2 items-center">
-                    {
-                             (status === "loading") ? <p>Cargando...</p>: // Evita errores de hidratación
+  {/* Perfil del usuario */}
+  <div id="profile" className="px-4 md:px-6 py-6 md:py-10">
+    <p className="text-slate-500 text-sm md:text-base">Bienvenido,</p>
+    <a href="#" className="inline-flex space-x-2 items-center">
+      {status === "loading" ? (
+        <p>Cargando...</p> // Evita errores de hidratación
+      ) : (
+        <>
+          <Image 
+            className="rounded-full w-10 h-10 md:w-12 md:h-12" 
+            src={session?.user?.image || "/logo.png"}
+            alt="User avatar"
+            width={50}
+            height={50} 
+          />
+          <span className="text-sm md:text-base font-bold">
+            {session?.user?.name}
+          </span>
+        </>
+      )}
+    </a>
+  </div>
 
-                    <span>
-                        <Image className="rounded-full w-8 h-8" src={session?.user?.image || "/logo.png"}
-                            alt="User avatar"
-                            width={50}
-                            height={50} />
-                    </span>}
-                    <span className="text-sm md:text-base font-bold">
+  {/* Menú de navegación */}
+  <div id="nav" className="w-full px-4 md:px-6">
+    {menuItems.map(item => (
+      <SidebarMenuItem key={item.path} {...item} />
+    ))}
+  </div>
+</div>
 
-                        {session?.user?.name}
-                    </span>
-                </a>
-            </div>
-
-
-            <div id="nav" className="w-full px-6">
-                {
-                    menuItems.map(item => (
-                        <SidebarMenuItem key={item.path} {...item} />
-                    ))
-                }
-
-            </div>
-        </div>
     )
 }
