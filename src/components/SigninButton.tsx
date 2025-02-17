@@ -94,13 +94,13 @@ const SigninButton = () => {
             </button>
             <h2 className="text-xl font-bold text-center mb-4">Cómo jugar</h2>
             <div className="relative w-full h-0" style={{ paddingBottom: "56.25%" }}>
-              <iframe
-                className="absolute top-0 left-0 w-full h-full"
-                src="https://www.youtube.com/embed/ZzRXUcs6GG0?autoplay=1"
-                title="Cómo jugar"
-                allow="autoplay; encrypted-media"
-                allowFullScreen
-              ></iframe>
+              <video
+                className="w-full rounded-lg"
+                src="/demo.mp4"
+                autoPlay
+                controls
+                onEnded={handleVideoModal} // Cierra el modal cuando termina (opcional)
+              />
             </div>
           </div>
         </div>
