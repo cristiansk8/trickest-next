@@ -2,6 +2,8 @@
 import { useState } from 'react';
 import { useSession } from 'next-auth/react';
 import LocationSelector from './LocationSelector';
+import { useRouter } from 'next/navigation'; // ✅ Importa useRouter
+
 
 interface ModalProps {
     openModal: boolean;
@@ -21,16 +23,19 @@ const SkateProfileCompletionModal: React.FC<ModalProps> = ({ openModal, handleMo
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
+
+    const router = useRouter(); // ✅ Obtiene el objeto router
+    
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setLoading(true);
-
+    
         if (!session?.user) {
             console.error('No estás autenticado');
             setLoading(false);
             return;
         }
-
+    
         try {
             const response = await fetch('/api/skate_profiles', {
                 method: 'POST',
@@ -44,13 +49,16 @@ const SkateProfileCompletionModal: React.FC<ModalProps> = ({ openModal, handleMo
                     photo: session.user.image,
                 }),
             });
-
+    
             const data = await response.json();
             if (data.error) throw new Error(data.error);
-
+    
             console.log('Registro exitoso:', data);
             setIsRegistered(true);
             handleModal();
+    
+            // ✅ Redirige después de 2 segundos
+            router.push('/dashboard/skaters/profile');
         } catch (error) {
             console.error('Error al registrar:', error);
         } finally {

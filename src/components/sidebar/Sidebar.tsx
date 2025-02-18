@@ -38,16 +38,16 @@ export const Sidebar = () => {
 
     return (
 <div id="menu"
-  className="bg-gray-900 min-h-screen z-10 text-slate-300 w-full max-w-[400px] left-0 overflow-y-auto md:w-64">
+  className="bg-gray-900 min-h-auto lg:min-h-screen z-10 text-slate-300 w-full max-w-[400px] left-0 overflow-y-auto md:w-64">
 
   {/* Logo y Título */}
   <div id="logo" className="my-4 px-4 md:px-6">
     <h1 className="flex items-center text-lg md:text-2xl font-bold text-white">
       <IoLogoReact className="text-blue-500 w-6 h-6 md:w-8 md:h-8 mr-2" />
       <span>Trickest</span>
-      <span className="text-blue-500">2024 Skaters</span>.
+      <span className="text-blue-500">2025 Skaters</span>
     </h1>
-    <p className="text-slate-500 text-sm">Score = 0</p>
+    <span className="text-blue-500 text-sm text-lg md:text-2xl font-bold">Score = 0</span>
   </div>
 
   {/* Perfil del usuario */}
