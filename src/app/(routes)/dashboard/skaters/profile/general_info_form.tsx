@@ -4,13 +4,12 @@ import { useSession } from "next-auth/react";
 import LocationSelector from "@/components/LocationSelector";
 import { useRouter } from 'next/navigation';
 
-
-
 export default function ProfilePage() {
   const { data: session, status } = useSession();
   const [isClient, setIsClient] = useState(false);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const [notification, setNotification] = useState(""); // Estado para mostrar mensajes
 
   const [formData, setFormData] = useState({
     name: "",
@@ -66,17 +65,16 @@ export default function ProfilePage() {
 
   if (!isClient) return <p>Cargando...</p>; // Evita el render en SSR
 
-  const handleSubmitUpdatePofile = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmitUpdateProfile = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
+    setNotification(""); // Reiniciar notificación antes de enviar
 
     if (!session?.user) {
-      console.error('No estás autenticado');
+      setNotification("⚠️ No estás autenticado.");
       setLoading(false);
       return;
     }
-    /* console.log("📦 Datos a enviar:", formData); */
-
 
     try {
       const response = await fetch('/api/skate_profiles/general_info', {
@@ -97,28 +95,38 @@ export default function ProfilePage() {
       const data = await response.json();
       if (data.error) throw new Error(data.error);
 
-      console.log('Registro exitoso:', data);
+      setNotification("✅ Perfil actualizado con éxito."); // Mensaje de éxito
+      // Desaparece la notificación en 5 segundos
+      setTimeout(() => {
+        setNotification("");
+      }, 5000);
 
-      router.push('/dashboard/skaters/profile');
     } catch (error) {
+      setNotification("❌ Error al actualizar el perfil. Inténtalo de nuevo.");
       console.error('Error al registrar:', error);
     } finally {
       setLoading(false);
     }
-
-  }
-
+  };
 
   return (
     <div className="text-black">
       <h1 className="mt-2 text-3xl">Hola</h1>
       <span className="text-xl">Información general</span>
 
+      {/* Notificación de éxito o error */}
+      {notification && (
+        <div className={`mt-4 p-2 text-white rounded ${notification.includes("Error") ? "bg-red-500" : "bg-green-500"}`}>
+          {notification}
+        </div>
+      )}
+
       {loading && <p>Cargando...</p>}
 
       <form
-        onSubmit={handleSubmitUpdatePofile}
-        className="grid grid-cols-2 bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+        onSubmit={handleSubmitUpdateProfile}
+        className="grid grid-cols-2 bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
+      >
         <div className="mb-4">
           <label htmlFor="name" className="block text-gray-700 text-sm font-bold mb-2">Nombre:</label>
           <input className="shadow border rounded w-full py-2 px-3" type="text" id="name" name="name" value={formData.name} onChange={handleChange} />

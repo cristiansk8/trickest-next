@@ -26,7 +26,7 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
     try {
         // Extraemos los datos del cuerpo de la solicitud
-        const { email, name, phone, photo, departamento, ciudad, facebook, instagram, twitter, tiktok } = await req.json();
+        const { email, name, phone, photo, departamento, ciudad, facebook, instagram, twitter, tiktok, madero, trucks, ruedas, rodamientos, tenis} = await req.json();
 
         // Validamos los campos obligatorios
         if (!email || !name || !phone || !photo || !departamento || !ciudad) {
@@ -63,12 +63,28 @@ export async function POST(req: Request) {
                 tiktok: tiktok ?? undefined,
             },
         });
+        const dreamSetup = await prisma.wishSkate.upsert({
+            where: { userId: email }, // Usamos el correo electrónico como identificador
+            update: {
+                madero: madero ?? undefined,
+                trucks: trucks ?? undefined,
+                ruedas: ruedas ?? undefined,
+                rodamientos: rodamientos ?? undefined,
+            },
+            create: {
+                userId: email,
+                madero: madero ?? undefined,
+                trucks: trucks ?? undefined,
+                ruedas: ruedas ?? undefined,
+                rodamientos: rodamientos ?? undefined,
+            },
+        });
 
         // Responder con éxito
-        return NextResponse.json({ message: 'Usuario y redes sociales creados con éxito', user, socialMedia }, { status: 201 });
+        return NextResponse.json({ message: 'Tabla soñada creados con éxito', user, socialMedia }, { status: 201 });
     } catch (error) {
         console.error('Error:', error);
-        return NextResponse.json({ error: 'Hubo un error al crear el usuario y redes sociales' }, { status: 500 });
+        return NextResponse.json({ error: 'Hubo un error al crear la tabla soñada' }, { status: 500 });
     }
 }
 

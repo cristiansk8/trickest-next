@@ -49,3 +49,38 @@ export async function POST(req: Request) {
         return NextResponse.json({ error: 'Error al registrar redes sociales' }, { status: 500 });
     }
 }
+
+export async function GET(req: Request) {
+    try {
+      const url = new URL(req.url);
+      const email = url.searchParams.get("email");
+  
+      console.log("🔍 Email recibido en la API:", email);
+  
+      if (!email) {
+        return NextResponse.json({ error: "Email es requerido" }, { status: 400 });
+      }
+  
+      // Buscar redes sociales del usuario
+      const socialMedia = await prisma.socialMedia.findUnique({
+        where: { userId: email },
+      });
+  
+      console.log("🌐 Redes sociales encontradas:", socialMedia);
+  
+      if (!socialMedia) {
+        return NextResponse.json(
+          { exists: false, message: "Redes sociales no encontradas" },
+          { status: 404 }
+        );
+      }
+  
+      return NextResponse.json({ exists: true, socialMedia }, { status: 200 });
+    } catch (error) {
+      console.error("❌ Error en la API de redes sociales:", error);
+      return NextResponse.json(
+        { error: "Error en el servidor" },
+        { status: 500 }
+      );
+    }
+  }
