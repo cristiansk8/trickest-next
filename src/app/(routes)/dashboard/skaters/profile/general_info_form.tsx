@@ -2,12 +2,16 @@
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import LocationSelector from "@/components/LocationSelector";
+import { useRouter } from 'next/navigation';
+
+
 
 export default function ProfilePage() {
   const { data: session, status } = useSession();
   const [isClient, setIsClient] = useState(false);
   const [loading, setLoading] = useState(true);
-  
+  const router = useRouter();
+
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
@@ -62,6 +66,49 @@ export default function ProfilePage() {
 
   if (!isClient) return <p>Cargando...</p>; // Evita el render en SSR
 
+  const handleSubmitUpdatePofile = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setLoading(true);
+
+    if (!session?.user) {
+      console.error('No estás autenticado');
+      setLoading(false);
+      return;
+    }
+    /* console.log("📦 Datos a enviar:", formData); */
+
+
+    try {
+      const response = await fetch('/api/skate_profiles/general_info', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: session.user.email,
+          name: session.user.name,
+          phone: formData.phone,
+          ciudad: formData.ciudad,
+          departamento: formData.departamento,
+          estado: formData.estado,
+          birthdate: formData.birthdate,
+          birthskate: formData.birthskate,
+        }),
+      });
+
+      const data = await response.json();
+      if (data.error) throw new Error(data.error);
+
+      console.log('Registro exitoso:', data);
+
+      router.push('/dashboard/skaters/profile');
+    } catch (error) {
+      console.error('Error al registrar:', error);
+    } finally {
+      setLoading(false);
+    }
+
+  }
+
+
   return (
     <div className="text-black">
       <h1 className="mt-2 text-3xl">Hola</h1>
@@ -69,7 +116,9 @@ export default function ProfilePage() {
 
       {loading && <p>Cargando...</p>}
 
-      <form className="grid grid-cols-2 bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+      <form
+        onSubmit={handleSubmitUpdatePofile}
+        className="grid grid-cols-2 bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
         <div className="mb-4">
           <label htmlFor="name" className="block text-gray-700 text-sm font-bold mb-2">Nombre:</label>
           <input className="shadow border rounded w-full py-2 px-3" type="text" id="name" name="name" value={formData.name} onChange={handleChange} />

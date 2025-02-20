@@ -33,36 +33,40 @@ export async function GET(req: Request) {
 
 // Actualización de Usuario (sin modificar email ni foto)
 export async function PUT(req: Request) {
-    try {
-        const { email, name, phone, estado, departamento, ciudad, birthdate, birthskate } = await req.json();
+  console.log("🔧 Actualizando usuario...");
 
-        if (!email) {
-            return NextResponse.json({ error: 'Email requerido' }, { status: 400 });
-        }
+  try {
+    const data = await req.json();
+    console.log("📦 Datos recibidos:", data);
+    const { email, name, phone, estado, departamento, ciudad, birthdate, birthskate } = data;
 
-        // Verificar si el usuario existe
-        const existingUser = await prisma.user.findUnique({ where: { email } });
-        if (!existingUser) {
-            return NextResponse.json({ error: 'Usuario no encontrado' }, { status: 404 });
-        }
-
-        // Actualizar los datos del usuario (sin modificar email ni photo)
-        const updatedUser = await prisma.user.update({
-            where: { email },
-            data: {
-                name,
-                phone,
-                estado,
-                departamento,
-                ciudad,
-                birthdate: birthdate ? new Date(birthdate) : undefined,
-                birthskate: birthskate ? new Date(birthskate) : undefined,
-            },
-        });
-
-        return NextResponse.json({ message: 'Usuario actualizado con éxito', updatedUser }, { status: 200 });
-    } catch (error) {
-        console.error('Error al actualizar el usuario:', error);
-        return NextResponse.json({ error: 'Hubo un error en la actualización' }, { status: 500 });
+    if (!email) {
+      return NextResponse.json({ error: 'Email requerido' }, { status: 400 });
     }
+
+    // Verificar si el usuario existe
+    const existingUser = await prisma.user.findUnique({ where: { email } });
+    if (!existingUser) {
+      return NextResponse.json({ error: 'Usuario no encontrado' }, { status: 404 });
+    }
+
+    // Actualizar los datos del usuario (sin modificar email ni photo)
+    const updatedUser = await prisma.user.update({
+      where: { email },
+      data: {
+        name,
+        phone,
+        departamento,
+        ciudad,
+        estado,
+        birthdate: birthdate ? new Date(birthdate) : undefined,
+        birthskate: birthskate ? new Date(birthskate) : undefined,
+      },
+    });
+
+    return NextResponse.json({ message: 'Usuario actualizado con éxito', updatedUser }, { status: 200 });
+  } catch (error) {
+    console.error('Error al actualizar el usuario:', error);
+    return NextResponse.json({ error: 'Hubo un error en la actualización' }, { status: 500 });
+  }
 }

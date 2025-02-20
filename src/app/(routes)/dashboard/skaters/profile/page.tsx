@@ -39,7 +39,7 @@ export default function ProfilePage() {
       const response = await fetch('/api/skate_profiles/social_media', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({   
+        body: JSON.stringify({
           facebook: formData.facebook,
           instagram: formData.instagram,
           twitter: formData.twitter,
@@ -47,13 +47,13 @@ export default function ProfilePage() {
           userId: session.user.email
         }),
       });
-    
+
       const data = await response.json();
-    
+
       if (data.error) {
         throw new Error(data.error);
       }
-    
+
       console.log('Registro exitoso:', data);
       setIsRegistered(true);
     } catch (error) {
@@ -70,7 +70,7 @@ export default function ProfilePage() {
       <div className="text-black">
         <span className="text-xl">Equipamiento soñado</span>
         <div>
-          <form className="flex grid grid-cols-2 bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 ">
+          <form className="grid grid-cols-2 bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 ">
             <div className="mb-4">
               <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="name">Madero:</label>
               <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
