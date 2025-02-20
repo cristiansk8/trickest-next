@@ -71,3 +71,4 @@ export async function POST(req: Request) {
         return NextResponse.json({ error: 'Hubo un error al crear el usuario y redes sociales' }, { status: 500 });
     }
 }
+

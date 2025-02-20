@@ -23,8 +23,11 @@ model User {
   estado       String?
   departamento String?
   ciudad       String?
+  birthdate    DateTime? // Nuevo campo para la fecha de nacimiento
+  birthskate   DateTime? // Nuevo campo para la fecha de nacimiento
   createdAt    DateTime      @default(now())
   socials      SocialMedia[] // Relación con la tabla de redes sociales
+  WishSkate    WishSkate?
 }
 
 model SocialMedia {
@@ -34,6 +37,18 @@ model SocialMedia {
   instagram String?
   twitter   String?
   tiktok    String?
+
+  user User @relation(fields: [userId], references: [email]) // Relacionado por email
+}
+
+model WishSkate {
+  id          Int     @id @default(autoincrement())
+  userId      String  @unique // Cambiado de Int a String (email del usuario)
+  madero      String?
+  trucks      String?
+  ruedas      String?
+  rodamientos String?
+  tenis       String?
 
   user User @relation(fields: [userId], references: [email]) // Relacionado por email
 }
