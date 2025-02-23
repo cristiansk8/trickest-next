@@ -1,7 +1,6 @@
 "use client"; // Asegura que el código solo se ejecute en el cliente
 
 import { useEffect, useState } from 'react';
-import LocationSelector from '../../../../../components/LocationSelector'; // Asegúrate de que la ruta sea correcta
 import { useSession } from "next-auth/react";
 import GeneralInfoForm from './general_info_form';
 import SkateSetupPage from './dream_setup';
@@ -130,9 +129,8 @@ export default function ProfilePage() {
 
       {/* Notificación */}
       {notification && (
-        <div className={`my-4 p-3 rounded-md text-white ${
-          notification.includes("✅") ? "bg-green-500" : "bg-red-500"
-        }`}>
+        <div className={`my-4 p-3 rounded-md text-white ${notification.includes("✅") ? "bg-green-500" : "bg-red-500"
+          }`}>
           {notification}
         </div>
       )}

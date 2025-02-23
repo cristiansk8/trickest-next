@@ -1,19 +1,16 @@
 import type { Metadata } from 'next'
-import TransitionPage from '@/components/transition-page';
-import Introduction from '@/components/introduction';
-import GalerryLevels from '@/components/GalerryLevels';
-import { FaMagnifyingGlass } from "react-icons/fa6";
-import HowWin from '@/components/howToWin';
-import HighScore from '@/components/highScore';
-import Footer from '@/components/footer';
-import Partners from '@/components/partners/partners';
+import TransitionPage from '@/components/utils/transition-page';
+
+
+import HighScore from '@/components/sections/HighScore';
+import Introduction from '@/components/Introduction';
+
 
 
 export default function Home() {
   return (
     <main>
       <div className="flex">
-        <TransitionPage />
         <Introduction />
       </div>
       {/* <div className='pt-28 text-center'>

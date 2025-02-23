@@ -1,4 +1,4 @@
-import { SidebarJuez } from "@/components/sidebar/SidebarJuez";
+import { SidebarJuez } from "@/components/layout/sidebar/SidebarJuez";
 
 
 export default function DashboardLayout({ children }: { children: React.ReactNode; }) {

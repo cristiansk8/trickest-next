@@ -1,7 +1,7 @@
 'use client'
 import React from 'react'
 import Image from 'next/image'
-import { IoLogoReact, IoBrowsersOutline, IoCalculator, IoFootball, IoHeartOutline } from "react-icons/io5"
+import { IoLogoReact, } from "react-icons/io5"
 import { SidebarMenuItem } from './SidebarMenuItem';
 import { MdOutlineSkateboarding } from "react-icons/md";
 import { GiSkateboard } from "react-icons/gi";
@@ -42,20 +42,20 @@ export const Sidebar = () => {
       className="bg-gray-900 min-h-auto lg:min-h-screen z-10 text-slate-300 w-full max-w-[400px] left-0 overflow-y-auto md:w-64">
 
       {/* Logo y Título */}
-      
-        <div id="logo" className="my-4 px-4 md:px-6 cursor-pointer">
+
+      <div id="logo" className="my-4 px-4 md:px-6 cursor-pointer">
         <Link href="/">
           <h1 className="flex items-center text-lg md:text-2xl font-bold text-white">
             <IoLogoReact className="text-blue-500 w-6 h-6 md:w-8 md:h-8 mr-2" />
             <span>Trickest</span>
             <span className="text-blue-500">2025 Skaters</span>
           </h1>
-          </Link>
-          <span className="text-blue-500 text-sm text-lg md:text-2xl font-bold">
-            Score = 0
-          </span>
-        </div>
-      
+        </Link>
+        <span className="text-blue-500 text-sm text-lg md:text-2xl font-bold">
+          Score = 0
+        </span>
+      </div>
+
 
       {/* Perfil del usuario */}
       <div id="profile" className="px-4 md:px-6 py-6 md:py-10">

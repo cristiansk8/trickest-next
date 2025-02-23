@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import LocationSelector from "@/components/LocationSelector";
+import LocationSelector from "@/components/ui/LocationSelector";
 import { useRouter } from 'next/navigation';
 
 export default function ProfilePage() {

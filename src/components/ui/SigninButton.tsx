@@ -2,9 +2,9 @@
 
 import { signIn, signOut, useSession } from "next-auth/react";
 import { useState, useEffect } from "react";
-import SkateProfileCompletionModal from "./SkateProfileCompletionModal";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import SkateProfileCompletionModal from "../sections/SkateProfileCompletionModal";
 
 const SigninButton = () => {
   const pathname = usePathname();
@@ -105,8 +105,8 @@ const SigninButton = () => {
           </div>
         </div>
       )}
-            {/* Modal para el video */}
-            {openVideoModal && (
+      {/* Modal para el video */}
+      {openVideoModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75 z-50">
           <div className="bg-white p-4 rounded-lg shadow-lg max-w-2xl w-full relative">
             <button

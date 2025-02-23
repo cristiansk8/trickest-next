@@ -1,7 +1,7 @@
 import React from 'react'
-import { howToWin } from "../../data";
 import localFont from 'next/font/local';
-import {Button} from "@nextui-org/react";
+import { Button } from "@nextui-org/react";
+import { howToWin } from '../../../data';
 
 const myFont = localFont({
     src: './fonts/blox.woff',
@@ -9,11 +9,11 @@ const myFont = localFont({
 });
 
 const HowWin = () => {
-    return ( 
+    return (
         <div>
             <div className="flex w-full flex-wrap content-center justify-center px-7">
                 <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
-                    {  
+                    {
                         howToWin.map((tricket, index) => {
                             return (
                                 <div className="max-w-xsborder    " key={index}>
@@ -23,7 +23,7 @@ const HowWin = () => {
                 text-center md:text-6xl md:mx-0 md:mb-8 tracking-wide ${myFont.className}`}>{tricket.titulo}</h3>
                                         <p>{tricket.caption}</p>
                                     </div>
-                                </div> 
+                                </div>
                             )
                         })
                     }

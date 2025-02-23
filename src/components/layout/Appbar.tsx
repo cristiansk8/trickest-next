@@ -1,5 +1,5 @@
 import React from "react";
-import SigninButton from "./SigninButton";
+import SigninButton from "../ui/SigninButton";
 
 const Appbar = () => {
   return (

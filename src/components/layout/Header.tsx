@@ -1,9 +1,7 @@
 "use client"
-import Image from "next/image";
+import Providers from "../../providers/Providers";
+import MotionTransition from "../utils/transition-component";
 import Appbar from "./Appbar";
-import Providers from "./Providers";
-import Link from "next/link";
-import MotionTransition from "./transition-component";
 
 
 const Header = () => {
@@ -12,8 +10,7 @@ const Header = () => {
             <header className="flex gap-4 p-4 bg-gradient-to-b shadow">
                 <Providers>
                     <Appbar />
-                </Providers> 
-
+                </Providers>
             </header>
         </MotionTransition>
     );
