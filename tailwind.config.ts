@@ -24,6 +24,12 @@ const config: Config = {
       },
       darkMode: "class",
       plugins: [nextui()],
+      spacing: {
+        'unit-6': '1.5rem', // Define el valor de unit-6
+      },
+      borderRadius: {
+        large: '1.5rem', // Define el valor de large
+      },
     },
   },
   plugins: [],

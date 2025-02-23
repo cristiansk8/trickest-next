@@ -5,7 +5,7 @@ import Link from 'next/link'
 
 interface Props {
     path: string;
-    icon: JSX.Element;
+    icon: React.ReactNode;
     title: string;
     subTitle: string;
 }

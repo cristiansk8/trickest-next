@@ -38,6 +38,7 @@ export async function POST(req: Request) {
             data: {
                 email,
                 name,
+                nickname: `${email}_temp`,
                 phone: phone ?? undefined,
                 photo,
                 departamento,
