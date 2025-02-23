@@ -17,6 +17,7 @@ datasource db {
 model User {
   id           Int           @id @default(autoincrement())
   email        String        @unique
+  nickname     String        @unique
   name         String?
   phone        String? // Campo para el número de celular
   photo        String?
