@@ -3,7 +3,7 @@ import TransitionPage from '@/components/utils/transition-page';
 
 
 import HighScore from '@/components/sections/HighScore';
-import Introduction from '@/components/Introduction';
+import GameIntro from '@/components/GameIntro';
 
 
 
@@ -11,7 +11,7 @@ export default function Home() {
   return (
     <main>
       <div className="flex">
-        <Introduction />
+        <GameIntro />
       </div>
       {/* <div className='pt-28 text-center'>
         <h1 className='text-slate-200 my-16 text-2xl md:text-4xl font-bold'>High Scores</h1>
