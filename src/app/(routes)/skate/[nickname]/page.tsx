@@ -3,12 +3,12 @@ import React from 'react'
 import { getServerSession } from 'next-auth';
 
 import { notFound } from 'next/navigation';
-import { getSkateByNickenName } from '@/actions';
 
 import { authOptions } from '@/app/lib/auth';
 import { SkateHeader } from '@/components/sections/SkateHeader';
 import { SkateExtra } from '@/components/sections/SkateExtra';
 import { HiddenSkateExtra } from '@/components/sections/HiddenSkateExtra';
+import { getSkateByNickenName } from '@/actions/skate/get-skate-by-nickname';
 
 
 export default async function SkateByNickenName({ params }: {
@@ -19,10 +19,6 @@ export default async function SkateByNickenName({ params }: {
 
     // Obtener la sesión del usuario
     const session = await getServerSession(authOptions);
-
-    console.log('Session: server', session);
-
-
     const skate = await getSkateByNickenName(nickname);
 
     if (!skate) {

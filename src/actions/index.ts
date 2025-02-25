@@ -1,1 +1,2 @@
-export * from './skate/get-skate-by-nickname'
+export * from './skate/skate.actions';
+export * from './skate/check-registration';

@@ -36,8 +36,8 @@ export const HiddenSkateExtra = ({ }: HiddenSkateExtraProps) => {
             </div>
 
             {/* Overlay absoluto con botón centrado */}
-            <div className="absolute inset-0 flex items-center justify-center py-36 bg-gray-600 bg-opacity-80">
-                <Link href="/auth/signin" className="px-6 py-3 bg-purple-700 text-white rounded-md shadow-md hover:bg-primary-dark transition-colors duration-200">
+            <div className="absolute max-w-sm mx-auto inset-0 flex items-center justify-center py-36 bg-gray-600 bg-opacity-80">
+                <Link href="/api/auth/signin" className="px-6 py-3 bg-purple-700 text-white rounded-md shadow-md hover:bg-primary-dark transition-colors duration-200">
                     Inicia sesión
                 </Link>
             </div>

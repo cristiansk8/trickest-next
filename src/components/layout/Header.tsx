@@ -1,19 +1,22 @@
-"use client"
 import Providers from "../../providers/Providers";
-import MotionTransition from "../utils/transition-component";
 import Appbar from "./Appbar";
 
 
-const Header = () => {
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/app/lib/auth';
+
+import SignoutButton from "../ui/SignoutButton";
+
+
+
+export default async function Header() {
+    const session = await getServerSession(authOptions);
     return (
-        <MotionTransition position="bottom" className="absolute z-40 inline-block w-full top-5 md:top-10">
-            <header className="flex gap-4 p-4 bg-gradient-to-b shadow">
-                <Providers>
-                    <Appbar />
-                </Providers>
-            </header>
-        </MotionTransition>
+        <header className="flex gap-4 p-4 bg-gradient-to-b shadow">
+            <div className="w-full flex flex-row justify-between">
+                <Appbar />
+                {session?.user ? <SignoutButton /> : null}
+            </div>
+        </header>
     );
 }
-
-export default Header;
