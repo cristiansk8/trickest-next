@@ -39,7 +39,6 @@ const Appbar = async () => {
             <Link
               target="_blank"
               href={`/skate/${skate?.nickname}`
-
               } passHref>
               {skate?.nickname}
             </Link>

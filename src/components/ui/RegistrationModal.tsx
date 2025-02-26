@@ -10,10 +10,12 @@ interface PageProps {
 
 const RegistrationModal = ({ openModal, handleModal }: PageProps) => {
     return (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-80 z-[9999]">
-            Capa queda encima
-            <SkateProfileCompletionModal openModal={openModal} handleModal={handleModal} />
-        </div>
+        !openModal ? null : (
+            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-80 z-[9999]">
+                Capa queda encima
+                <SkateProfileCompletionModal openModal={openModal} handleModal={handleModal} />
+            </div>
+        )
     );
 };
 
