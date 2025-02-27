@@ -1,6 +1,6 @@
 // app/components/Appbar.tsx
 import { getServerSession } from 'next-auth';
-import { authOptions } from '@/app/lib/auth';
+import { authOptions } from '@/lib/auth';
 
 import SigninButton from "../ui/SigninButton";
 import SignoutButton from "../ui/SignoutButton";

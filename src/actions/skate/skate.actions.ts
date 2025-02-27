@@ -1,6 +1,6 @@
 'use server'
 
-import prisma from '@/app/lib/prisma';
+import prisma from '@/lib/prisma';
 
 type SkateSearchField = 'email' | 'nickname'
 
@@ -11,7 +11,7 @@ const getSkateByField = async (field: SkateSearchField, value: string) => {
             where: { [field]: value },
             include: {
                 socials: true,
-                WishSkate: true,
+                wishSkate: true,
             }
         })
     } catch (error) {

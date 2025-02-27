@@ -15,41 +15,93 @@ datasource db {
 }
 
 model User {
-  id           Int           @id @default(autoincrement())
-  email        String        @unique
-  nickname     String        @unique
-  name         String?
-  phone        String? // Campo para el número de celular
-  photo        String?
-  estado       String?
-  departamento String?
-  ciudad       String?
-  birthdate    DateTime? // Nuevo campo para la fecha de nacimiento
-  birthskate   DateTime? // Nuevo campo para la fecha de nacimiento
-  createdAt    DateTime      @default(now())
-  socials      SocialMedia[] // Relación con la tabla de redes sociales
-  WishSkate    WishSkate?
+  id                  Int       @id @default(autoincrement())
+  email               String    @unique
+  nickname            String    @unique
+  oldNicknames        String[]  @default([])
+  name                String?
+  phone               String?
+  phoneVerified       Boolean   @default(false)
+  photo               String?
+  status              String?
+  state               String?
+  city                String?
+  birthdate           DateTime?
+  bio                 String?
+  level               String?
+  preferredSkateStyle String?
+  isPro               Boolean   @default(false)
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @default(now()) @updatedAt
+
+  // Relations (all optional)
+  socials      SocialMedia[]
+  wishSkate    WishSkate?
+  tricks       Trick[]
+  achievements Achievement[]
+  sponsors     Sponsor[]
+
+  @@index([nickname])
+  @@index([email])
 }
 
 model SocialMedia {
   id        Int     @id @default(autoincrement())
-  userId    String  @unique // Cambiado de Int a String (email del usuario)
+  userId    String  @unique
   facebook  String?
   instagram String?
   twitter   String?
   tiktok    String?
+  youtube   String?
+  linkedin  String?
 
-  user User @relation(fields: [userId], references: [email]) // Relacionado por email
+  user User @relation(fields: [userId], references: [email])
 }
 
 model WishSkate {
-  id          Int     @id @default(autoincrement())
-  userId      String  @unique // Cambiado de Int a String (email del usuario)
-  madero      String?
-  trucks      String?
-  ruedas      String?
-  rodamientos String?
-  tenis       String?
+  id       Int     @id @default(autoincrement())
+  userId   String  @unique
+  deck     String? // "madero" translated to "deck" (skateboard deck)
+  trucks   String?
+  wheels   String?
+  bearings String?
+  shoes    String?
+  helmet   String?
+  pads     String?
+  notes    String?
 
-  user User @relation(fields: [userId], references: [email]) // Relacionado por email
+  user User @relation(fields: [userId], references: [email])
+}
+
+model Trick {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String?
+  videoUrl    String
+  difficulty  String
+  likesCount  Int      @default(0)
+  createdAt   DateTime @default(now())
+  userId      Int
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model Achievement {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String?
+  date        DateTime
+  userId      Int
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model Sponsor {
+  id      Int     @id @default(autoincrement())
+  name    String
+  logo    String?
+  website String?
+  userId  Int
+
+  user User @relation(fields: [userId], references: [id])
 }

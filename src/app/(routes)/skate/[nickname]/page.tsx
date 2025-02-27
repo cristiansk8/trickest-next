@@ -4,7 +4,7 @@ import { getServerSession } from 'next-auth';
 
 import { notFound } from 'next/navigation';
 
-import { authOptions } from '@/app/lib/auth';
+import { authOptions } from '@/lib/auth';
 import { SkateHeader } from '@/components/sections/SkateHeader';
 import { SkateExtra } from '@/components/sections/SkateExtra';
 import { HiddenSkateExtra } from '@/components/sections/HiddenSkateExtra';

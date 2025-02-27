@@ -1,6 +1,6 @@
 'use server'
 
-import prisma from '@/app/lib/prisma';
+import prisma from '@/lib/prisma';
 
 
 export const getSkateByNickenName = async (nickname: string) => {
@@ -8,7 +8,7 @@ export const getSkateByNickenName = async (nickname: string) => {
         const skate = await prisma.user.findFirst({
             include:{
                 socials: true,
-                WishSkate: true,
+                wishSkate: true,
             },
             where: { nickname },
         });

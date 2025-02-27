@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import prisma from '@/app/lib/prisma';
+import prisma from '@/lib/prisma';
 
 // 📌 Obtener WishSkate por email de usuario
 export async function GET(req: Request) {
