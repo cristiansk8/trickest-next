@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -15,62 +9,56 @@ datasource db {
 }
 
 model User {
-  id                  Int       @id @default(autoincrement())
-  email               String    @unique
-  nickname            String    @unique
-  oldNicknames        String[]  @default([])
+  id                  Int           @id @default(autoincrement())
+  email               String        @unique
   name                String?
+  createdAt           DateTime      @default(now())
   phone               String?
-  phoneVerified       Boolean   @default(false)
   photo               String?
-  status              String?
-  state               String?
-  city                String?
   birthdate           DateTime?
+  nickname            String        @unique
   bio                 String?
-  level               String?
+  city                String?
+  isPro               Boolean       @default(false)
+  oldNicknames        String[]      @default([])
+  phoneVerified       Boolean       @default(false)
   preferredSkateStyle String?
-  isPro               Boolean   @default(false)
-  createdAt           DateTime  @default(now())
-  updatedAt           DateTime  @default(now()) @updatedAt
-
-  // Relations (all optional)
-  socials      SocialMedia[]
-  wishSkate    WishSkate?
-  tricks       Trick[]
-  achievements Achievement[]
-  sponsors     Sponsor[]
+  state               String?
+  status              String?
+  updatedAt           DateTime      @default(now()) @updatedAt
+  level               UserLevel?
+  achievements        Achievement[]
+  socials             SocialMedia[]
+  sponsors            Sponsor[]
+  tricks              Trick[]
+  wishSkate           WishSkate?
 
   @@index([nickname])
   @@index([email])
 }
 
 model SocialMedia {
-  id        Int     @id @default(autoincrement())
-  userId    String  @unique
-  facebook  String?
-  instagram String?
-  twitter   String?
-  tiktok    String?
-  youtube   String?
-  linkedin  String?
+  id       Int            @id @default(autoincrement())
+  platform SocialPlatform
+  url      String
+  userId   Int
+  user     User           @relation(fields: [userId], references: [id])
 
-  user User @relation(fields: [userId], references: [email])
+  @@unique([userId, platform])
 }
 
 model WishSkate {
   id       Int     @id @default(autoincrement())
-  userId   String  @unique
-  deck     String? // "madero" translated to "deck" (skateboard deck)
+  userId   Int     @unique
   trucks   String?
-  wheels   String?
   bearings String?
-  shoes    String?
+  deck     String?
   helmet   String?
-  pads     String?
   notes    String?
-
-  user User @relation(fields: [userId], references: [email])
+  pads     String?
+  shoes    String?
+  wheels   String?
+  user     User    @relation(fields: [userId], references: [id])
 }
 
 model Trick {
@@ -82,8 +70,7 @@ model Trick {
   likesCount  Int      @default(0)
   createdAt   DateTime @default(now())
   userId      Int
-
-  user User @relation(fields: [userId], references: [id])
+  user        User     @relation(fields: [userId], references: [id])
 }
 
 model Achievement {
@@ -92,8 +79,7 @@ model Achievement {
   description String?
   date        DateTime
   userId      Int
-
-  user User @relation(fields: [userId], references: [id])
+  user        User     @relation(fields: [userId], references: [id])
 }
 
 model Sponsor {
@@ -102,6 +88,20 @@ model Sponsor {
   logo    String?
   website String?
   userId  Int
+  user    User    @relation(fields: [userId], references: [id])
+}
 
-  user User @relation(fields: [userId], references: [id])
+enum UserLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
+enum SocialPlatform {
+  FACEBOOK
+  INSTAGRAM
+  TWITTER
+  TIKTOK
+  YOUTUBE
+  LINKEDIN
 }

@@ -6,9 +6,9 @@ import { notFound } from 'next/navigation';
 
 import { authOptions } from '@/lib/auth';
 import { SkateHeader } from '@/components/sections/SkateHeader';
-import { SkateExtra } from '@/components/sections/SkateExtra';
 import { HiddenSkateExtra } from '@/components/sections/HiddenSkateExtra';
 import { getSkateByNickenName } from '@/actions/skate/get-skate-by-nickname';
+import WishSkate from '@/components/sections/WishSkate';
 
 
 export default async function SkateByNickenName({ params }: {
@@ -26,16 +26,9 @@ export default async function SkateByNickenName({ params }: {
     }
 
     return (
-        <div className="relative flex flex-col w-full min-w-0 mb-6 break-words border border-dashed bg-clip-border rounded-2xl border-stone-200 bg-light/30 draggable pt-20">
-            <div className="px-9 pt-9 flex-auto min-h-[70px] pb-0 bg-transparent">
-                <SkateHeader skate={skate} session={session} />
-                {
-                    session ?
-                        <SkateExtra skate={skate} />
-                        :
-                        <HiddenSkateExtra />
-                }
-            </div>
+        <div className="">
+            <SkateHeader skate={skate} session={session} />
+            <WishSkate skate={skate} />
         </div>
     );
 }

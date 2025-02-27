@@ -9,6 +9,8 @@ export const getSkateByNickenName = async (nickname: string) => {
             include:{
                 socials: true,
                 wishSkate: true,
+                sponsors:true,
+                tricks:true
             },
             where: { nickname },
         });
