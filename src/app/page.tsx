@@ -13,7 +13,7 @@ export default function Home() {
           <GameIntro />
         </div>
         {<div className='pt-28 text-center'>
-          <div className='flex flex-col h-full py-5 md:pt-28 text-center bg-[#2e2257]'>
+          <div className='flex flex-col h-full py-5 md:pt-28 text-center bg-[#17b2ff]'>
             <h1 className='text-slate-200 my-16 text-2xl md:text-4xl font-bold'>Sigue los pasos</h1>
           </div>
         </div>}
