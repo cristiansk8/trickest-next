@@ -22,12 +22,12 @@ const GameLevels = () => {
   ];
 
   return (
-    <div className="p-4 bg-[url('/png-big-city.png')] bg-cover bg-repeat bg-bottom min-h-2 flex items-center justify-center">
+    <div className="p-4 min-h-2 flex items-center justify-center">
       <div className="flex flex-col md:flex-row gap-8 justify-center items-center ">
         {levels.map((level) => (
           <div
             key={level.id}
-            className={`hover:scale-110 flex flex-col items-center cursor-pointer transition-all ${
+            className={` hover:scale-110 flex flex-col items-center cursor-pointer transition-all ${
               selectedLevel === level.id ? "scale-110" : "scale-100"
             }`}
             onClick={() => {
@@ -51,7 +51,7 @@ const GameLevels = () => {
               </svg>
               {/* Número */}
               <span
-                className={`absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-4xl md:text-5xl text-white ${myFont.className}`}
+                className={`absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-4xl md:text-5xl text-black ${myFont.className}`}
               >
                 {level.id}
               </span>
