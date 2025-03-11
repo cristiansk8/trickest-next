@@ -28,7 +28,7 @@ const GameIntro = () => {
                 </div>
                 <p className={`mx-auto mb-2 text-4xl text-center md:text-6xl md:mx-0 md:mb-8 ${myFont.className}`}>
                     <span className="block md:flex">
-                        patina graba postea
+                        patina graba postea 1123
                     </span>
                     <span className="text-watermelon md:text-9xl">
                         gana

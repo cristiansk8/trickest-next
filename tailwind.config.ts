@@ -17,6 +17,9 @@ const config: Config = {
         budGreen: "#71A95A",
         dartmouthGreen: "#007944",
         darkBg: "#131424",
+        neonblue: "#00f7ff",
+        neonred: "#ff073a",
+        neonyellow: "#ffd700",
       },
       backgroundImage: {
         "gradient-cover":

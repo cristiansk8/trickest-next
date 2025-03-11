@@ -1,4 +1,5 @@
 
+import ArcadeGameLevels from "@/components/levels";
 import { highScore } from "../../../../../../data";
 import { Button } from "@nextui-org/react";
 /* export const medatada = {
@@ -8,7 +9,9 @@ import { Button } from "@nextui-org/react";
 
 export default function PorfilePage() {
     return (
+        
         <div className="text-black">
+            <ArcadeGameLevels />
             <h1 className="mt-2 text-3xl">Trucos</h1>
             <span className="text-xl">Destacados</span>
 
