@@ -6,6 +6,71 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Trickest is a skateboarding challenge platform built with Next.js 14, where skaters submit video submissions of tricks for different difficulty levels, and judges evaluate them. The platform includes user authentication (Google OAuth + credentials), profile management, team features, and a scoring system.
 
+### Project Type & Use Cases
+
+**Platform Category:** Competition/Challenge Platform with User-Generated Content (Videos)
+
+**Core User Flows:**
+1. **Skater Journey:**
+   - Sign up via Google OAuth or email/password
+   - Complete profile (password, personal info, skate preferences, social media)
+   - Browse challenges (10 difficulty levels + bonus)
+   - Submit video evidence of completed tricks
+   - Track submission status (pending → approved/rejected)
+   - View scores and feedback from judges
+   - Compete on leaderboards
+   - Join/manage teams
+
+2. **Judge Journey:**
+   - Access judge dashboard (requires judge role)
+   - Review pending submissions with video playback
+   - Evaluate technique, execution, style
+   - Assign scores (0-100) with written feedback
+   - Approve or reject submissions
+   - Can also participate as skater
+
+3. **Admin Journey:**
+   - Same as judge + ownership privileges
+   - Manage challenges, users, teams (future)
+
+**Key Technical Challenges:**
+- Video hosting and playback (currently YouTube embeds for demos, need solution for submissions)
+- Real-time score updates and leaderboards
+- Role-based access control (3 roles: skater, judge, admin)
+- Multi-step profile completion with state management
+- Social features (teams, leaderboards, profiles)
+- Mobile-responsive video recording/upload flow
+
+**Business Logic:**
+- Points system based on challenge difficulty
+- Scoring algorithm (0-100 per submission)
+- Team scoring aggregation
+- Achievement/badge system (future)
+- Anti-cheat measures (video verification)
+
+## Documentation
+
+This project includes comprehensive documentation in the `/docs` folder:
+
+- **`DESIGN_SYSTEM.md`** - Complete design system guide including:
+  - Visual style and aesthetic principles (arcade retro-futurista)
+  - Color palette with hex codes and usage guidelines
+  - Typography conventions
+  - Component patterns and examples (modals, buttons, cards, inputs, tabs)
+  - Gradients and glow effects
+  - Animations and transitions
+  - Accessibility considerations
+  - Responsive design patterns
+  - Tips de uso (jerarquía visual, estados interactivos, contraste)
+  - Export para diseñadores (Figma/Sketch, CSS variables)
+
+**When to reference:**
+- Creating new UI components → Check `DESIGN_SYSTEM.md` for patterns
+- Choosing colors → Check color sections in `DESIGN_SYSTEM.md`
+- Styling decisions → Follow arcade/retro-futurista aesthetic
+- Responsive design → Reference breakpoint patterns in design docs
+- Export to design tools → Use "Export para Diseñadores" section
+
 ## Commands
 
 ### Development
@@ -28,6 +93,129 @@ node scripts/check_db_user.js # Debug database connection and verify user
 ```
 
 **Note:** The seed script creates test users (admin@trickest.com, judge1-3@trickest.com) all with password `password123`.
+
+## Development Principles
+
+### Design System - Atomic Design
+
+Follow **Atomic Design methodology** for component organization:
+
+1. **Atoms** (`src/components/atoms/`)
+   - Basic building blocks: buttons, inputs, labels, icons
+   - No dependencies on other components
+   - Highly reusable and isolated
+   - Examples: avatar.tsx, circle-image.tsx, container.tsx
+
+2. **Molecules** (`src/components/molecules/`)
+   - Simple combinations of atoms
+   - Single responsibility, reusable groups
+   - Examples: UserScoreBadge, LocationSelector, navbar
+
+3. **Organisms** (`src/components/organisms/`)
+   - Complex UI sections composed of molecules/atoms
+   - Examples: ChallengeCard, SubmissionHistoryCard, Sidebar components, modals
+
+4. **Templates** (`src/components/templates/`)
+   - Page-level layouts without specific content
+   - Define structure and placement
+   - Examples: dashboard layouts, authentication flows
+
+5. **Pages** (`src/app/`)
+   - Specific instances of templates with real content
+   - Next.js App Router pages
+
+**Migration Note:** Current components are in flat structure. Gradually refactor into atomic structure when modifying existing components or creating new ones.
+
+### Server-Side Rendering (SSR) Priority
+
+**Default to Server Components** - Next.js 14 App Router uses Server Components by default:
+
+- **Server Components** (default, no "use client"):
+  - Data fetching, database queries
+  - Direct Prisma access
+  - Reduces bundle size
+  - Better SEO and initial load performance
+  - Most page components and layouts
+
+- **Client Components** ("use client" directive):
+  - Only when needed for interactivity
+  - useState, useEffect, event handlers
+  - Browser APIs (localStorage, window)
+  - Third-party libraries requiring client-side
+  - Examples: modals, forms with validation, interactive animations
+
+**Data Fetching Patterns:**
+```typescript
+// Prefer async Server Components
+async function Page() {
+  const data = await prisma.user.findMany() // Direct DB access
+  return <Component data={data} />
+}
+
+// Use loading.tsx for loading states
+// Use error.tsx for error boundaries
+```
+
+### Performance & Optimization
+
+1. **Video/Image Optimization**
+   - Use Next.js `<Image>` component for all images
+   - Configure image domains in `next.config.mjs`
+   - Lazy load video submissions
+   - Consider video CDN for production (YouTube embeds for demos)
+
+2. **Code Splitting**
+   - Dynamic imports for heavy components: `const Modal = dynamic(() => import('./Modal'))`
+   - Lazy load modals and non-critical UI
+   - Separate judge/skater dashboard code
+
+3. **Bundle Optimization**
+   - Tree-shake unused NextUI components
+   - Monitor bundle size with `next build`
+   - Use `next/font` for custom fonts
+
+### Security Best Practices
+
+1. **Input Validation**
+   - Always validate user input on server-side
+   - Sanitize video URLs and user-generated content
+   - Use Prisma parameterized queries (prevents SQL injection)
+
+2. **Authentication Guards**
+   - Protect API routes with NextAuth session checks
+   - Verify roles server-side (never trust client)
+   - Use middleware for route protection when possible
+
+3. **OWASP Top 10**
+   - Prevent XSS: sanitize HTML, use React's built-in escaping
+   - CSRF protection: NextAuth handles this
+   - Secure headers: configure in `next.config.mjs`
+   - Rate limiting on submission endpoints (consider implementing)
+
+### Accessibility (a11y)
+
+- Use semantic HTML elements
+- Ensure keyboard navigation works
+- Add ARIA labels where needed
+- Test with screen readers
+- Color contrast compliance (WCAG AA minimum)
+- NextUI components have built-in a11y
+
+### Error Handling
+
+- Use `error.tsx` files for route-level error boundaries
+- Graceful degradation for failed video loads
+- User-friendly error messages
+- Log errors server-side for debugging
+- Handle network failures in client components
+
+### SEO Considerations
+
+- Metadata API for dynamic pages (`generateMetadata`)
+- Semantic HTML structure
+- Open Graph tags for social sharing
+- Dynamic sitemaps for user profiles/challenges
+- Performance optimization (Core Web Vitals)
 
 ## Architecture
 
@@ -79,10 +267,27 @@ Modals guide users through completion:
 - `submissions/` - Trick submission management (pending, evaluate)
 - `users/` - User data endpoints (score)
 
-**Components:**
-- `src/components/` - Shared UI components
-- `src/components/sidebar/` - Dashboard navigation (Sidebar.tsx for skaters, SidebarJuez.tsx for judges)
-- Modals: Registration, login, profile completion flows
+**Components:** Following Atomic Design principles
+
+Current structure (flat, to be migrated):
+- `src/components/` - All components in flat structure
+- `src/components/sidebar/` - Dashboard navigation components
+- `src/components/partners/` - Partner/sponsor components
+- `src/components/fonts/` - Font assets
+
+Target structure (implement gradually):
+- `src/components/atoms/` - Basic elements (buttons, inputs, icons, avatars)
+- `src/components/molecules/` - Simple combinations (UserScoreBadge, navbar)
+- `src/components/organisms/` - Complex sections (ChallengeCard, Sidebar, modals)
+- `src/components/templates/` - Page layouts (dashboard templates)
+
+Key Component Categories:
+- **Authentication Flow:** SigninButton, LoginEmailForm, RegisterEmailForm, SetPasswordModal
+- **Profile Management:** SkateProfileCompletionModal, WelcomeModal, avatar components
+- **Challenge System:** ChallengeCard, SubmitTrickModal, GalerryLevels
+- **Submissions:** SubmissionHistoryCard, evaluation interfaces
+- **Navigation:** Sidebar (skaters), SidebarJuez (judges), navbar, Appbar
+- **Utilities:** LocationSelector, transition components, particles effects
 
 **Providers:**
 - `SessionWrapper` in `src/providers/` wraps app with NextAuth session
@@ -94,12 +299,32 @@ Modals guide users through completion:
 - Submissions link users to challenges with status: "pending" → "approved"/"rejected"
 - Judges evaluate submissions and assign scores (0-100) plus feedback
 
-### Styling
+### Styling & Design System
 
 - **Tailwind CSS** with NextUI components (`@nextui-org/react`)
-- Custom colors defined in `tailwind.config.ts`: watermelon, melon, budGreen, dartmouthGreen, darkBg
-- Framer Motion for animations
-- TSParticles for visual effects
+- **Visual Style:** Arcade/retro-futurista with neon effects, thick borders (4px), uppercase text
+- **Custom colors** defined in `tailwind.config.ts`:
+  - `watermelon` (#F35588) - Primary CTAs and highlights
+  - `melon` (#FFBBB4) - Hover states and soft accents
+  - `budGreen` (#71A95A) - Success and active states
+  - `dartmouthGreen` (#007944) - Success dark variant
+  - `darkBg` (#131424) - App background
+- **Color Palette:** Cyan (tech/system), Purple (premium/creative), Green/Teal (success/social)
+- **Gradients:** Heavy use of `from-cyan-500 to-purple-600` style gradients for headers and CTAs
+- **Typography:** Font-black (900 weight), uppercase, tracking-wider for arcade aesthetic
+- **Effects:** Glow shadows (`shadow-lg shadow-cyan-500/50`), hover scale transforms
+- **Animations:** Framer Motion for transitions, custom fadeIn keyframe
+- **Particles:** TSParticles for landing page effects
+
+**Design Documentation:**
+- Full design system & color palette: `docs/DESIGN_SYSTEM.md`
+
+**UI Patterns:**
+- Bordered cards with gradient borders (neon effect)
+- Arcade-style buttons with 4px white borders
+- Tab navigation with gradient active states
+- Dashboard backgrounds use multi-stop gradients (`from-slate-900 via-purple-900 to-slate-900`)
+- Emoji usage for visual hierarchy (🎮 👤 🛹 🌐 etc.)
 
 ### Key Patterns
 
@@ -107,6 +332,9 @@ Modals guide users through completion:
 2. **Path Aliases:** Use `@/*` to import from `src/*`
 3. **Image Domains:** Configured in `next.config.mjs` for external images (Google, Unsplash, etc.)
 4. **ESLint:** Disabled during builds (`ignoreDuringBuilds: true`)
+5. **Design System:** Always reference `docs/DESIGN_SYSTEM.md` when creating/modifying UI components
+6. **Color Usage:** Use custom colors from `tailwind.config.ts` for brand consistency (watermelon, melon, budGreen, dartmouthGreen, darkBg)
+7. **Component Styling:** Follow arcade aesthetic - thick borders (4px), uppercase text, gradient backgrounds, glow effects
 
 ### Environment Variables
 
@@ -117,9 +345,77 @@ Required variables (see `.env.example`):
 - `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 - `NEXT_PUBLIC_BACKEND_URL`
 
+## Best Practices & Code Standards
+
+### TypeScript
+
+- **Strict typing:** Enable strict mode in `tsconfig.json`
+- Define interfaces for all data structures (User, Challenge, Submission, etc.)
+- Type API responses and database queries
+- Use Prisma-generated types when possible
+- Create custom types in `src/types/` for domain models
+- Extend NextAuth types in `src/types/next-auth.d.ts`
+
+### UI/UX Development
+
+- **Design System First:** Always consult `docs/DESIGN_SYSTEM.md` before creating components
+- **Color Consistency:** Use only colors from `tailwind.config.ts` and `docs/DESIGN_SYSTEM.md`
+- **Arcade Aesthetic:** Maintain retro-futurista style (thick borders, uppercase, gradients, neon glows)
+- **Component Reusability:** Build atoms → molecules → organisms (Atomic Design)
+- **Responsive Design:** Mobile-first approach, test all breakpoints (sm, md, lg, xl)
+- **Accessibility:** Semantic HTML, keyboard navigation, ARIA labels, WCAG AA compliance
+- **Animations:** Subtle and purposeful, max 0.3-0.5s duration (use Framer Motion or CSS)
+- **Emoji Usage:** Part of visual identity - use for icons and visual hierarchy (🎮 🛹 👤 etc.)
+
+### State Management
+
+- **Server State:** Default approach with Server Components + database queries
+- **Client State:** Use React hooks (useState, useReducer) for local UI state
+- **Form State:** Consider React Hook Form for complex forms
+- **Global State:** Avoid unless necessary; use React Context sparingly
+- **Session State:** NextAuth session via useSession() hook
+
+### API Design
+
+- **RESTful conventions:** Use proper HTTP methods (GET, POST, PUT, DELETE)
+- **Error handling:** Return consistent error responses with status codes
+- **Validation:** Validate all inputs before database operations
+- **Response format:** Consistent JSON structure `{ success: boolean, data?: any, error?: string }`
+- **Rate limiting:** Implement for submission endpoints (future)
+
+### Testing Strategy (To Implement)
+
+- **Unit tests:** For utility functions, helpers, business logic
+- **Integration tests:** For API routes with test database
+- **E2E tests:** For critical flows (signup, submission, evaluation)
+- **Tools:** Jest, React Testing Library, Playwright
+- **Coverage:** Aim for 70%+ on core business logic
+
+### Git Workflow
+
+- **Branch naming:** `feature/`, `fix/`, `refactor/`, `docs/`
+- **Commit messages:** Conventional commits (feat:, fix:, refactor:, etc.)
+- **PR reviews:** Required for main branch
+- **CI/CD:** Run linting, type-checking, tests before merge
+
+### Performance Monitoring
+
+- Monitor Core Web Vitals (LCP, FID, CLS)
+- Track video load times
+- Database query performance (use Prisma metrics)
+- Bundle size analysis
+- Lighthouse scores (aim for 90+)
+
 ## Important Notes
 
 - Users are uniquely identified by **email** (not numeric ID) in most relationships
 - When creating migrations, always test with both `DATABASE_URL` and `DIRECT_URL`
 - Password hashing uses bcrypt with 10 rounds
 - NextAuth callbacks query the database on every JWT/session operation to keep role/status fresh
+- **Always prioritize SSR over CSR** unless interactivity requires client components
+- **Follow Atomic Design** when creating or refactoring components
+- **Consult `docs/DESIGN_SYSTEM.md`** before creating any new UI components
+- **Use the custom color palette** (watermelon, melon, budGreen, dartmouthGreen, darkBg) for brand consistency
+- **Maintain arcade/retro-futurista aesthetic** - thick borders, uppercase text, gradients, glow effects
+- Video content is the core feature - optimize heavily for video performance and UX
+- Emojis are part of the visual identity - use them purposefully for hierarchy and context
