@@ -1,7 +1,7 @@
-"use client"; // Asegura que el código solo se ejecute en el cliente
+"use client";
 
 import { useEffect, useState } from 'react';
-import LocationSelector from '../../../../../components/LocationSelector'; // Asegúrate de que la ruta sea correcta
+import LocationSelector from '../../../../../components/LocationSelector';
 import { useSession } from "next-auth/react";
 import GeneralInfoForm from './general_info_form';
 import SkateSetupPage from './dream_setup';
@@ -11,7 +11,8 @@ export default function ProfilePage() {
   const { data: session, status } = useSession();
   const [isClient, setIsClient] = useState(false);
   const [isRegistered, setIsRegistered] = useState(false);
-  const [notification, setNotification] = useState(""); // Estado para la notificación
+  const [notification, setNotification] = useState("");
+  const [activeTab, setActiveTab] = useState<'general' | 'setup' | 'social'>('general'); // Tab activo
   const [formData, setFormData] = useState({
     facebook: '',
     instagram: '',
@@ -32,10 +33,25 @@ export default function ProfilePage() {
       try {
         setLoading(true);
         const response = await fetch(`/api/skate_profiles/social_media?email=${session.user?.email}`);
-        if (!response.ok) throw new Error("No se pudo obtener la información del perfil.");
-
         const data = await response.json();
         console.log("Datos recibidos:", data);
+
+        // Si el usuario no tiene redes sociales (404), simplemente deja los campos vacíos
+        if (response.status === 404 || !data.exists) {
+          console.log("Usuario nuevo sin redes sociales, campos vacíos por defecto");
+          setFormData({
+            facebook: "",
+            instagram: "",
+            tiktok: "",
+            twitter: "",
+          });
+          return;
+        }
+
+        // Si hay un error real del servidor (500), mostrar notificación
+        if (!response.ok) {
+          throw new Error("Error del servidor al obtener el perfil.");
+        }
 
         // Ajusta la asignación para usar data.socialMedia
         setFormData({
@@ -47,6 +63,10 @@ export default function ProfilePage() {
       } catch (error) {
         console.error("Error al obtener perfil:", error);
         setNotification("❌ Error al cargar los datos del perfil.");
+        // Auto-limpiar notificación de error después de 5 segundos
+        setTimeout(() => {
+          setNotification("");
+        }, 5000);
       } finally {
         setLoading(false);
       }
@@ -117,96 +137,206 @@ export default function ProfilePage() {
     }
   };
 
-  // Si no estamos en el cliente, muestra un mensaje de carga
-  if (!isClient) return <p>Cargando...</p>;
+  if (!isClient) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-black">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-cyan-400 mx-auto"></div>
+          <p className="mt-4 text-cyan-400 font-bold text-xl">LOADING...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="text-black">
-      {/* Componente de información general */}
-      <GeneralInfoForm />
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-4 md:p-8">
+      {/* Header con efecto retro */}
+      <div className="max-w-7xl mx-auto mb-8">
+        <div className="bg-gradient-to-r from-cyan-500 to-purple-600 p-1 rounded-lg shadow-2xl">
+          <div className="bg-slate-900 rounded-lg p-6">
+            <h1 className="text-3xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400 uppercase tracking-wider text-center md:text-left">
+              🎮 Player Profile
+            </h1>
+            <p className="text-cyan-300 mt-2 text-sm md:text-base text-center md:text-left">
+              {session?.user?.email || "Skater"}
+            </p>
+          </div>
+        </div>
+      </div>
 
-      {/* Componente de configuración de skate */}
-      <SkateSetupPage />
+      {/* Sistema de Tabs estilo arcade */}
+      <div className="max-w-7xl mx-auto mb-6">
+        <div className="flex flex-col md:flex-row gap-3 md:gap-4">
+          <button
+            onClick={() => setActiveTab('general')}
+            className={`flex-1 py-3 md:py-4 px-4 md:px-6 font-black uppercase tracking-wider transition-all transform hover:scale-105 ${
+              activeTab === 'general'
+                ? 'bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-lg shadow-cyan-500/50 border-4 border-cyan-300'
+                : 'bg-slate-800 text-slate-400 border-4 border-slate-700 hover:border-cyan-500'
+            } rounded-lg text-sm md:text-base`}
+          >
+            👤 INFO GENERAL
+          </button>
 
-      {/* Notificación */}
+          <button
+            onClick={() => setActiveTab('setup')}
+            className={`flex-1 py-3 md:py-4 px-4 md:px-6 font-black uppercase tracking-wider transition-all transform hover:scale-105 ${
+              activeTab === 'setup'
+                ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg shadow-purple-500/50 border-4 border-purple-300'
+                : 'bg-slate-800 text-slate-400 border-4 border-slate-700 hover:border-purple-500'
+            } rounded-lg text-sm md:text-base`}
+          >
+            🛹 DREAM SETUP
+          </button>
+
+          <button
+            onClick={() => setActiveTab('social')}
+            className={`flex-1 py-3 md:py-4 px-4 md:px-6 font-black uppercase tracking-wider transition-all transform hover:scale-105 ${
+              activeTab === 'social'
+                ? 'bg-gradient-to-r from-green-500 to-teal-500 text-white shadow-lg shadow-green-500/50 border-4 border-green-300'
+                : 'bg-slate-800 text-slate-400 border-4 border-slate-700 hover:border-green-500'
+            } rounded-lg text-sm md:text-base`}
+          >
+            🌐 REDES SOCIALES
+          </button>
+        </div>
+      </div>
+
+      {/* Notificación flotante */}
       {notification && (
-        <div className={`my-4 p-3 rounded-md text-white ${
+        <div className={`max-w-7xl mx-auto mb-6 animate-pulse ${
           notification.includes("✅") ? "bg-green-500" : "bg-red-500"
-        }`}>
-          {notification}
+        } border-4 border-white rounded-lg p-4 shadow-2xl`}>
+          <p className="text-white font-bold text-center text-sm md:text-base">{notification}</p>
         </div>
       )}
 
-      {/* Formulario de redes sociales */}
-      <div className="text-black">
-        <span className="text-xl">Redes sociales</span>
-        <form onSubmit={handleSubmit} className="space-y-4 bg-white shadow-md rounded p-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Input de Facebook */}
-            <div>
-              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="facebook">Facebook:</label>
-              <input
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                type="text"
-                id="facebook"
-                name="facebook"
-                value={formData.facebook}
-                onChange={handleChange}
-              />
-            </div>
+      {/* Contenido de las tabs */}
+      <div className="max-w-7xl mx-auto">
+        {/* Tab: Información General */}
+        {activeTab === 'general' && (
+          <div className="animate-fadeIn">
+            <GeneralInfoForm />
+          </div>
+        )}
 
-            {/* Input de Instagram */}
-            <div>
-              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="instagram">Instagram:</label>
-              <input
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                type="text"
-                id="instagram"
-                name="instagram"
-                value={formData.instagram}
-                onChange={handleChange}
-              />
-            </div>
+        {/* Tab: Setup Soñado */}
+        {activeTab === 'setup' && (
+          <div className="animate-fadeIn">
+            <SkateSetupPage />
+          </div>
+        )}
 
-            {/* Input de TikTok */}
-            <div>
-              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="tiktok">Tiktok:</label>
-              <input
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                type="text"
-                id="tiktok"
-                name="tiktok"
-                value={formData.tiktok}
-                onChange={handleChange}
-              />
-            </div>
+        {/* Tab: Redes Sociales */}
+        {activeTab === 'social' && (
+          <div className="animate-fadeIn">
+            <div className="bg-gradient-to-r from-green-500 to-teal-500 p-1 rounded-lg shadow-2xl">
+              <div className="bg-slate-900 rounded-lg p-6 md:p-8">
+                <h2 className="text-2xl md:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-teal-400 uppercase mb-6 text-center md:text-left">
+                  🌐 Conecta tus redes
+                </h2>
 
-            {/* Input de Twitter */}
-            <div>
-              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="twitter">X:</label>
-              <input
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                type="text"
-                id="twitter"
-                name="twitter"
-                value={formData.twitter}
-                onChange={handleChange}
-              />
+                <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                    {/* Facebook */}
+                    <div className="group">
+                      <label className="block text-cyan-400 font-bold mb-2 uppercase tracking-wide text-sm md:text-base flex items-center gap-2">
+                        <span className="text-xl">📘</span> Facebook
+                      </label>
+                      <input
+                        className="w-full bg-slate-800 border-4 border-slate-600 rounded-lg py-3 px-4 text-white placeholder-slate-500 focus:border-blue-500 focus:outline-none transition-all group-hover:border-blue-400"
+                        type="text"
+                        id="facebook"
+                        name="facebook"
+                        placeholder="tu.perfil"
+                        value={formData.facebook}
+                        onChange={handleChange}
+                      />
+                    </div>
+
+                    {/* Instagram */}
+                    <div className="group">
+                      <label className="block text-cyan-400 font-bold mb-2 uppercase tracking-wide text-sm md:text-base flex items-center gap-2">
+                        <span className="text-xl">📷</span> Instagram
+                      </label>
+                      <input
+                        className="w-full bg-slate-800 border-4 border-slate-600 rounded-lg py-3 px-4 text-white placeholder-slate-500 focus:border-pink-500 focus:outline-none transition-all group-hover:border-pink-400"
+                        type="text"
+                        id="instagram"
+                        name="instagram"
+                        placeholder="@tu_usuario"
+                        value={formData.instagram}
+                        onChange={handleChange}
+                      />
+                    </div>
+
+                    {/* TikTok */}
+                    <div className="group">
+                      <label className="block text-cyan-400 font-bold mb-2 uppercase tracking-wide text-sm md:text-base flex items-center gap-2">
+                        <span className="text-xl">🎵</span> TikTok
+                      </label>
+                      <input
+                        className="w-full bg-slate-800 border-4 border-slate-600 rounded-lg py-3 px-4 text-white placeholder-slate-500 focus:border-teal-500 focus:outline-none transition-all group-hover:border-teal-400"
+                        type="text"
+                        id="tiktok"
+                        name="tiktok"
+                        placeholder="@tu_usuario"
+                        value={formData.tiktok}
+                        onChange={handleChange}
+                      />
+                    </div>
+
+                    {/* Twitter/X */}
+                    <div className="group">
+                      <label className="block text-cyan-400 font-bold mb-2 uppercase tracking-wide text-sm md:text-base flex items-center gap-2">
+                        <span className="text-xl">𝕏</span> Twitter / X
+                      </label>
+                      <input
+                        className="w-full bg-slate-800 border-4 border-slate-600 rounded-lg py-3 px-4 text-white placeholder-slate-500 focus:border-cyan-500 focus:outline-none transition-all group-hover:border-cyan-400"
+                        type="text"
+                        id="twitter"
+                        name="twitter"
+                        placeholder="@tu_usuario"
+                        value={formData.twitter}
+                        onChange={handleChange}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Botón de guardar estilo arcade */}
+                  <div className="flex justify-center mt-8">
+                    <button
+                      className="bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-400 hover:to-teal-400 text-white font-black py-4 px-12 rounded-lg border-4 border-white uppercase tracking-wider text-lg shadow-2xl transform hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                      type="submit"
+                      disabled={loading}
+                    >
+                      {loading ? "⏳ GUARDANDO..." : "💾 GUARDAR"}
+                    </button>
+                  </div>
+                </form>
+              </div>
             </div>
           </div>
-
-          {/* Botón de guardar */}
-          <div className="flex justify-center">
-            <button
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-              type="submit"
-              disabled={loading}
-            >
-              {loading ? "Guardando..." : "Guardar"}
-            </button>
-          </div>
-        </form>
+        )}
       </div>
+
+      {/* Agregar estilos de animación */}
+      <style jsx>{`
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        .animate-fadeIn {
+          animation: fadeIn 0.3s ease-out;
+        }
+      `}</style>
     </div>
   );
 }

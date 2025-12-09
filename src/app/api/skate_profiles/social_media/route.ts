@@ -1,41 +1,26 @@
 import prisma from '@/app/lib/prisma';
 import { NextResponse } from 'next/server';
 
+// 📌 Actualizar o crear redes sociales (mantener POST para compatibilidad)
 export async function POST(req: Request) {
-
     try {
-        console.log(req.json)
         const { userId, facebook, instagram, twitter, tiktok } = await req.json();
-        
-        // Verificación de campos requeridos (ya que es solo para usuarios logueados)
-        if (!userId || (!facebook && !instagram && !twitter && !tiktok)) {
-            return NextResponse.json({ error: 'El correo y al menos una red social son requeridos jajaj.' }, { status: 400 });
+
+        if (!userId) {
+            return NextResponse.json({ error: 'El correo es requerido' }, { status: 400 });
         }
 
-        // Verificar si el usuario ya tiene redes sociales registradas
-        const existingSocialMedia = await prisma.socialMedia.findUnique({
+        // Usar upsert para crear o actualizar
+        const socialMedia = await prisma.socialMedia.upsert({
             where: { userId: userId },
-        });
-
-        if (existingSocialMedia) {
-            // Si ya existe, actualizamos los datos
-            const updatedSocialMedia = await prisma.socialMedia.update({
-                where: { userId: userId },
-                data: {
-                    facebook: facebook ?? existingSocialMedia.facebook,
-                    instagram: instagram ?? existingSocialMedia.instagram,
-                    twitter: twitter ?? existingSocialMedia.twitter,
-                    tiktok: tiktok ?? existingSocialMedia.tiktok,
-                },
-            });
-
-            return NextResponse.json({ message: 'Redes sociales actualizadas correctamente', socialMedia: updatedSocialMedia }, { status: 200 });
-        }
-
-        // Si no existe, creamos un nuevo registro
-        const socialMedia = await prisma.socialMedia.create({
-            data: {
-                userId: userId, // Usamos el correo como userId
+            update: {
+                facebook: facebook ?? undefined,
+                instagram: instagram ?? undefined,
+                twitter: twitter ?? undefined,
+                tiktok: tiktok ?? undefined,
+            },
+            create: {
+                userId: userId,
                 facebook: facebook ?? undefined,
                 instagram: instagram ?? undefined,
                 twitter: twitter ?? undefined,
@@ -43,10 +28,55 @@ export async function POST(req: Request) {
             },
         });
 
-        return NextResponse.json({ message: 'Redes sociales registradas correctamente', socialMedia }, { status: 201 });
+        return NextResponse.json({ message: 'Redes sociales actualizadas correctamente', socialMedia }, { status: 200 });
     } catch (error) {
-        console.error('Error al registrar redes sociales:', error);
-        return NextResponse.json({ error: 'Error al registrar redes sociales' }, { status: 500 });
+        console.error('Error al actualizar redes sociales:', error);
+        return NextResponse.json({ error: 'Error al actualizar redes sociales' }, { status: 500 });
+    }
+}
+
+// 📌 Actualizar redes sociales usando PUT (consistente con otros endpoints)
+export async function PUT(req: Request) {
+    console.log("🔧 Actualizando redes sociales...");
+
+    try {
+        const data = await req.json();
+        console.log("📦 Datos recibidos:", data);
+
+        const { email, facebook, instagram, twitter, tiktok } = data;
+
+        if (!email) {
+            return NextResponse.json({ error: "Email requerido" }, { status: 400 });
+        }
+
+        // Usar upsert para crear o actualizar
+        const updatedSocialMedia = await prisma.socialMedia.upsert({
+            where: { userId: email },
+            update: {
+                facebook,
+                instagram,
+                twitter,
+                tiktok,
+            },
+            create: {
+                userId: email,
+                facebook,
+                instagram,
+                twitter,
+                tiktok,
+            },
+        });
+
+        return NextResponse.json(
+            { message: "Redes sociales actualizadas con éxito", updatedSocialMedia },
+            { status: 200 }
+        );
+    } catch (error) {
+        console.error("❌ Error al actualizar redes sociales:", error);
+        return NextResponse.json(
+            { error: "Hubo un error en la actualización" },
+            { status: 500 }
+        );
     }
 }
 

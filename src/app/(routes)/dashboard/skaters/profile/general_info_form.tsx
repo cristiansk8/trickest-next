@@ -82,7 +82,7 @@ export default function ProfilePage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           email: session.user.email,
-          name: session.user.name,
+          name: formData.name,  // ✅ Usar el nombre del formulario, no de la sesión
           phone: formData.phone,
           ciudad: formData.ciudad,
           departamento: formData.departamento,
@@ -110,63 +110,133 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="text-black">
-      <h1 className="mt-2 text-3xl">Hola</h1>
-      <span className="text-xl">Información general</span>
+    <div className="bg-gradient-to-r from-cyan-500 to-blue-500 p-1 rounded-lg shadow-2xl">
+      <div className="bg-slate-900 rounded-lg p-6 md:p-8">
+        <h2 className="text-2xl md:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-400 uppercase mb-6 text-center md:text-left">
+          👤 Datos Personales
+        </h2>
 
-      {/* Notificación de éxito o error */}
-      {notification && (
-        <div className={`mt-4 p-2 text-white rounded ${notification.includes("Error") ? "bg-red-500" : "bg-green-500"}`}>
-          {notification}
-        </div>
-      )}
+        {/* Notificación de éxito o error */}
+        {notification && (
+          <div className={`mb-6 p-4 rounded-lg border-4 border-white text-white font-bold text-center animate-pulse ${notification.includes("Error") ? "bg-red-500" : "bg-green-500"}`}>
+            {notification}
+          </div>
+        )}
 
-      {loading && <p>Cargando...</p>}
+        {loading && (
+          <div className="text-center py-4">
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-4 border-b-4 border-cyan-400"></div>
+            <p className="text-cyan-400 mt-2 font-bold">Cargando...</p>
+          </div>
+        )}
 
-      <form
-        onSubmit={handleSubmitUpdateProfile}
-        className="grid grid-cols-2 bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
-      >
-        <div className="mb-4">
-          <label htmlFor="name" className="block text-gray-700 text-sm font-bold mb-2">Nombre:</label>
-          <input className="shadow border rounded w-full py-2 px-3" type="text" id="name" name="name" value={formData.name} onChange={handleChange} />
-        </div>
+        <form
+          onSubmit={handleSubmitUpdateProfile}
+          className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6"
+        >
+          {/* Nombre */}
+          <div className="group">
+            <label htmlFor="name" className="block text-cyan-400 font-bold mb-2 uppercase tracking-wide text-sm md:text-base">
+              ✏️ Nombre
+            </label>
+            <input
+              className="w-full bg-slate-800 border-4 border-slate-600 rounded-lg py-3 px-4 text-white placeholder-slate-500 focus:border-cyan-500 focus:outline-none transition-all group-hover:border-cyan-400"
+              type="text"
+              id="name"
+              name="name"
+              placeholder="Tu nombre completo"
+              value={formData.name}
+              onChange={handleChange}
+            />
+          </div>
 
-        <div className="mb-4">
-          <label htmlFor="phone" className="block text-gray-700 text-sm font-bold mb-2">Teléfono:</label>
-          <input className="shadow border rounded w-full py-2 px-3" type="text" id="phone" name="phone" value={formData.phone} onChange={handleChange} />
-        </div>
+          {/* Teléfono */}
+          <div className="group">
+            <label htmlFor="phone" className="block text-cyan-400 font-bold mb-2 uppercase tracking-wide text-sm md:text-base">
+              📱 Teléfono
+            </label>
+            <input
+              className="w-full bg-slate-800 border-4 border-slate-600 rounded-lg py-3 px-4 text-white placeholder-slate-500 focus:border-cyan-500 focus:outline-none transition-all group-hover:border-cyan-400"
+              type="text"
+              id="phone"
+              name="phone"
+              placeholder="+57 300 123 4567"
+              value={formData.phone}
+              onChange={handleChange}
+            />
+          </div>
 
-        <div className="mb-4">
-          <label htmlFor="birthdate" className="block text-gray-700 text-sm font-bold mb-2">Fecha de nacimiento:</label>
-          <input className="shadow border rounded w-full py-2 px-3" type="date" id="birthdate" name="birthdate" value={formData.birthdate} onChange={handleChange} />
-        </div>
+          {/* Fecha de nacimiento */}
+          <div className="group">
+            <label htmlFor="birthdate" className="block text-cyan-400 font-bold mb-2 uppercase tracking-wide text-sm md:text-base">
+              🎂 Fecha de Nacimiento
+            </label>
+            <input
+              className="w-full bg-slate-800 border-4 border-slate-600 rounded-lg py-3 px-4 text-white placeholder-slate-500 focus:border-cyan-500 focus:outline-none transition-all group-hover:border-cyan-400"
+              type="date"
+              id="birthdate"
+              name="birthdate"
+              value={formData.birthdate}
+              onChange={handleChange}
+            />
+          </div>
 
-        <div className="mb-4">
-          <label htmlFor="birthskate" className="block text-gray-700 text-sm font-bold mb-2">Fecha en que empezó a patinar:</label>
-          <input className="shadow border rounded w-full py-2 px-3" type="date" id="birthskate" name="birthskate" value={formData.birthskate} onChange={handleChange} />
-        </div>
+          {/* Fecha inicio skate */}
+          <div className="group">
+            <label htmlFor="birthskate" className="block text-cyan-400 font-bold mb-2 uppercase tracking-wide text-sm md:text-base">
+              🛹 Primera vez en Skate
+            </label>
+            <input
+              className="w-full bg-slate-800 border-4 border-slate-600 rounded-lg py-3 px-4 text-white placeholder-slate-500 focus:border-cyan-500 focus:outline-none transition-all group-hover:border-cyan-400"
+              type="date"
+              id="birthskate"
+              name="birthskate"
+              value={formData.birthskate}
+              onChange={handleChange}
+            />
+          </div>
 
-        <div className="mb-4 col-span-2">
-          <LocationSelector
-            selectedDepartment={formData.departamento}
-            setSelectedDepartment={(value) => handleLocationChange("departamento", value)}
-            selectedCity={formData.ciudad}
-            setSelectedCity={(value) => handleLocationChange("ciudad", value)}
-          />
-        </div>
+          {/* Ubicación */}
+          <div className="col-span-1 md:col-span-2">
+            <label className="block text-cyan-400 font-bold mb-4 uppercase tracking-wide text-sm md:text-base">
+              📍 Ubicación
+            </label>
+            <LocationSelector
+              selectedDepartment={formData.departamento}
+              setSelectedDepartment={(value) => handleLocationChange("departamento", value)}
+              selectedCity={formData.ciudad}
+              setSelectedCity={(value) => handleLocationChange("ciudad", value)}
+            />
+          </div>
 
-        <div className="mb-4">
-          <label htmlFor="estado" className="block text-gray-700 text-sm font-bold mb-2">Estado:</label>
-          <input className="shadow border rounded w-full py-2 px-3" type="text" id="estado" name="estado" value={formData.estado} onChange={handleChange} />
-        </div>
+          {/* Estado */}
+          <div className="group col-span-1 md:col-span-2">
+            <label htmlFor="estado" className="block text-cyan-400 font-bold mb-2 uppercase tracking-wide text-sm md:text-base">
+              🏴 Estado
+            </label>
+            <input
+              className="w-full bg-slate-800 border-4 border-slate-600 rounded-lg py-3 px-4 text-white placeholder-slate-500 focus:border-cyan-500 focus:outline-none transition-all group-hover:border-cyan-400"
+              type="text"
+              id="estado"
+              name="estado"
+              placeholder="Estado (opcional)"
+              value={formData.estado}
+              onChange={handleChange}
+            />
+          </div>
 
-        <div className="flex items-center justify-between col-span-2">
-          <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" type="submit">
-            Guardar
-          </button>
-        </div>
-      </form>
+          {/* Botón guardar */}
+          <div className="col-span-1 md:col-span-2 flex justify-center mt-6">
+            <button
+              className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-white font-black py-4 px-12 rounded-lg border-4 border-white uppercase tracking-wider text-lg shadow-2xl transform hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              type="submit"
+              disabled={loading}
+            >
+              {loading ? "⏳ GUARDANDO..." : "💾 GUARDAR"}
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }

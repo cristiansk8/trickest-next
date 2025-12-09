@@ -50,6 +50,14 @@ export async function PUT(req: Request) {
       return NextResponse.json({ error: 'Usuario no encontrado' }, { status: 404 });
     }
 
+    // Determinar el profileStatus
+    let profileStatus = existingUser.profileStatus;
+
+    // Si tiene phone, ciudad y departamento, cambiar a "complete"
+    if (phone && ciudad && departamento) {
+      profileStatus = 'complete';
+    }
+
     // Actualizar los datos del usuario (sin modificar email ni photo)
     const updatedUser = await prisma.user.update({
       where: { email },
@@ -61,6 +69,7 @@ export async function PUT(req: Request) {
         estado,
         birthdate: birthdate ? new Date(birthdate) : undefined,
         birthskate: birthskate ? new Date(birthskate) : undefined,
+        profileStatus,
       },
     });
 

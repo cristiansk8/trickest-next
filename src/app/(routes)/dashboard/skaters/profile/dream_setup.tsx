@@ -98,47 +98,118 @@ export default function SkateSetupPage() {
     };
 
     return (
-        <div className="text-black">
-            <span className="text-xl">Setup soñado</span>
+        <div className="bg-gradient-to-r from-purple-500 to-pink-500 p-1 rounded-lg shadow-2xl">
+            <div className="bg-slate-900 rounded-lg p-6 md:p-8">
+                <h2 className="text-2xl md:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 uppercase mb-6 text-center md:text-left">
+                    🛹 Tu Setup Soñado
+                </h2>
 
-            {notification && (
-                <div className={`mt-4 p-2 text-white rounded ${notification.includes("Error") ? "bg-red-500" : "bg-green-500"}`}>
-                    {notification}
-                </div>
-            )}
+                {notification && (
+                    <div className={`mb-6 p-4 rounded-lg border-4 border-white text-white font-bold text-center animate-pulse ${notification.includes("Error") ? "bg-red-500" : "bg-green-500"}`}>
+                        {notification}
+                    </div>
+                )}
 
-            {loading && <p>Cargando...</p>}
+                {loading && (
+                    <div className="text-center py-4">
+                        <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-4 border-b-4 border-purple-400"></div>
+                        <p className="text-purple-400 mt-2 font-bold">Cargando...</p>
+                    </div>
+                )}
 
-            <form onSubmit={handleSubmit} className="grid grid-cols-2 bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-                <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="madero">Madero:</label>
-                    <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                        type="text" id="madero" name="madero" value={formData.madero} onChange={handleChange} />
-                </div>
-                <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="trucks">Trucks:</label>
-                    <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                        type="text" id="trucks" name="trucks" value={formData.trucks} onChange={handleChange} />
-                </div>
-                <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="ruedas">Ruedas:</label>
-                    <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                        type="text" id="ruedas" name="ruedas" value={formData.ruedas} onChange={handleChange} />
-                </div>
-                <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="rodamientos">Rodamientos:</label>
-                    <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                        type="text" id="rodamientos" name="rodamientos" value={formData.rodamientos} onChange={handleChange} />
-                </div>
-                <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="tenis">Tenis:</label>
-                    <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                        type="text" id="tenis" name="tenis" value={formData.tenis} onChange={handleChange} />
-                </div>
-                <div className="flex items-center justify-between">
-                    <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">Guardar</button>
-                </div>
-            </form>
+                <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                    {/* Madero/Deck */}
+                    <div className="group">
+                        <label className="block text-purple-400 font-bold mb-2 uppercase tracking-wide text-sm md:text-base flex items-center gap-2" htmlFor="madero">
+                            <span className="text-xl">🪵</span> Madero / Deck
+                        </label>
+                        <input
+                            className="w-full bg-slate-800 border-4 border-slate-600 rounded-lg py-3 px-4 text-white placeholder-slate-500 focus:border-purple-500 focus:outline-none transition-all group-hover:border-purple-400"
+                            type="text"
+                            id="madero"
+                            name="madero"
+                            placeholder="Ej: Element, Baker, Santa Cruz..."
+                            value={formData.madero}
+                            onChange={handleChange}
+                        />
+                    </div>
+
+                    {/* Trucks */}
+                    <div className="group">
+                        <label className="block text-purple-400 font-bold mb-2 uppercase tracking-wide text-sm md:text-base flex items-center gap-2" htmlFor="trucks">
+                            <span className="text-xl">🔩</span> Trucks
+                        </label>
+                        <input
+                            className="w-full bg-slate-800 border-4 border-slate-600 rounded-lg py-3 px-4 text-white placeholder-slate-500 focus:border-purple-500 focus:outline-none transition-all group-hover:border-purple-400"
+                            type="text"
+                            id="trucks"
+                            name="trucks"
+                            placeholder="Ej: Independent, Thunder, Venture..."
+                            value={formData.trucks}
+                            onChange={handleChange}
+                        />
+                    </div>
+
+                    {/* Ruedas */}
+                    <div className="group">
+                        <label className="block text-purple-400 font-bold mb-2 uppercase tracking-wide text-sm md:text-base flex items-center gap-2" htmlFor="ruedas">
+                            <span className="text-xl">⚪</span> Ruedas
+                        </label>
+                        <input
+                            className="w-full bg-slate-800 border-4 border-slate-600 rounded-lg py-3 px-4 text-white placeholder-slate-500 focus:border-purple-500 focus:outline-none transition-all group-hover:border-purple-400"
+                            type="text"
+                            id="ruedas"
+                            name="ruedas"
+                            placeholder="Ej: Spitfire, Bones, Ricta..."
+                            value={formData.ruedas}
+                            onChange={handleChange}
+                        />
+                    </div>
+
+                    {/* Rodamientos */}
+                    <div className="group">
+                        <label className="block text-purple-400 font-bold mb-2 uppercase tracking-wide text-sm md:text-base flex items-center gap-2" htmlFor="rodamientos">
+                            <span className="text-xl">⚙️</span> Rodamientos
+                        </label>
+                        <input
+                            className="w-full bg-slate-800 border-4 border-slate-600 rounded-lg py-3 px-4 text-white placeholder-slate-500 focus:border-purple-500 focus:outline-none transition-all group-hover:border-purple-400"
+                            type="text"
+                            id="rodamientos"
+                            name="rodamientos"
+                            placeholder="Ej: Bones Reds, Bronson..."
+                            value={formData.rodamientos}
+                            onChange={handleChange}
+                        />
+                    </div>
+
+                    {/* Tenis */}
+                    <div className="group col-span-1 md:col-span-2">
+                        <label className="block text-purple-400 font-bold mb-2 uppercase tracking-wide text-sm md:text-base flex items-center gap-2" htmlFor="tenis">
+                            <span className="text-xl">👟</span> Zapatos / Tenis
+                        </label>
+                        <input
+                            className="w-full bg-slate-800 border-4 border-slate-600 rounded-lg py-3 px-4 text-white placeholder-slate-500 focus:border-purple-500 focus:outline-none transition-all group-hover:border-purple-400"
+                            type="text"
+                            id="tenis"
+                            name="tenis"
+                            placeholder="Ej: Vans, Nike SB, DC Shoes..."
+                            value={formData.tenis}
+                            onChange={handleChange}
+                        />
+                    </div>
+
+                    {/* Botón guardar */}
+                    <div className="col-span-1 md:col-span-2 flex justify-center mt-6">
+                        <button
+                            className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-400 hover:to-pink-400 text-white font-black py-4 px-12 rounded-lg border-4 border-white uppercase tracking-wider text-lg shadow-2xl transform hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                            type="submit"
+                            disabled={loading}
+                        >
+                            {loading ? "⏳ GUARDANDO..." : "💾 GUARDAR"}
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     );
 }

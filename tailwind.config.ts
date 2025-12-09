@@ -22,6 +22,15 @@ const config: Config = {
         "gradient-cover":
           "linear-gradient(90.21deg, rgba(170, 54, 124, 0.5) -5.91%, rgba(74, 47, 189, 0.5) 111.58%)",
       },
+      keyframes: {
+        fadeIn: {
+          '0%': { opacity: '0', transform: 'scale(0.95)' },
+          '100%': { opacity: '1', transform: 'scale(1)' },
+        },
+      },
+      animation: {
+        fadeIn: 'fadeIn 0.5s ease-out',
+      },
       darkMode: "class",
       plugins: [nextui()],
     },

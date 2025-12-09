@@ -42,18 +42,27 @@ const LocationSelector: React.FC<LocationSelectorProps> = ({
     }, [selectedDepartment, departamentos]);
 
     return (
-        <div className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Selector de Departamento */}
-            <div>
-                <label className="block text-gray-700 text-sm font-bold mb-2">Departamento:</label>
+            <div className="group">
+                <label className="block text-cyan-400 font-bold mb-2 uppercase tracking-wide text-sm md:text-base">
+                    🗺️ Departamento
+                </label>
                 <select
-                    className="w-full px-3 py-2 border rounded shadow-sm focus:outline-none bg-white text-gray-900"
+                    className="w-full bg-slate-800 border-4 border-slate-600 rounded-lg py-3 px-4 text-white focus:border-cyan-500 focus:outline-none transition-all group-hover:border-cyan-400 appearance-none cursor-pointer"
                     value={selectedDepartment}
                     onChange={(e) => setSelectedDepartment(e.target.value)}
+                    style={{
+                        backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='white'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`,
+                        backgroundRepeat: 'no-repeat',
+                        backgroundPosition: 'right 0.75rem center',
+                        backgroundSize: '1.5em 1.5em',
+                        paddingRight: '2.5rem'
+                    }}
                 >
-                    <option value="">Selecciona un departamento</option>
+                    <option value="" className="bg-slate-800">Selecciona un departamento</option>
                     {departamentos.map((departamento) => (
-                        <option key={departamento.id} value={departamento.departamento}>
+                        <option key={departamento.id} value={departamento.departamento} className="bg-slate-800">
                             {departamento.departamento}
                         </option>
                     ))}
@@ -61,19 +70,30 @@ const LocationSelector: React.FC<LocationSelectorProps> = ({
             </div>
 
             {/* Selector de Ciudad */}
-            <div>
-                <label className="block text-gray-700 text-sm font-bold mb-2">Ciudad:</label>
+            <div className="group">
+                <label className="block text-cyan-400 font-bold mb-2 uppercase tracking-wide text-sm md:text-base">
+                    🏙️ Ciudad
+                </label>
                 <select
-                    className={`w-full px-3 py-2 border rounded shadow-sm focus:outline-none bg-white text-gray-900 ${
+                    className={`w-full bg-slate-800 border-4 border-slate-600 rounded-lg py-3 px-4 text-white focus:border-cyan-500 focus:outline-none transition-all group-hover:border-cyan-400 appearance-none cursor-pointer ${
                         cities.length === 0 ? 'opacity-50 cursor-not-allowed' : ''
                     }`}
                     value={selectedCity || ''}
                     onChange={(e) => setSelectedCity(e.target.value)}
                     disabled={cities.length === 0}
+                    style={{
+                        backgroundImage: cities.length > 0 ? `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='white'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")` : 'none',
+                        backgroundRepeat: 'no-repeat',
+                        backgroundPosition: 'right 0.75rem center',
+                        backgroundSize: '1.5em 1.5em',
+                        paddingRight: '2.5rem'
+                    }}
                 >
-                    <option value="">Selecciona una ciudad</option>
+                    <option value="" className="bg-slate-800">
+                        {cities.length === 0 ? 'Primero selecciona un departamento' : 'Selecciona una ciudad'}
+                    </option>
                     {cities.map((city, index) => (
-                        <option key={index} value={city}>
+                        <option key={index} value={city} className="bg-slate-800">
                             {city}
                         </option>
                     ))}

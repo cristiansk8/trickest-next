@@ -50,22 +50,18 @@ export async function PUT(req: Request) {
       return NextResponse.json({ error: "Email requerido" }, { status: 400 });
     }
 
-    // Verificar si el WishSkate ya existe
-    const existingWish = await prisma.wishSkate.findUnique({
+    // Usar upsert para crear o actualizar WishSkate
+    const updatedWishSkate = await prisma.wishSkate.upsert({
       where: { userId: email },
-    });
-
-    if (!existingWish) {
-      return NextResponse.json(
-        { error: "WishSkate no encontrado" },
-        { status: 404 }
-      );
-    }
-
-    // Actualizar los datos de WishSkate
-    const updatedWishSkate = await prisma.wishSkate.update({
-      where: { userId: email },
-      data: {
+      update: {
+        madero,
+        trucks,
+        ruedas,
+        rodamientos,
+        tenis,
+      },
+      create: {
+        userId: email,
         madero,
         trucks,
         ruedas,

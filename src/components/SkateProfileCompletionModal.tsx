@@ -11,6 +11,7 @@ interface ModalProps {
 const SkateProfileCompletionModal: React.FC<ModalProps> = ({ openModal, handleModal }) => {
     const [formData, setFormData] = useState({ phone: '' });
     const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string>('');
     const { data: session } = useSession();
     const router = useRouter();
 
@@ -24,35 +25,64 @@ const SkateProfileCompletionModal: React.FC<ModalProps> = ({ openModal, handleMo
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setLoading(true);
+        setError('');
 
         if (!session?.user) {
-            console.error('No estás autenticado');
+            setError('No estás autenticado. Por favor inicia sesión nuevamente.');
+            setLoading(false);
+            return;
+        }
+
+        // Validaciones del formulario
+        if (!formData.phone) {
+            setError('El teléfono es obligatorio');
+            setLoading(false);
+            return;
+        }
+
+        if (!selectedDepartment) {
+            setError('Debes seleccionar un departamento');
+            setLoading(false);
+            return;
+        }
+
+        if (!selectedCity) {
+            setError('Debes seleccionar una ciudad');
             setLoading(false);
             return;
         }
 
         try {
-            const response = await fetch('/api/skate_profiles', {
-                method: 'POST',
+            const payload = {
+                email: session.user.email,
+                phone: formData.phone,
+                ciudad: selectedCity,
+                departamento: selectedDepartment,
+            };
+
+            console.log('Completando perfil:', payload);
+
+            // Actualizar el perfil del usuario (PUT en lugar de POST)
+            const response = await fetch('/api/skate_profiles/general_info', {
+                method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    email: session.user.email,
-                    name: session.user.name,
-                    phone: formData.phone,
-                    ciudad: selectedCity,
-                    departamento: selectedDepartment,
-                    photo: session.user.image,
-                }),
+                body: JSON.stringify(payload),
             });
 
             const data = await response.json();
-            if (data.error) throw new Error(data.error);
 
-            console.log('Registro exitoso:', data);
+            if (!response.ok) {
+                throw new Error(data.error || 'Error al completar perfil');
+            }
+
+            console.log('Perfil completado exitosamente:', data);
             handleModal();
-            router.push('/dashboard/skaters/profile');
+
+            // Recargar la página para actualizar el estado de la sesión
+            window.location.reload();
         } catch (error) {
-            console.error('Error al registrar:', error);
+            console.error('Error al completar perfil:', error);
+            setError(error instanceof Error ? error.message : 'Error desconocido al completar perfil');
         } finally {
             setLoading(false);
         }
@@ -66,6 +96,14 @@ const SkateProfileCompletionModal: React.FC<ModalProps> = ({ openModal, handleMo
                 <h2 className="text-sm font-medium text-gray-900 border-b border-gray-300 py-3 px-4 mb-4">
                     Completa tu registro
                 </h2>
+
+                {/* Mensaje de error */}
+                {error && (
+                    <div className="mx-4 mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                        <p className="text-sm">{error}</p>
+                    </div>
+                )}
+
                 <form onSubmit={handleSubmit} className="space-y-4 px-4 pb-4 flex-grow">
                     {/* Campo Teléfono */}
                     <div>

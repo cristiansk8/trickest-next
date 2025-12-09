@@ -1,76 +1,182 @@
+"use client";
 
-import { highScore } from "../../../../../../data";
-import { Button } from "@nextui-org/react";
-/* export const medatada = {
-    title: "tricks",
-    description: "Información general",
-}; */
+import { useEffect, useState } from 'react';
+import { useSession } from 'next-auth/react';
+import ChallengeCard from '@/components/ChallengeCard';
+import SubmitTrickModal from '@/components/SubmitTrickModal';
 
-export default function PorfilePage() {
+interface UserSubmission {
+  id: number;
+  status: string;
+  score: number | null;
+  videoUrl: string;
+  submittedAt: Date;
+  feedback: string | null;
+}
+
+interface Challenge {
+  id: number;
+  level: number;
+  name: string;
+  description: string;
+  demoVideoUrl: string;
+  isBonus: boolean;
+  difficulty: string;
+  points: number;
+  userSubmission: UserSubmission | null;
+}
+
+export default function TricksPage() {
+  const { data: session } = useSession();
+  const [challenges, setChallenges] = useState<Challenge[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [selectedChallenge, setSelectedChallenge] = useState<Challenge | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const fetchChallenges = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch('/api/challenges');
+      if (!response.ok) throw new Error('Error al cargar challenges');
+
+      const data = await response.json();
+      setChallenges(data.challenges || []);
+    } catch (error) {
+      console.error('Error:', error);
+      setError('Error al cargar los challenges');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchChallenges();
+  }, []);
+
+  const handleSubmitClick = (challenge: Challenge) => {
+    setSelectedChallenge(challenge);
+    setModalOpen(true);
+  };
+
+  const handleSubmitSuccess = () => {
+    // Refrescar challenges para actualizar el estado
+    fetchChallenges();
+  };
+
+  // Calcular estadísticas
+  const totalPoints = challenges.reduce((acc, c) => acc + c.points, 0);
+  const completedChallenges = challenges.filter(
+    c => c.userSubmission?.status === 'approved'
+  ).length;
+  const earnedPoints = challenges
+    .filter(c => c.userSubmission?.status === 'approved')
+    .reduce((acc, c) => acc + (c.userSubmission?.score || 0), 0);
+
+  // Separar bonus del resto
+  const regularChallenges = challenges.filter(c => !c.isBonus);
+  const bonusChallenge = challenges.find(c => c.isBonus);
+
+  if (loading) {
     return (
-        <div className="text-black">
-            <h1 className="mt-2 text-3xl">Trucos</h1>
-            <span className="text-xl">Destacados</span>
-
-            <div className="flex w-full flex-wrap content-center justify-center px-7">
-                <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
-                    {
-                        highScore.map((tricket, index) => {
-                            return (
-                                <div className="max-w-xsborder    " key={index}>
-                                    <img className="h-52 w-full object-cover" src={`${tricket.imgURl}`} />
-                                    <div className='p-1 text-left'>
-                                        <h3>{tricket.name}</h3>
-                                        <ul className="mt-3 flex flex-wrap">
-                                            <li className="mr-auto">
-                                                <a href="#" className="flex text-gray-400 hover:text-gray-600">
-                                                    editar
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <a href="#" className="flex text-gray-400 hover:text-gray-600">
-                                                    Eliminar
-                                                </a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            )
-                        })
-                    }
-                </div>
-            </div>
-
-            <span className="text-xl">Todos los trucos</span>
-
-            <div className="flex w-full flex-wrap content-center justify-center px-7">
-            <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
-                {
-                    highScore.map((tricket, index) => {
-                        return (
-                            <div className="max-w-xsborder    " key={index}>
-                                <img className="h-52 w-full object-cover" src={`${tricket.imgURl}`} />
-                                <div className='p-1 text-left'>
-                                <h3>{tricket.name}</h3>
-                                <ul className="mt-3 flex flex-wrap">
-                                    <li className="mr-auto">
-                                        <a href="#" className="flex text-gray-400 hover:text-gray-600">
-                                            editar
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="#" className="flex text-gray-400 hover:text-gray-600">
-                                            Eliminar
-                                        </a>
-                                    </li>
-                                </ul>
-                                </div>
-                            </div>
-                        )
-                    })
-                }
-            </div>
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-black">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-cyan-400 mx-auto"></div>
+          <p className="mt-4 text-cyan-400 font-bold text-xl">CARGANDO CHALLENGES...</p>
         </div>
-        </div>
+      </div>
     );
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-4 md:p-8">
+      {/* Header */}
+      <div className="max-w-7xl mx-auto mb-8">
+        <div className="bg-gradient-to-r from-cyan-500 to-blue-600 p-1 rounded-lg shadow-2xl">
+          <div className="bg-slate-900 rounded-lg p-6">
+            <h1 className="text-3xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-400 uppercase tracking-wider text-center md:text-left">
+              🎯 CHALLENGES
+            </h1>
+            <p className="text-cyan-300 mt-2 text-sm md:text-base text-center md:text-left">
+              Completa trucos para ganar puntos y subir en el ranking
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Stats Bar */}
+      <div className="max-w-7xl mx-auto mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="bg-gradient-to-r from-purple-500 to-pink-500 p-1 rounded-lg">
+            <div className="bg-slate-900 rounded-lg p-4 text-center">
+              <p className="text-slate-400 text-xs uppercase">Puntos Disponibles</p>
+              <p className="text-white text-2xl font-black">{totalPoints}</p>
+            </div>
+          </div>
+          <div className="bg-gradient-to-r from-green-500 to-teal-500 p-1 rounded-lg">
+            <div className="bg-slate-900 rounded-lg p-4 text-center">
+              <p className="text-slate-400 text-xs uppercase">Completados</p>
+              <p className="text-white text-2xl font-black">
+                {completedChallenges} / {challenges.length}
+              </p>
+            </div>
+          </div>
+          <div className="bg-gradient-to-r from-yellow-500 to-orange-500 p-1 rounded-lg">
+            <div className="bg-slate-900 rounded-lg p-4 text-center">
+              <p className="text-slate-400 text-xs uppercase">Puntos Ganados</p>
+              <p className="text-white text-2xl font-black">{earnedPoints}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Error Message */}
+      {error && (
+        <div className="max-w-7xl mx-auto mb-6">
+          <div className="bg-red-500 border-4 border-red-700 rounded-lg p-4">
+            <p className="text-white font-bold text-center">{error}</p>
+          </div>
+        </div>
+      )}
+
+      {/* Regular Challenges Grid */}
+      <div className="max-w-7xl mx-auto mb-8">
+        <h2 className="text-2xl md:text-3xl font-black text-white uppercase tracking-wider mb-6">
+          📋 Niveles 1-10
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {regularChallenges.map((challenge) => (
+            <ChallengeCard
+              key={challenge.id}
+              challenge={challenge}
+              onSubmitClick={() => handleSubmitClick(challenge)}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* Bonus Challenge */}
+      {bonusChallenge && (
+        <div className="max-w-7xl mx-auto mb-8">
+          <h2 className="text-2xl md:text-3xl font-black text-white uppercase tracking-wider mb-6">
+            🌟 NIVEL BONUS
+          </h2>
+          <div className="max-w-2xl mx-auto">
+            <ChallengeCard
+              challenge={bonusChallenge}
+              onSubmitClick={() => handleSubmitClick(bonusChallenge)}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Submit Modal */}
+      <SubmitTrickModal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        challenge={selectedChallenge}
+        onSubmitSuccess={handleSubmitSuccess}
+      />
+    </div>
+  );
 }
