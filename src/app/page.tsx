@@ -27,7 +27,7 @@ export default function Home() {
       {/* Skaters Showcase Section */}
       <div className="pt-28 pb-16">
         <div className="text-center mb-12">
-          <h2 className="text-4xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400 uppercase tracking-wider mb-4">
+          <h2 className="text-4xl md:text-6xl font-black text-slate-200 uppercase tracking-wider mb-4">
             🛹 CONOCE LA COMUNIDAD
           </h2>
           <p className="text-slate-600 text-lg max-w-2xl mx-auto">

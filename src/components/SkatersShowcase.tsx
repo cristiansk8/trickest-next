@@ -56,7 +56,7 @@ export default function SkatersShowcase() {
       <div className="space-y-4">
         {!showForm ? (
           <div className="space-y-3">
-            <div className="bg-gradient-to-r from-cyan-500 to-purple-600 p-1 rounded-lg inline-block">
+            <div className="bg-slate-800 p-1 rounded-lg inline-block">
               <div className="bg-slate-900 rounded-lg px-6 py-3">
                 <span className="text-white font-bold text-sm">
                   🚀 ¡Sé uno de los primeros!
@@ -65,7 +65,7 @@ export default function SkatersShowcase() {
             </div>
             <button
               onClick={() => setShowForm(true)}
-              className="bg-gradient-to-r from-green-500 to-teal-600 hover:from-green-400 hover:to-teal-400 text-white font-bold py-2 px-6 rounded-lg transition-all transform hover:scale-105"
+              className="bg-green-600 hover:bg-green-500 text-white font-bold py-2 px-6 rounded-lg transition-all transform hover:scale-105"
             >
               📧 Regístrate para ser notificado
             </button>
@@ -91,7 +91,7 @@ export default function SkatersShowcase() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="flex-1 bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-400 hover:to-purple-400 text-white font-bold py-2 px-4 rounded-lg transition-all disabled:opacity-50"
+                  className="flex-1 bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-2 px-4 rounded-lg transition-all disabled:opacity-50"
                 >
                   {loading ? '⏳ Enviando...' : '🚀 ¡Quiero ser el primero!'}
                 </button>
