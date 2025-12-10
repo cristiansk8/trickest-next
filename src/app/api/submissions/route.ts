@@ -2,10 +2,13 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import prisma from '@/app/lib/prisma';
 import { validateYouTubeUrl, normalizeYouTubeUrl } from '@/lib/youtube';
+import { authOptions } from '@/lib/auth';
+
+export const dynamic = 'force-dynamic';
 
 export async function POST(req: Request) {
   try {
-    const session = await getServerSession();
+    const session = await getServerSession(authOptions);
 
     // Verificar autenticación
     if (!session?.user?.email) {
