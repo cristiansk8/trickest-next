@@ -1,13 +1,14 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 
 interface LeaderboardUser {
   rank: number;
   email: string;
+  username: string;
   name: string;
   photo: string | null;
   location: string | null;
@@ -43,8 +44,12 @@ type Tab = 'users' | 'teams';
 export default function LeaderboardPage() {
   const { data: session } = useSession();
   const [activeTab, setActiveTab] = useState<Tab>('users');
-  const [usersLeaderboard, setUsersLeaderboard] = useState<LeaderboardUser[]>([]);
-  const [teamsLeaderboard, setTeamsLeaderboard] = useState<LeaderboardTeam[]>([]);
+  const [usersLeaderboard, setUsersLeaderboard] = useState<LeaderboardUser[]>(
+    []
+  );
+  const [teamsLeaderboard, setTeamsLeaderboard] = useState<LeaderboardTeam[]>(
+    []
+  );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -112,7 +117,9 @@ export default function LeaderboardPage() {
       <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-black">
         <div className="text-center">
           <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-cyan-400 mx-auto"></div>
-          <p className="mt-4 text-cyan-400 font-bold text-xl">CARGANDO RANKING...</p>
+          <p className="mt-4 text-cyan-400 font-bold text-xl">
+            CARGANDO RANKING...
+          </p>
         </div>
       </div>
     );
@@ -171,7 +178,9 @@ export default function LeaderboardPage() {
                 </span>
               </div>
               <div className="text-right">
-                <p className="text-white font-bold text-xl">{currentUserRank.totalScore} pts</p>
+                <p className="text-white font-bold text-xl">
+                  {currentUserRank.totalScore} pts
+                </p>
                 <p className="text-slate-400 text-sm">
                   {currentUserRank.challengesCompleted} challenges completados
                 </p>
@@ -195,8 +204,12 @@ export default function LeaderboardPage() {
         <div className="max-w-4xl mx-auto">
           {usersLeaderboard.length === 0 ? (
             <div className="bg-slate-800 border-4 border-slate-700 rounded-lg p-8 text-center">
-              <p className="text-slate-400 text-xl">No hay skaters en el ranking aún</p>
-              <p className="text-slate-500 mt-2">¡Sé el primero en completar un challenge!</p>
+              <p className="text-slate-400 text-xl">
+                No hay skaters en el ranking aún
+              </p>
+              <p className="text-slate-500 mt-2">
+                ¡Sé el primero en completar un challenge!
+              </p>
             </div>
           ) : (
             <div className="space-y-3">
@@ -204,9 +217,13 @@ export default function LeaderboardPage() {
               {usersLeaderboard.slice(0, 3).map((user) => (
                 <Link
                   key={user.email}
-                  href={`/dashboard/profile/${user.email}`}
-                  className={`block bg-gradient-to-r ${getRankStyle(user.rank)} p-1 rounded-lg shadow-lg ${
-                    user.email === session?.user?.email ? 'ring-4 ring-cyan-400' : ''
+                  href={`/profile/${user.username}`}
+                  className={`block bg-gradient-to-r ${getRankStyle(
+                    user.rank
+                  )} p-1 rounded-lg shadow-lg ${
+                    user.email === session?.user?.email
+                      ? 'ring-4 ring-cyan-400'
+                      : ''
                   } hover:scale-[1.02] transition-transform cursor-pointer`}
                 >
                   <div className="bg-slate-900 rounded-lg p-4 flex items-center gap-4">
@@ -232,23 +249,35 @@ export default function LeaderboardPage() {
                       <h3 className="text-white font-bold text-lg hover:text-cyan-400 transition-colors">
                         {user.name}
                         {user.email === session?.user?.email && (
-                          <span className="ml-2 text-cyan-400 text-sm">(Tú)</span>
+                          <span className="ml-2 text-cyan-400 text-sm">
+                            (Tú)
+                          </span>
                         )}
                       </h3>
                       {user.location && (
-                        <p className="text-slate-400 text-sm">📍 {user.location}</p>
+                        <p className="text-slate-400 text-sm">
+                          📍 {user.location}
+                        </p>
                       )}
                       {user.team && (
-                        <p className="text-purple-400 text-sm">👥 {user.team.name}</p>
+                        <p className="text-purple-400 text-sm">
+                          👥 {user.team.name}
+                        </p>
                       )}
                     </div>
                     <div className="text-right">
-                      <p className="text-white font-black text-2xl">{user.totalScore}</p>
+                      <p className="text-white font-black text-2xl">
+                        {user.totalScore}
+                      </p>
                       <p className="text-slate-400 text-xs uppercase">puntos</p>
                     </div>
                     <div className="text-right hidden md:block">
-                      <p className="text-cyan-400 font-bold">{user.challengesCompleted}</p>
-                      <p className="text-slate-400 text-xs uppercase">challenges</p>
+                      <p className="text-cyan-400 font-bold">
+                        {user.challengesCompleted}
+                      </p>
+                      <p className="text-slate-400 text-xs uppercase">
+                        challenges
+                      </p>
                     </div>
                   </div>
                 </Link>
@@ -258,7 +287,7 @@ export default function LeaderboardPage() {
               {usersLeaderboard.slice(3).map((user) => (
                 <Link
                   key={user.email}
-                  href={`/dashboard/profile/${user.email}`}
+                  href={`/profile/${user.username}`}
                   className={`bg-slate-800 border-2 border-slate-700 rounded-lg p-4 flex items-center gap-4 hover:border-cyan-500 hover:scale-[1.01] transition-all cursor-pointer ${
                     user.email === session?.user?.email
                       ? 'border-cyan-400 bg-slate-800/80'
@@ -292,19 +321,27 @@ export default function LeaderboardPage() {
                     </h3>
                     <div className="flex gap-4 text-sm">
                       {user.location && (
-                        <span className="text-slate-500">📍 {user.location}</span>
+                        <span className="text-slate-500">
+                          📍 {user.location}
+                        </span>
                       )}
                       {user.team && (
-                        <span className="text-purple-400">👥 {user.team.name}</span>
+                        <span className="text-purple-400">
+                          👥 {user.team.name}
+                        </span>
                       )}
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="text-white font-bold text-lg">{user.totalScore}</p>
+                    <p className="text-white font-bold text-lg">
+                      {user.totalScore}
+                    </p>
                     <p className="text-slate-500 text-xs">pts</p>
                   </div>
                   <div className="text-right hidden md:block">
-                    <p className="text-cyan-400 font-bold">{user.challengesCompleted}</p>
+                    <p className="text-cyan-400 font-bold">
+                      {user.challengesCompleted}
+                    </p>
                     <p className="text-slate-500 text-xs">challenges</p>
                   </div>
                 </Link>
@@ -319,7 +356,9 @@ export default function LeaderboardPage() {
         <div className="max-w-4xl mx-auto">
           {teamsLeaderboard.length === 0 ? (
             <div className="bg-slate-800 border-4 border-slate-700 rounded-lg p-8 text-center">
-              <p className="text-slate-400 text-xl">No hay equipos en el ranking aún</p>
+              <p className="text-slate-400 text-xl">
+                No hay equipos en el ranking aún
+              </p>
               <p className="text-slate-500 mt-2">¡Crea un equipo y compite!</p>
             </div>
           ) : (
@@ -328,7 +367,9 @@ export default function LeaderboardPage() {
               {teamsLeaderboard.slice(0, 3).map((team) => (
                 <div
                   key={team.id}
-                  className={`bg-gradient-to-r ${getRankStyle(team.rank)} p-1 rounded-lg shadow-lg`}
+                  className={`bg-gradient-to-r ${getRankStyle(
+                    team.rank
+                  )} p-1 rounded-lg shadow-lg`}
                 >
                   <div className="bg-slate-900 rounded-lg p-4 flex items-center gap-4">
                     <div className="text-4xl w-16 text-center">
@@ -350,7 +391,9 @@ export default function LeaderboardPage() {
                       )}
                     </div>
                     <div className="flex-1">
-                      <h3 className="text-white font-bold text-lg">{team.name}</h3>
+                      <h3 className="text-white font-bold text-lg">
+                        {team.name}
+                      </h3>
                       <p className="text-slate-400 text-sm">
                         👑 {team.owner.name || 'Capitán'}
                       </p>
@@ -359,12 +402,18 @@ export default function LeaderboardPage() {
                       </p>
                     </div>
                     <div className="text-right">
-                      <p className="text-white font-black text-2xl">{team.totalScore}</p>
+                      <p className="text-white font-black text-2xl">
+                        {team.totalScore}
+                      </p>
                       <p className="text-slate-400 text-xs uppercase">puntos</p>
                     </div>
                     <div className="text-right hidden md:block">
-                      <p className="text-purple-400 font-bold">{team.challengesCompleted}</p>
-                      <p className="text-slate-400 text-xs uppercase">challenges</p>
+                      <p className="text-purple-400 font-bold">
+                        {team.challengesCompleted}
+                      </p>
+                      <p className="text-slate-400 text-xs uppercase">
+                        challenges
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -401,11 +450,15 @@ export default function LeaderboardPage() {
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="text-white font-bold text-lg">{team.totalScore}</p>
+                    <p className="text-white font-bold text-lg">
+                      {team.totalScore}
+                    </p>
                     <p className="text-slate-500 text-xs">pts</p>
                   </div>
                   <div className="text-right hidden md:block">
-                    <p className="text-purple-400 font-bold">{team.challengesCompleted}</p>
+                    <p className="text-purple-400 font-bold">
+                      {team.challengesCompleted}
+                    </p>
                     <p className="text-slate-500 text-xs">challenges</p>
                   </div>
                 </div>

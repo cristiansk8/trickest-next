@@ -6,8 +6,9 @@ import { useParams } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { FaInstagram, FaTiktok, FaTwitter, FaFacebook } from 'react-icons/fa';
-import { MdOutlineSkateboarding, MdLocationOn, MdGroups } from 'react-icons/md';
+import { MdOutlineSkateboarding, MdLocationOn, MdGroups, MdPersonAdd, MdPersonRemove } from 'react-icons/md';
 import { GiSkateboard, GiTrophy } from 'react-icons/gi';
+import { Button } from '@nextui-org/react';
 
 interface PublicProfile {
   email: string;
@@ -37,14 +38,52 @@ interface PublicProfile {
   stats: {
     totalScore: number;
     challengesCompleted: number;
-    highestDifficulty: number;
     submissionsApproved: number;
+    submissionsRejected: number;
+    submissionsPending: number;
+    successRate: number;
+    currentStreak: number;
+    bestStreak: number;
+    highestDifficulty: number;
+    difficultyStats: {
+      easy: { completed: number; avgScore: number; totalScore: number };
+      medium: { completed: number; avgScore: number; totalScore: number };
+      hard: { completed: number; avgScore: number; totalScore: number };
+      expert: { completed: number; avgScore: number; totalScore: number };
+    };
+    totalXP: number;
+    achievementsUnlocked: number;
+    totalAchievements: number;
   };
-  recentAchievements: {
-    challengeName: string;
-    difficulty: number;
-    score: number | null;
+  achievements: {
+    id: string;
+    name: string;
+    description: string;
+    icon: string;
+    category: string;
+    rarity: string;
+    unlocked: boolean;
+    unlockedDate: string | null;
+    xp?: number;
   }[];
+  recentActivity: {
+    type: string;
+    challengeName: string;
+    difficulty: string;
+    status: string;
+    score: number | null;
+    date: string;
+  }[];
+  activitySummary: {
+    thisMonth: number;
+    thisWeek: number;
+    lastSubmission: string | null;
+  };
+  socialStats: {
+    followerCount: number;
+    followingCount: number;
+    isFollowing: boolean;
+  };
 }
 
 export default function PublicProfilePage() {
@@ -53,9 +92,43 @@ export default function PublicProfilePage() {
   const [profile, setProfile] = useState<PublicProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [following, setFollowing] = useState(false);
+  const [followLoading, setFollowLoading] = useState(false);
 
   const email = params.email as string;
   const isOwnProfile = session?.user?.email === decodeURIComponent(email);
+
+  const handleFollowToggle = async () => {
+    if (!session?.user?.email || isOwnProfile) return;
+
+    setFollowLoading(true);
+    try {
+      const response = await fetch('/api/follow', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ targetUserEmail: decodeURIComponent(email) }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setFollowing(data.action === 'follow');
+        // Update follower count in profile
+        if (profile) {
+          setProfile({
+            ...profile,
+            socialStats: {
+              ...profile.socialStats,
+              followerCount: profile.socialStats.followerCount + (data.action === 'follow' ? 1 : -1),
+              isFollowing: data.action === 'follow'
+            }
+          });
+        }
+      }
+    } catch (error) {
+      console.error('Error toggling follow:', error);
+    }
+    setFollowLoading(false);
+  };
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -74,6 +147,19 @@ export default function PublicProfilePage() {
 
         const data = await response.json();
         setProfile(data);
+
+        // Check if current user is following this profile
+        if (session?.user?.email && session.user.email !== decodeURIComponent(email)) {
+          try {
+            const followResponse = await fetch(`/api/follow?user=${encodeURIComponent(email)}`);
+            if (followResponse.ok) {
+              const followData = await followResponse.json();
+              setFollowing(followData.isFollowing);
+            }
+          } catch (error) {
+            console.error('Error checking follow status:', error);
+          }
+        }
       } catch (err) {
         console.error('Error:', err);
         setError('Error al cargar el perfil');
@@ -199,6 +285,18 @@ export default function PublicProfilePage() {
                 <p className="text-slate-500 text-xs mt-2">
                   Miembro desde {new Date(profile.memberSince).toLocaleDateString('es-ES', { year: 'numeric', month: 'long' })}
                 </p>
+
+                {/* Follow Stats */}
+                <div className="flex items-center gap-6 mt-3 justify-center md:justify-start">
+                  <div className="text-center">
+                    <p className="text-cyan-400 font-bold text-lg">{profile.socialStats?.followerCount || 0}</p>
+                    <p className="text-slate-400 text-xs">Seguidores</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-cyan-400 font-bold text-lg">{profile.socialStats?.followingCount || 0}</p>
+                    <p className="text-slate-400 text-xs">Siguiendo</p>
+                  </div>
+                </div>
               </div>
 
               {/* Main Score */}
@@ -211,13 +309,31 @@ export default function PublicProfilePage() {
                 </div>
               </div>
             </div>
+
+            {/* Follow Button */}
+            {!isOwnProfile && session?.user?.email && (
+              <div className="mt-4 text-center md:text-right">
+                <Button
+                  onClick={handleFollowToggle}
+                  isLoading={followLoading}
+                  className={`font-bold uppercase tracking-wider ${
+                    following
+                      ? 'bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-400 hover:to-pink-500 text-white'
+                      : 'bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-400 hover:to-purple-500 text-white'
+                  }`}
+                  startContent={following ? <MdPersonRemove size={20} /> : <MdPersonAdd size={20} />}
+                >
+                  {following ? 'Dejar de Seguir' : 'Seguir'}
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       </div>
 
-      {/* Stats Grid */}
+      {/* Advanced Stats Grid */}
       <div className="max-w-4xl mx-auto mb-8">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
           <div className="bg-gradient-to-r from-green-500 to-emerald-600 p-[3px] rounded-lg">
             <div className="bg-slate-900 rounded-lg p-4 text-center h-full">
               <p className="text-slate-400 text-xs uppercase font-bold tracking-wider">Challenges</p>
@@ -227,68 +343,230 @@ export default function PublicProfilePage() {
 
           <div className="bg-gradient-to-r from-blue-500 to-cyan-600 p-[3px] rounded-lg">
             <div className="bg-slate-900 rounded-lg p-4 text-center h-full">
-              <p className="text-slate-400 text-xs uppercase font-bold tracking-wider">Aprobados</p>
-              <p className="text-3xl font-black text-cyan-400">{profile.stats.submissionsApproved}</p>
+              <p className="text-slate-400 text-xs uppercase font-bold tracking-wider">Tasa Éxito</p>
+              <p className="text-3xl font-black text-cyan-400">{profile.stats.successRate}%</p>
             </div>
           </div>
 
           <div className="bg-gradient-to-r from-purple-500 to-pink-600 p-[3px] rounded-lg">
             <div className="bg-slate-900 rounded-lg p-4 text-center h-full">
-              <p className="text-slate-400 text-xs uppercase font-bold tracking-wider">Max Nivel</p>
-              <p className="text-3xl font-black text-purple-400">{profile.stats.highestDifficulty}</p>
+              <p className="text-slate-400 text-xs uppercase font-bold tracking-wider">Racha Actual</p>
+              <p className="text-3xl font-black text-purple-400">{profile.stats.currentStreak}</p>
             </div>
           </div>
 
           <div className="bg-gradient-to-r from-rose-500 to-red-600 p-[3px] rounded-lg">
             <div className="bg-slate-900 rounded-lg p-4 text-center h-full">
-              <p className="text-slate-400 text-xs uppercase font-bold tracking-wider">Promedio</p>
-              <p className="text-3xl font-black text-rose-400">
-                {profile.stats.submissionsApproved > 0
-                  ? Math.round(profile.stats.totalScore / profile.stats.submissionsApproved)
-                  : 0}
+              <p className="text-slate-400 text-xs uppercase font-bold tracking-wider">Mejor Racha</p>
+              <p className="text-3xl font-black text-rose-400">{profile.stats.bestStreak}</p>
+            </div>
+          </div>
+        </div>
+
+        {/* XP and Achievements Progress */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+          <div className="bg-gradient-to-r from-yellow-500 to-orange-600 p-[3px] rounded-lg">
+            <div className="bg-slate-900 rounded-lg p-4">
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-slate-400 text-xs uppercase font-bold tracking-wider">XP Total</span>
+                <span className="text-yellow-400 font-black">{profile.stats.totalXP.toLocaleString()}</span>
+              </div>
+              <div className="w-full bg-slate-800 rounded-full h-3 border-2 border-slate-700">
+                <div
+                  className="bg-gradient-to-r from-yellow-500 to-orange-600 h-full rounded-full transition-all duration-500"
+                  style={{ width: `${Math.min((profile.stats.achievementsUnlocked / profile.stats.totalAchievements) * 100, 100)}%` }}
+                />
+              </div>
+              <p className="text-center text-white font-bold text-sm mt-2">
+                {profile.stats.achievementsUnlocked}/{profile.stats.totalAchievements} Logros
               </p>
+            </div>
+          </div>
+
+          <div className="bg-gradient-to-r from-cyan-500 to-blue-600 p-[3px] rounded-lg">
+            <div className="bg-slate-900 rounded-lg p-4">
+              <p className="text-slate-400 text-xs uppercase font-bold tracking-wider mb-2">Actividad Reciente</p>
+              <div className="space-y-1 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-slate-300">Esta semana:</span>
+                  <span className="text-cyan-400 font-bold">{profile.activitySummary.thisWeek}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-300">Este mes:</span>
+                  <span className="text-cyan-400 font-bold">{profile.activitySummary.thisMonth}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-300">Última submission:</span>
+                  <span className="text-cyan-400 font-bold text-xs">
+                    {profile.activitySummary.lastSubmission
+                      ? new Date(profile.activitySummary.lastSubmission).toLocaleDateString('es-ES')
+                      : 'Nunca'}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Difficulty Stats */}
+        <div className="bg-gradient-to-r from-slate-700 to-slate-800 p-[3px] rounded-lg">
+          <div className="bg-slate-900 rounded-lg p-4">
+            <h3 className="text-white font-bold text-lg mb-4 text-center uppercase tracking-wider">Estadísticas por Dificultad</h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {Object.entries(profile.stats.difficultyStats).map(([difficulty, stats]) => (
+                <div key={difficulty} className="text-center">
+                  <p className="text-slate-400 text-xs uppercase font-bold tracking-wider mb-1">
+                    {difficulty === 'easy' ? 'Fácil' :
+                     difficulty === 'medium' ? 'Medio' :
+                     difficulty === 'hard' ? 'Difícil' : 'Experto'}
+                  </p>
+                  <p className="text-2xl font-black text-cyan-400">{stats.completed}</p>
+                  <p className="text-slate-500 text-xs">completados</p>
+                  {stats.avgScore > 0 && (
+                    <p className="text-yellow-400 text-sm font-bold">{stats.avgScore} avg</p>
+                  )}
+                </div>
+              ))}
             </div>
           </div>
         </div>
       </div>
 
       {/* Content Grid */}
-      <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Recent Achievements */}
+      <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* Achievements */}
         <div className="bg-gradient-to-r from-yellow-500 to-orange-500 p-[3px] rounded-lg">
           <div className="bg-slate-900 rounded-lg p-6 h-full">
             <h2 className="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-400 uppercase mb-4 flex items-center gap-2">
-              <GiTrophy className="text-yellow-400" /> Últimos Logros
+              <GiTrophy className="text-yellow-400" /> 🏆 LOGROS DESBLOQUEADOS
             </h2>
 
-            {profile.recentAchievements.length > 0 ? (
-              <div className="space-y-3">
-                {profile.recentAchievements.map((achievement, idx) => (
-                  <div
-                    key={idx}
-                    className="bg-slate-800 border-2 border-slate-700 rounded-lg p-3 flex items-center justify-between"
-                  >
-                    <div>
-                      <p className="text-white font-bold text-sm">{achievement.challengeName}</p>
-                      <p className="text-slate-500 text-xs">Nivel {achievement.difficulty}</p>
+            {profile.achievements.length > 0 ? (
+              <div className="space-y-3 max-h-96 overflow-y-auto">
+                {profile.achievements.map((achievement) => {
+                  const rarityColors = {
+                    common: 'border-slate-500 bg-slate-800',
+                    uncommon: 'border-green-400 bg-green-900/20',
+                    rare: 'border-cyan-400 bg-cyan-900/20',
+                    epic: 'border-purple-400 bg-purple-900/20',
+                    legendary: 'border-yellow-400 bg-yellow-900/20',
+                    secret: 'border-rose-400 bg-rose-900/20',
+                  };
+
+                  return (
+                    <div
+                      key={achievement.id}
+                      className={`border-2 rounded-lg p-3 ${rarityColors[achievement.rarity as keyof typeof rarityColors]} hover:scale-105 transition-transform`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <span className="text-2xl">{achievement.icon}</span>
+                        <div className="flex-1">
+                          <p className="text-white font-bold text-sm uppercase">{achievement.name}</p>
+                          <p className="text-slate-400 text-xs">{achievement.description}</p>
+                          <div className="flex items-center gap-2 mt-1">
+                            <span className={`text-xs px-2 py-1 rounded uppercase font-bold ${
+                              achievement.rarity === 'legendary' ? 'bg-yellow-500 text-black' :
+                              achievement.rarity === 'epic' ? 'bg-purple-500 text-white' :
+                              achievement.rarity === 'rare' ? 'bg-cyan-500 text-white' :
+                              'bg-slate-600 text-white'
+                            }`}>
+                              {achievement.rarity}
+                            </span>
+                            {achievement.unlockedDate && (
+                              <span className="text-slate-500 text-xs">
+                                {new Date(achievement.unlockedDate).toLocaleDateString('es-ES')}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                    {achievement.score && (
-                      <span className="text-yellow-400 font-black">{achievement.score} pts</span>
-                    )}
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             ) : (
-              <p className="text-slate-500 text-center py-8">Sin logros aún</p>
+              <div className="text-center py-8">
+                <GiTrophy className="text-slate-600 text-4xl mx-auto mb-4" />
+                <p className="text-slate-500">Sin logros desbloqueados aún</p>
+                <p className="text-slate-600 text-sm mt-2">¡Envía tu primera submission para comenzar!</p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Recent Activity */}
+        <div className="bg-gradient-to-r from-purple-500 to-pink-500 p-[3px] rounded-lg">
+          <div className="bg-slate-900 rounded-lg p-6 h-full">
+            <h2 className="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 uppercase mb-4 flex items-center gap-2">
+              <MdOutlineSkateboarding className="text-purple-400" /> 📅 ACTIVIDAD RECIENTE
+            </h2>
+
+            {profile.recentActivity.length > 0 ? (
+              <div className="space-y-3 max-h-96 overflow-y-auto">
+                {profile.recentActivity.map((activity, idx) => {
+                  const statusColors = {
+                    approved: 'text-green-400 border-green-500/30 bg-green-500/10',
+                    rejected: 'text-red-400 border-red-500/30 bg-red-500/10',
+                    pending: 'text-yellow-400 border-yellow-500/30 bg-yellow-500/10',
+                  };
+
+                  const statusIcons = {
+                    approved: '✅',
+                    rejected: '❌',
+                    pending: '⏳',
+                  };
+
+                  return (
+                    <div
+                      key={idx}
+                      className={`border-2 rounded-lg p-3 ${statusColors[activity.status as keyof typeof statusColors]}`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="text-lg">{statusIcons[activity.status as keyof typeof statusIcons]}</span>
+                            <p className="text-white font-bold text-sm">{activity.challengeName}</p>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className={`text-xs px-2 py-1 rounded uppercase font-bold ${
+                              activity.difficulty === 'easy' ? 'bg-green-500 text-black' :
+                              activity.difficulty === 'medium' ? 'bg-yellow-500 text-black' :
+                              activity.difficulty === 'hard' ? 'bg-red-500 text-white' :
+                              'bg-purple-500 text-white'
+                            }`}>
+                              {activity.difficulty}
+                            </span>
+                            <span className="text-slate-400 text-xs">
+                              {new Date(activity.date).toLocaleDateString('es-ES')}
+                            </span>
+                          </div>
+                        </div>
+                        {activity.score && (
+                          <div className="text-right">
+                            <p className="text-2xl font-black text-yellow-400">{activity.score}</p>
+                            <p className="text-slate-500 text-xs">puntos</p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <MdOutlineSkateboarding className="text-slate-600 text-4xl mx-auto mb-4" />
+                <p className="text-slate-500">Sin actividad reciente</p>
+                <p className="text-slate-600 text-sm mt-2">¡Envía tu primera submission!</p>
+              </div>
             )}
           </div>
         </div>
 
         {/* Skate Setup */}
-        <div className="bg-gradient-to-r from-purple-500 to-pink-500 p-[3px] rounded-lg">
+        <div className="bg-gradient-to-r from-green-500 to-teal-500 p-[3px] rounded-lg">
           <div className="bg-slate-900 rounded-lg p-6 h-full">
-            <h2 className="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 uppercase mb-4 flex items-center gap-2">
-              <GiSkateboard className="text-purple-400" /> Dream Setup
+            <h2 className="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-teal-400 uppercase mb-4 flex items-center gap-2">
+              <GiSkateboard className="text-green-400" /> 🛼 DREAM SETUP
             </h2>
 
             {profile.skateSetup ? (
@@ -325,16 +603,23 @@ export default function PublicProfilePage() {
                 )}
               </div>
             ) : (
-              <p className="text-slate-500 text-center py-8">Setup no configurado</p>
+              <div className="text-center py-8">
+                <GiSkateboard className="text-slate-600 text-4xl mx-auto mb-4" />
+                <p className="text-slate-500">Setup no configurado</p>
+                <p className="text-slate-600 text-sm mt-2">Configura tu dream setup en tu perfil</p>
+              </div>
             )}
           </div>
         </div>
 
-        {/* Social Media */}
-        {profile.socialMedia && (profile.socialMedia.instagram || profile.socialMedia.tiktok || profile.socialMedia.twitter || profile.socialMedia.facebook) && (
-          <div className="md:col-span-2 bg-gradient-to-r from-green-500 to-teal-500 p-[3px] rounded-lg">
+      </div>
+
+      {/* Social Media Section */}
+      {profile.socialMedia && (profile.socialMedia.instagram || profile.socialMedia.tiktok || profile.socialMedia.twitter || profile.socialMedia.facebook) && (
+        <div className="max-w-4xl mx-auto mb-8">
+          <div className="bg-gradient-to-r from-green-500 to-teal-500 p-[3px] rounded-lg">
             <div className="bg-slate-900 rounded-lg p-6">
-              <h2 className="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-teal-400 uppercase mb-4">
+              <h2 className="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-teal-400 uppercase mb-4 text-center">
                 🌐 Redes Sociales
               </h2>
 
@@ -386,8 +671,8 @@ export default function PublicProfilePage() {
               </div>
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Edit Profile Button (if own profile) */}
       {isOwnProfile && (

@@ -45,12 +45,11 @@ export async function GET(
           },
         },
         submissions: {
-          where: {
-            status: 'approved',
-          },
           select: {
             id: true,
             score: true,
+            status: true,
+            submittedAt: true,
             challenge: {
               select: {
                 name: true,
@@ -70,12 +69,139 @@ export async function GET(
       );
     }
 
-    // Calculate stats
+    // Calculate advanced stats
     const totalScore = user.submissions.reduce((acc, sub) => acc + (sub.score || 0), 0);
     const challengesCompleted = user.submissions.length;
-    const highestDifficulty = user.submissions.reduce((max, sub) => {
-      return sub.challenge.difficulty > max ? sub.challenge.difficulty : max;
-    }, 0);
+    const approvedSubmissions = user.submissions.filter(sub => sub.status === 'approved').length;
+    const rejectedSubmissions = user.submissions.filter(sub => sub.status === 'rejected').length;
+    const pendingSubmissions = user.submissions.filter(sub => sub.status === 'pending').length;
+
+    // Calculate streaks
+    const approvedDates = user.submissions
+      .filter(sub => sub.status === 'approved')
+      .sort((a, b) => new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime())
+      .map(sub => new Date(sub.submittedAt).toDateString());
+
+    let currentStreak = 0;
+    let bestStreak = 0;
+    let tempStreak = 0;
+
+    for (let i = 0; i < approvedDates.length; i++) {
+      if (i === 0 || approvedDates[i] === approvedDates[i - 1]) {
+        tempStreak++;
+      } else {
+        bestStreak = Math.max(bestStreak, tempStreak);
+        tempStreak = 1;
+      }
+    }
+    bestStreak = Math.max(bestStreak, tempStreak);
+    currentStreak = tempStreak;
+
+    // Calculate difficulty stats
+    const difficultyStats = {
+      easy: { completed: 0, avgScore: 0, totalScore: 0 },
+      medium: { completed: 0, avgScore: 0, totalScore: 0 },
+      hard: { completed: 0, avgScore: 0, totalScore: 0 },
+      expert: { completed: 0, avgScore: 0, totalScore: 0 },
+    };
+
+    user.submissions.forEach(sub => {
+      if (sub.status === 'approved') {
+        const diff = sub.challenge.difficulty as keyof typeof difficultyStats;
+        if (difficultyStats[diff]) {
+          difficultyStats[diff].completed++;
+          difficultyStats[diff].totalScore += sub.score || 0;
+        }
+      }
+    });
+
+    // Calculate averages
+    Object.keys(difficultyStats).forEach(diff => {
+      const d = diff as keyof typeof difficultyStats;
+      if (difficultyStats[d].completed > 0) {
+        difficultyStats[d].avgScore = Math.round(difficultyStats[d].totalScore / difficultyStats[d].completed);
+      }
+    });
+
+    // Success rate
+    const successRate = user.submissions.length > 0
+      ? Math.round((approvedSubmissions / user.submissions.length) * 100)
+      : 0;
+
+    // Recent activity (last 10 submissions)
+    const recentActivity = user.submissions
+      .sort((a, b) => new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime())
+      .slice(0, 10)
+      .map(sub => ({
+        type: 'submission',
+        challengeName: sub.challenge.name,
+        difficulty: sub.challenge.difficulty,
+        status: sub.status,
+        score: sub.score,
+        date: sub.submittedAt,
+      }));
+
+    // Achievements system (simplified for now - can be expanded)
+    const achievements = [
+      {
+        id: 'first_blood',
+        name: 'FIRST BLOOD',
+        description: 'Envía tu primera submission',
+        icon: '🩸',
+        category: 'principiante',
+        rarity: 'common',
+        xp: 25,
+        unlocked: user.submissions.length > 0,
+        unlockedDate: user.submissions.length > 0 ? user.submissions[0]?.submittedAt : null,
+      },
+      {
+        id: 'approved',
+        name: 'APPROVED!',
+        description: 'Primera submission aprobada',
+        icon: '✅',
+        category: 'principiante',
+        rarity: 'common',
+        xp: 50,
+        unlocked: approvedSubmissions > 0,
+        unlockedDate: approvedSubmissions > 0 ? user.submissions.find(s => s.status === 'approved')?.submittedAt : null,
+      },
+      {
+        id: 'score_100',
+        name: 'CENTURY CLUB',
+        description: 'Alcanza 100 puntos totales',
+        icon: '💯',
+        category: 'intermedio',
+        rarity: 'uncommon',
+        xp: 100,
+        unlocked: totalScore >= 100,
+        unlockedDate: totalScore >= 100 ? new Date().toISOString() : null,
+      },
+      {
+        id: 'streak_master',
+        name: 'STREAK MASTER',
+        description: '5 submissions aprobadas seguidas',
+        icon: '🔥',
+        category: 'intermedio',
+        rarity: 'rare',
+        xp: 150,
+        unlocked: bestStreak >= 5,
+        unlockedDate: bestStreak >= 5 ? new Date().toISOString() : null,
+      },
+      {
+        id: 'perfect_score',
+        name: 'PERFECT SCORE',
+        description: 'Obtén 100 puntos en un challenge',
+        icon: '🎯',
+        category: 'avanzado',
+        rarity: 'epic',
+        xp: 200,
+        unlocked: user.submissions.some(sub => sub.score === 100),
+        unlockedDate: user.submissions.find(sub => sub.score === 100)?.submittedAt || null,
+      },
+    ];
+
+    const unlockedAchievements = achievements.filter(a => a.unlocked);
+    const totalXP = unlockedAchievements.reduce((acc, a) => acc + (a.xp || 50), 0);
 
     // Build location string from ciudad, departamento, estado
     const locationParts = [user.ciudad, user.departamento, user.estado].filter(Boolean);
@@ -83,6 +209,17 @@ export async function GET(
 
     // Get the first social media record (if any)
     const socialMedia = user.socials.length > 0 ? user.socials[0] : null;
+
+    // Get follower/following counts
+    const [followerCount, followingCount] = await Promise.all([
+      prisma.follow.count({ where: { followingId: decodedEmail } }),
+      prisma.follow.count({ where: { followerId: decodedEmail } })
+    ]);
+
+    // Check if current user is following this profile (if authenticated)
+    let isFollowing = false;
+    // For now, we'll set this to false and handle it on the client side
+    // In a production app, you'd use proper session validation here
 
     // Format response - exclude sensitive data
     const publicProfile = {
@@ -98,14 +235,42 @@ export async function GET(
       stats: {
         totalScore,
         challengesCompleted,
-        highestDifficulty,
-        submissionsApproved: user.submissions.length,
+        submissionsApproved: approvedSubmissions,
+        submissionsRejected: rejectedSubmissions,
+        submissionsPending: pendingSubmissions,
+        successRate,
+        currentStreak,
+        bestStreak,
+        highestDifficulty: Math.max(...user.submissions.map(s => {
+          const levels = { easy: 1, medium: 2, hard: 3, expert: 4 };
+          return levels[s.challenge.difficulty as keyof typeof levels] || 0;
+        }), 0),
+        difficultyStats,
+        totalXP,
+        achievementsUnlocked: unlockedAchievements.length,
+        totalAchievements: achievements.length,
       },
-      recentAchievements: user.submissions.slice(0, 5).map(sub => ({
-        challengeName: sub.challenge.name,
-        difficulty: sub.challenge.difficulty,
-        score: sub.score,
-      })),
+      achievements: unlockedAchievements.slice(0, 8), // Show top 8 achievements
+      recentActivity,
+      activitySummary: {
+        thisMonth: user.submissions.filter(s =>
+          new Date(s.submittedAt).getMonth() === new Date().getMonth() &&
+          new Date(s.submittedAt).getFullYear() === new Date().getFullYear()
+        ).length,
+        thisWeek: user.submissions.filter(s => {
+          const weekAgo = new Date();
+          weekAgo.setDate(weekAgo.getDate() - 7);
+          return new Date(s.submittedAt) > weekAgo;
+        }).length,
+        lastSubmission: user.submissions.length > 0 ?
+          user.submissions.sort((a, b) => new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime())[0].submittedAt :
+          null,
+      },
+      socialStats: {
+        followerCount,
+        followingCount,
+        isFollowing,
+      },
     };
 
     return NextResponse.json(publicProfile);

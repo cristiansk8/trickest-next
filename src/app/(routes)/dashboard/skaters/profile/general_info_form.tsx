@@ -1,24 +1,26 @@
-"use client";
-import { useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
-import LocationSelector from "@/components/LocationSelector";
+'use client';
+import LocationSelector from '@/components/LocationSelector';
+import ImageUpload from '@/components/ImageUpload';
+import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 export default function ProfilePage() {
   const { data: session, status } = useSession();
   const [isClient, setIsClient] = useState(false);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
-  const [notification, setNotification] = useState(""); // Estado para mostrar mensajes
+  const [notification, setNotification] = useState(''); // Estado para mostrar mensajes
 
   const [formData, setFormData] = useState({
-    name: "",
-    phone: "",
-    birthdate: "",
-    birthskate: "",
-    ciudad: "",
-    departamento: "",
-    estado: "",
+    name: '',
+    phone: '',
+    photo: '',
+    birthdate: '',
+    birthskate: '',
+    ciudad: '',
+    departamento: '',
+    estado: '',
   });
 
   useEffect(() => {
@@ -26,27 +28,35 @@ export default function ProfilePage() {
   }, []);
 
   useEffect(() => {
-    if (status !== "authenticated" || !session?.user?.email) return;
+    if (status !== 'authenticated' || !session?.user?.email) return;
 
     const fetchProfile = async () => {
       try {
-        const response = await fetch(`/api/skate_profiles/general_info?email=${session.user?.email}`);
-        if (!response.ok) throw new Error("No se pudo obtener la información del perfil.");
+        const response = await fetch(
+          `/api/skate_profiles/general_info?email=${session.user?.email}`
+        );
+        if (!response.ok)
+          throw new Error('No se pudo obtener la información del perfil.');
 
         const data = await response.json();
-        console.log("Datos recibidos:", data);
+        console.log('Datos recibidos:', data);
 
         setFormData({
-          name: data.user?.name || "",
-          phone: data.user?.phone || "",
-          estado: data.user?.estado || "",
-          departamento: data.user?.departamento || "",
-          ciudad: data.user?.ciudad || "",
-          birthdate: data.user?.birthdate ? data.user.birthdate.split("T")[0] : "",
-          birthskate: data.user?.birthskate ? data.user.birthskate.split("T")[0] : "",
+          name: data.user?.name || '',
+          phone: data.user?.phone || '',
+          photo: data.user?.photo || '',
+          estado: data.user?.estado || '',
+          departamento: data.user?.departamento || '',
+          ciudad: data.user?.ciudad || '',
+          birthdate: data.user?.birthdate
+            ? data.user.birthdate.split('T')[0]
+            : '',
+          birthskate: data.user?.birthskate
+            ? data.user.birthskate.split('T')[0]
+            : '',
         });
       } catch (error) {
-        console.error("Error al obtener perfil:", error);
+        console.error('Error al obtener perfil:', error);
       } finally {
         setLoading(false);
       }
@@ -59,19 +69,24 @@ export default function ProfilePage() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleLocationChange = (field: "ciudad" | "departamento", value: string) => {
+  const handleLocationChange = (
+    field: 'ciudad' | 'departamento',
+    value: string
+  ) => {
     setFormData({ ...formData, [field]: value });
   };
 
   if (!isClient) return <p>Cargando...</p>; // Evita el render en SSR
 
-  const handleSubmitUpdateProfile = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmitUpdateProfile = async (
+    e: React.FormEvent<HTMLFormElement>
+  ) => {
     e.preventDefault();
     setLoading(true);
-    setNotification(""); // Reiniciar notificación antes de enviar
+    setNotification(''); // Reiniciar notificación antes de enviar
 
     if (!session?.user) {
-      setNotification("⚠️ No estás autenticado.");
+      setNotification('⚠️ No estás autenticado.');
       setLoading(false);
       return;
     }
@@ -82,8 +97,9 @@ export default function ProfilePage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           email: session.user.email,
-          name: formData.name,  // ✅ Usar el nombre del formulario, no de la sesión
+          name: formData.name, // ✅ Usar el nombre del formulario, no de la sesión
           phone: formData.phone,
+          photo: formData.photo,
           ciudad: formData.ciudad,
           departamento: formData.departamento,
           estado: formData.estado,
@@ -95,14 +111,13 @@ export default function ProfilePage() {
       const data = await response.json();
       if (data.error) throw new Error(data.error);
 
-      setNotification("✅ Perfil actualizado con éxito."); // Mensaje de éxito
+      setNotification('✅ Perfil actualizado con éxito.'); // Mensaje de éxito
       // Desaparece la notificación en 5 segundos
       setTimeout(() => {
-        setNotification("");
+        setNotification('');
       }, 5000);
-
     } catch (error) {
-      setNotification("❌ Error al actualizar el perfil. Inténtalo de nuevo.");
+      setNotification('❌ Error al actualizar el perfil. Inténtalo de nuevo.');
       console.error('Error al registrar:', error);
     } finally {
       setLoading(false);
@@ -118,7 +133,11 @@ export default function ProfilePage() {
 
         {/* Notificación de éxito o error */}
         {notification && (
-          <div className={`mb-6 p-4 rounded-lg border-4 border-white text-white font-bold text-center animate-pulse ${notification.includes("Error") ? "bg-red-500" : "bg-green-500"}`}>
+          <div
+            className={`mb-6 p-4 rounded-lg border-4 border-white text-white font-bold text-center animate-pulse ${
+              notification.includes('Error') ? 'bg-red-500' : 'bg-green-500'
+            }`}
+          >
             {notification}
           </div>
         )}
@@ -130,13 +149,26 @@ export default function ProfilePage() {
           </div>
         )}
 
+        {/* Upload de imagen de perfil */}
+        <div className="mb-8 flex justify-center">
+          <ImageUpload
+            currentImage={formData.photo}
+            onImageChange={(imageUrl) =>
+              setFormData({ ...formData, photo: imageUrl })
+            }
+          />
+        </div>
+
         <form
           onSubmit={handleSubmitUpdateProfile}
           className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6"
         >
           {/* Nombre */}
           <div className="group">
-            <label htmlFor="name" className="block text-cyan-400 font-bold mb-2 uppercase tracking-wide text-sm md:text-base">
+            <label
+              htmlFor="name"
+              className="block text-cyan-400 font-bold mb-2 uppercase tracking-wide text-sm md:text-base"
+            >
               ✏️ Nombre
             </label>
             <input
@@ -152,7 +184,10 @@ export default function ProfilePage() {
 
           {/* Teléfono */}
           <div className="group">
-            <label htmlFor="phone" className="block text-cyan-400 font-bold mb-2 uppercase tracking-wide text-sm md:text-base">
+            <label
+              htmlFor="phone"
+              className="block text-cyan-400 font-bold mb-2 uppercase tracking-wide text-sm md:text-base"
+            >
               📱 Teléfono
             </label>
             <input
@@ -168,7 +203,10 @@ export default function ProfilePage() {
 
           {/* Fecha de nacimiento */}
           <div className="group">
-            <label htmlFor="birthdate" className="block text-cyan-400 font-bold mb-2 uppercase tracking-wide text-sm md:text-base">
+            <label
+              htmlFor="birthdate"
+              className="block text-cyan-400 font-bold mb-2 uppercase tracking-wide text-sm md:text-base"
+            >
               🎂 Fecha de Nacimiento
             </label>
             <input
@@ -183,7 +221,10 @@ export default function ProfilePage() {
 
           {/* Fecha inicio skate */}
           <div className="group">
-            <label htmlFor="birthskate" className="block text-cyan-400 font-bold mb-2 uppercase tracking-wide text-sm md:text-base">
+            <label
+              htmlFor="birthskate"
+              className="block text-cyan-400 font-bold mb-2 uppercase tracking-wide text-sm md:text-base"
+            >
               🛹 Primera vez en Skate
             </label>
             <input
@@ -203,15 +244,20 @@ export default function ProfilePage() {
             </label>
             <LocationSelector
               selectedDepartment={formData.departamento}
-              setSelectedDepartment={(value) => handleLocationChange("departamento", value)}
+              setSelectedDepartment={(value) =>
+                handleLocationChange('departamento', value)
+              }
               selectedCity={formData.ciudad}
-              setSelectedCity={(value) => handleLocationChange("ciudad", value)}
+              setSelectedCity={(value) => handleLocationChange('ciudad', value)}
             />
           </div>
 
           {/* Estado */}
           <div className="group col-span-1 md:col-span-2">
-            <label htmlFor="estado" className="block text-cyan-400 font-bold mb-2 uppercase tracking-wide text-sm md:text-base">
+            <label
+              htmlFor="estado"
+              className="block text-cyan-400 font-bold mb-2 uppercase tracking-wide text-sm md:text-base"
+            >
               🏴 Estado
             </label>
             <input
@@ -232,7 +278,7 @@ export default function ProfilePage() {
               type="submit"
               disabled={loading}
             >
-              {loading ? "⏳ GUARDANDO..." : "💾 GUARDAR"}
+              {loading ? '⏳ GUARDANDO...' : '💾 GUARDAR'}
             </button>
           </div>
         </form>

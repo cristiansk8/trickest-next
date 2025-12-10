@@ -11,6 +11,7 @@ declare module "next-auth" {
       profileStatus?: string;
       hasPassword?: boolean;
       role?: string;
+      username?: string;
     };
   }
 }
@@ -20,5 +21,6 @@ declare module "next-auth/jwt" {
     profileStatus?: string;
     hasPassword?: boolean;
     role?: string;
+    username?: string;
   }
 }

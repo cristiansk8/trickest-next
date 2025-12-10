@@ -58,7 +58,9 @@
 | **Leaderboard Global** | ✅ 100% | Ranking usuarios con paginación |
 | **Leaderboard Teams** | ✅ 100% | Ranking equipos con score agregado |
 | **Cleanup Rutas** | ✅ 100% | Eliminadas rutas /judge y /jueces duplicadas |
-| **Perfiles Públicos** | 🔄 50% | En desarrollo por otro dev |
+| **Perfiles Públicos** | ✅ 100% | Stats, setup, redes sociales, logros recientes |
+| **Página de Logros** | ✅ 100% | 21 badges en 7 categorías con estilo arcade |
+| **Sidebar Unificado** | ✅ 100% | Un solo sidebar para skater/judge/admin |
 
 ### 1.5 Features NO Implementadas (❌ 0%)
 
@@ -91,9 +93,10 @@
 │ Team Leaderboard        │ ✅ 100%  │ ✅       │ ✅          │
 │ Global Leaderboard      │ ✅ 100%  │ ✅       │ ✅          │
 │ Routes Cleanup          │ ✅ 100%  │ N/A      │ ✅          │
-│ Perfiles Públicos       │ 🔄 50%   │ 🔄       │ 🔄          │
+│ Perfiles Públicos       │ ✅ 100%  │ ✅       │ ✅          │
+│ Achievements Page       │ ✅ 100%  │ N/A      │ ✅          │
 │ Admin Panel             │ ❌ 0%    │ ❌       │ ❌          │
-│ Achievements            │ ❌ 0%    │ ❌       │ ❌          │
+│ Achievement System      │ ❌ 0%    │ ❌       │ ❌          │
 │ Votación Comunidad      │ ❌ 0%    │ ❌       │ ❌          │
 │ Notifications           │ 🔄 30%   │ ❌       │ 🔄          │
 │ Real-time Updates       │ ❌ 0%    │ ❌       │ ❌          │
@@ -284,7 +287,8 @@ model Team {
 
 #### Challenges Seeded (11 + 1 Bonus)
 | Level | Nombre | Dificultad | Puntos |
-|-------|--------|------------|--------|
+|-------|--------|------------|--------|si
+
 | 1 | Ollie | Easy | 100 |
 | 2 | Kickflip | Medium | 150 |
 | 3 | Heelflip | Medium | 150 |
@@ -903,15 +907,20 @@ SOLUCIÓN: Integrar con endpoints reales o eliminar
 | Sistema de Teams (endpoints) | ✅ | Dic 2024 |
 | UI de Teams (crear, unirse, ver) | ✅ | Dic 2024 |
 | Leaderboard de Teams | ✅ | Dic 2024 |
-| Perfiles públicos básicos | 🔄 | En desarrollo |
+| Perfiles públicos básicos | ✅ | Dic 2024 |
+| Página de logros (UI) | ✅ | Dic 2024 |
+| Sidebar unificado (roles) | ✅ | Dic 2024 |
 
 **Entregables Completados:**
 - ✅ `/api/leaderboards/users` - Top 100 usuarios con paginación
 - ✅ `/api/leaderboards/teams` - Top teams con score agregado
 - ✅ `/api/teams/*` - CRUD completo (GET, POST, join, leave, my-team)
+- ✅ `/api/users/[email]/profile` - Perfil público con stats
 - ✅ `/dashboard/leaderboard` - Vista de rankings con tabs users/teams
 - ✅ `/dashboard/teams` - Gestión de equipos
-- 🔄 `/profile/[email]` - Perfil público (en desarrollo)
+- ✅ `/dashboard/profile/[email]` - Perfil público completo
+- ✅ `/dashboard/skaters/logros` - Página con 21 badges en 7 categorías
+- ✅ `Sidebar.tsx` - Unificado para skater/judge/admin con role routing
 
 ---
 

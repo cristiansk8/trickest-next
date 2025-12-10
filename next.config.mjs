@@ -5,7 +5,6 @@ const nextConfig = {
   },
 
   images: {
-
     remotePatterns: [
       {
         protocol: 'https',
@@ -20,12 +19,15 @@ const nextConfig = {
         hostname: 'tailone.tailwindtemplate.net',
       },
       {
-        protocol: "https",
-        hostname: "lh3.googleusercontent.com",
+        protocol: 'https',
+        hostname: 'lh3.googleusercontent.com',
       },
-
+      {
+        protocol: 'https',
+        hostname: 'example.com',
+      },
     ],
-  }
+  },
 };
 
 export default nextConfig;

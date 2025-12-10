@@ -21,6 +21,7 @@ export async function GET(req: Request) {
       },
       select: {
         email: true,
+        username: true,
         name: true,
         photo: true,
         departamento: true,

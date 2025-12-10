@@ -17,6 +17,7 @@ datasource db {
 model User {
   id            Int           @id @default(autoincrement())
   email         String        @unique
+  username      String?       @unique // Username único para URLs públicas
   password      String? // Contraseña hasheada (opcional para usuarios de Google)
   name          String?
   phone         String? // Campo para el número de celular
@@ -37,29 +38,32 @@ model User {
   evaluations   Submission[] @relation("JudgeEvaluations") // Evaluaciones hechas como juez
   ownedTeams    Team[]       @relation("TeamOwner") // Equipos que ha creado
   team          Team?        @relation("TeamMembers", fields: [teamId], references: [id])
+  votes         Vote[] // Votos realizados por el usuario
+  followers     Follow[]     @relation("UserFollowers") // Usuarios que me siguen
+  following     Follow[]     @relation("UserFollowing") // Usuarios que sigo
 }
 
 model SocialMedia {
   id        Int     @id @default(autoincrement())
-  userId    String  @unique // Cambiado de Int a String (email del usuario)
+  userId    String  @unique // Username del usuario
   facebook  String?
   instagram String?
-  twitter   String?
   tiktok    String?
+  twitter   String?
 
-  user User @relation(fields: [userId], references: [email]) // Relacionado por email
+  user User @relation(fields: [userId], references: [username]) // Relacionado por username
 }
 
 model WishSkate {
   id          Int     @id @default(autoincrement())
-  userId      String  @unique // Cambiado de Int a String (email del usuario)
+  userId      String  @unique // Username del usuario
   madero      String?
   trucks      String?
   ruedas      String?
   rodamientos String?
   tenis       String?
 
-  user User @relation(fields: [userId], references: [email]) // Relacionado por email
+  user User @relation(fields: [userId], references: [username]) // Relacionado por username
 }
 
 model Challenge {
@@ -80,7 +84,7 @@ model Challenge {
 
 model Submission {
   id           Int      @id @default(autoincrement())
-  userId       String // Email del usuario
+  userId       String // Username del usuario
   challengeId  Int // ID del reto
   videoUrl     String // URL del video de YouTube del usuario
   status       String   @default("pending") // "pending", "approved", "rejected"
@@ -88,15 +92,25 @@ model Submission {
   feedback     String? // Comentarios del equipo evaluador
   submittedAt  DateTime @default(now())
   evaluatedAt  DateTime? // Fecha de evaluación
-  evaluatedBy  String? // Email del juez que evaluó
+  evaluatedBy  String? // Username del juez que evaluó
 
-  user      User      @relation(fields: [userId], references: [email])
+  // Campos de votación comunitaria
+  upvotes          Int      @default(0) // Total de votos positivos
+  downvotes        Int      @default(0) // Total de votos negativos
+  voteCount        Int      @default(0) // Total de votos (upvotes + downvotes)
+  communityApproved Boolean @default(false) // Si fue aprobado por la comunidad
+  autoApprovedAt   DateTime? // Fecha de auto-aprobación por comunidad
+
+  user      User      @relation(fields: [userId], references: [username])
   challenge Challenge @relation(fields: [challengeId], references: [id])
-  judge     User?     @relation("JudgeEvaluations", fields: [evaluatedBy], references: [email])
+  judge     User?     @relation("JudgeEvaluations", fields: [evaluatedBy], references: [username])
+  votes     Vote[] // Relación con los votos
 
   @@index([userId, challengeId])
   @@index([status])
   @@index([evaluatedBy])
+  @@index([communityApproved])
+  @@index([voteCount])
 }
 
 model Team {
@@ -104,15 +118,53 @@ model Team {
   name        String   @unique // Nombre del equipo (único)
   description String? // Descripción del equipo
   logo        String? // URL del logo del equipo
-  ownerId     String // Email del creador del equipo
+  ownerId     String // Username del creador del equipo
   maxMembers  Int      @default(5) // Máximo de miembros permitidos
   isActive    Boolean  @default(true) // Si el equipo está activo
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  owner   User   @relation("TeamOwner", fields: [ownerId], references: [email])
+  owner   User   @relation("TeamOwner", fields: [ownerId], references: [username])
   members User[] @relation("TeamMembers") // Miembros del equipo
 
   @@index([ownerId])
   @@index([isActive])
+}
+
+model Vote {
+  id           Int      @id @default(autoincrement())
+  submissionId Int // ID de la submission votada
+  userId       String // Username del usuario que vota
+  voteType     String // "upvote" o "downvote"
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  submission Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  user       User       @relation(fields: [userId], references: [username])
+
+  @@unique([submissionId, userId]) // Un usuario solo puede votar una vez por submission
+  @@index([submissionId])
+  @@index([userId])
+  @@index([voteType])
+}
+
+model Follow {
+  id          Int      @id @default(autoincrement())
+  followerId  String // Username del usuario que sigue
+  followingId String // Username del usuario seguido
+  createdAt   DateTime @default(now())
+
+  follower  User @relation("UserFollowers", fields: [followerId], references: [username])
+  following User @relation("UserFollowing", fields: [followingId], references: [username])
+
+  @@unique([followerId, followingId]) // Un usuario no puede seguir al mismo usuario dos veces
+  @@index([followerId])
+  @@index([followingId])
+}
+
+model InterestedUser {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

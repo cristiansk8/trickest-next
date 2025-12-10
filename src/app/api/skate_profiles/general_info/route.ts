@@ -4,41 +4,59 @@ import { NextResponse } from 'next/server';
 export async function GET(req: Request) {
   try {
     const url = new URL(req.url);
-    const email = url.searchParams.get("email");
+    const email = url.searchParams.get('email');
 
-    console.log("🔍 Email recibido en la API:", email);
+    console.log('🔍 Email recibido en la API:', email);
 
     if (!email) {
-      return NextResponse.json({ error: "Email es requerido" }, { status: 400 });
+      return NextResponse.json(
+        { error: 'Email es requerido' },
+        { status: 400 }
+      );
     }
 
     const user = await prisma.user.findUnique({
       where: { email },
     });
 
-    console.log("👤 Datos del usuario encontrado:", user);
+    console.log('👤 Datos del usuario encontrado:', user);
 
     if (!user) {
-      return NextResponse.json({ registered: false, message: "Usuario no encontrado" }, { status: 404 });
+      return NextResponse.json(
+        { registered: false, message: 'Usuario no encontrado' },
+        { status: 404 }
+      );
     }
 
     // ✅ Devuelve los datos completos
     return NextResponse.json({ registered: true, user }, { status: 200 });
-
   } catch (error) {
-    console.error("❌ Error en la API:", error);
-    return NextResponse.json({ error: "Error en el servidor" }, { status: 500 });
+    console.error('❌ Error en la API:', error);
+    return NextResponse.json(
+      { error: 'Error en el servidor' },
+      { status: 500 }
+    );
   }
 }
 
 // Actualización de Usuario (sin modificar email ni foto)
 export async function PUT(req: Request) {
-  console.log("🔧 Actualizando usuario...");
+  console.log('🔧 Actualizando usuario...');
 
   try {
     const data = await req.json();
-    console.log("📦 Datos recibidos:", data);
-    const { email, name, phone, estado, departamento, ciudad, birthdate, birthskate } = data;
+    console.log('📦 Datos recibidos:', data);
+    const {
+      email,
+      name,
+      phone,
+      photo,
+      estado,
+      departamento,
+      ciudad,
+      birthdate,
+      birthskate,
+    } = data;
 
     if (!email) {
       return NextResponse.json({ error: 'Email requerido' }, { status: 400 });
@@ -47,7 +65,10 @@ export async function PUT(req: Request) {
     // Verificar si el usuario existe
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (!existingUser) {
-      return NextResponse.json({ error: 'Usuario no encontrado' }, { status: 404 });
+      return NextResponse.json(
+        { error: 'Usuario no encontrado' },
+        { status: 404 }
+      );
     }
 
     // Determinar el profileStatus
@@ -58,12 +79,13 @@ export async function PUT(req: Request) {
       profileStatus = 'complete';
     }
 
-    // Actualizar los datos del usuario (sin modificar email ni photo)
+    // Actualizar los datos del usuario (incluye photo si se proporciona)
     const updatedUser = await prisma.user.update({
       where: { email },
       data: {
         name,
         phone,
+        ...(photo && { photo }), // Solo actualiza photo si se proporciona
         departamento,
         ciudad,
         estado,
@@ -73,9 +95,15 @@ export async function PUT(req: Request) {
       },
     });
 
-    return NextResponse.json({ message: 'Usuario actualizado con éxito', updatedUser }, { status: 200 });
+    return NextResponse.json(
+      { message: 'Usuario actualizado con éxito', updatedUser },
+      { status: 200 }
+    );
   } catch (error) {
     console.error('Error al actualizar el usuario:', error);
-    return NextResponse.json({ error: 'Hubo un error en la actualización' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Hubo un error en la actualización' },
+      { status: 500 }
+    );
   }
 }

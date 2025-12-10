@@ -1,72 +1,167 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from 'react';
-import LocationSelector from '../../../../../components/LocationSelector';
-import { useSession } from "next-auth/react";
-import GeneralInfoForm from './general_info_form';
-import SkateSetupPage from './dream_setup';
+import { useSession } from 'next-auth/react';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import SkateSetupPage from './dream_setup';
+import GeneralInfoForm from './general_info_form';
 
 export default function ProfilePage() {
   const [loading, setLoading] = useState(false);
   const { data: session, status } = useSession();
   const [isClient, setIsClient] = useState(false);
   const [isRegistered, setIsRegistered] = useState(false);
-  const [notification, setNotification] = useState("");
-  const [activeTab, setActiveTab] = useState<'general' | 'setup' | 'social'>('general'); // Tab activo
+  const [notification, setNotification] = useState('');
+  const [activeTab, setActiveTab] = useState<'general' | 'setup' | 'social'>(
+    'general'
+  ); // Tab activo
   const [formData, setFormData] = useState({
     facebook: '',
     instagram: '',
     twitter: '',
     tiktok: '',
   });
+  const [showShareMenu, setShowShareMenu] = useState(false);
+
+  // Función para compartir el perfil
+  const handleShareProfile = async () => {
+    if (!session?.user?.username) return;
+    const profileUrl = `${window.location.origin}/profile/${session.user.username}`;
+
+    // Si el navegador soporta Web Share API
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: `Perfil de ${session.user.username} - Thetrickest`,
+          text: '¡Mira mi perfil en Thetrickest!',
+          url: profileUrl,
+        });
+        return; // Share successful, exit
+      } catch (error) {
+        console.log('Error al compartir:', error);
+      }
+    }
+
+    // Fallback: copiar al portapapeles
+    try {
+      await navigator.clipboard.writeText(profileUrl);
+      setNotification('✅ ¡Link copiado al portapapeles!');
+      setTimeout(() => setNotification(''), 3000);
+    } catch (error) {
+      // If clipboard fails, create a temporary input element
+      const input = document.createElement('input');
+      input.value = profileUrl;
+      input.style.position = 'fixed';
+      input.style.opacity = '0';
+      document.body.appendChild(input);
+      input.select();
+      try {
+        document.execCommand('copy');
+        setNotification('✅ ¡Link copiado al portapapeles!');
+        setTimeout(() => setNotification(''), 3000);
+      } catch (err) {
+        console.error('Failed to copy:', err);
+        setNotification('❌ No se pudo copiar el enlace');
+        setTimeout(() => setNotification(''), 3000);
+      }
+      document.body.removeChild(input);
+    }
+  };
+
+  // Funciones para compartir en redes específicas
+  const shareOnFacebook = () => {
+    if (!session?.user?.username) return;
+    const profileUrl = `${window.location.origin}/profile/${session.user.username}`;
+    window.open(
+      `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
+        profileUrl
+      )}`,
+      '_blank'
+    );
+  };
+
+  const shareOnTwitter = () => {
+    if (!session?.user?.username) return;
+    const profileUrl = `${window.location.origin}/profile/${session.user.username}`;
+    const text = `¡Mira mi perfil en Thetrickest! 🛹`;
+    window.open(
+      `https://twitter.com/intent/tweet?text=${encodeURIComponent(
+        text
+      )}&url=${encodeURIComponent(profileUrl)}`,
+      '_blank'
+    );
+  };
+
+  const shareOnWhatsApp = () => {
+    if (!session?.user?.username) return;
+    const profileUrl = `${window.location.origin}/profile/${session.user.username}`;
+    const text = `¡Mira mi perfil en Thetrickest! 🛹 ${profileUrl}`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+  };
 
   // Verifica si estamos en el cliente
   useEffect(() => {
     setIsClient(true);
   }, []);
 
+  // Cerrar menú al hacer clic fuera
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (showShareMenu && !target.closest('.share-menu-container')) {
+        setShowShareMenu(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showShareMenu]);
+
   // Carga los datos del perfil cuando el usuario está autenticado
   useEffect(() => {
-    if (status !== "authenticated" || !session?.user?.email) return;
+    if (status !== 'authenticated' || !session?.user?.email) return;
 
     const fetchProfile = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`/api/skate_profiles/social_media?email=${session.user?.email}`);
+        const response = await fetch(
+          `/api/skate_profiles/social_media?email=${session.user?.email}`
+        );
         const data = await response.json();
-        console.log("Datos recibidos:", data);
+        console.log('Datos recibidos:', data);
 
         // Si el usuario no tiene redes sociales (404), simplemente deja los campos vacíos
         if (response.status === 404 || !data.exists) {
-          console.log("Usuario nuevo sin redes sociales, campos vacíos por defecto");
+          console.log(
+            'Usuario nuevo sin redes sociales, campos vacíos por defecto'
+          );
           setFormData({
-            facebook: "",
-            instagram: "",
-            tiktok: "",
-            twitter: "",
+            facebook: '',
+            instagram: '',
+            tiktok: '',
+            twitter: '',
           });
           return;
         }
 
         // Si hay un error real del servidor (500), mostrar notificación
         if (!response.ok) {
-          throw new Error("Error del servidor al obtener el perfil.");
+          throw new Error('Error del servidor al obtener el perfil.');
         }
 
         // Ajusta la asignación para usar data.socialMedia
         setFormData({
-          facebook: data.socialMedia?.facebook || "",
-          instagram: data.socialMedia?.instagram || "",
-          tiktok: data.socialMedia?.tiktok || "",
-          twitter: data.socialMedia?.twitter || "",
+          facebook: data.socialMedia?.facebook || '',
+          instagram: data.socialMedia?.instagram || '',
+          tiktok: data.socialMedia?.tiktok || '',
+          twitter: data.socialMedia?.twitter || '',
         });
       } catch (error) {
-        console.error("Error al obtener perfil:", error);
-        setNotification("❌ Error al cargar los datos del perfil.");
+        console.error('Error al obtener perfil:', error);
+        setNotification('❌ Error al cargar los datos del perfil.');
         // Auto-limpiar notificación de error después de 5 segundos
         setTimeout(() => {
-          setNotification("");
+          setNotification('');
         }, 5000);
       } finally {
         setLoading(false);
@@ -85,11 +180,11 @@ export default function ProfilePage() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
-    setNotification(""); // Reinicia la notificación antes de enviar
+    setNotification(''); // Reinicia la notificación antes de enviar
 
     if (!session?.user) {
       console.error('No estás autenticado');
-      setNotification("❌ No estás autenticado.");
+      setNotification('❌ No estás autenticado.');
       setLoading(false);
       return;
     }
@@ -112,7 +207,7 @@ export default function ProfilePage() {
           instagram: formData.instagram,
           twitter: formData.twitter,
           tiktok: formData.tiktok,
-          userId: session.user.email
+          userId: session.user.email,
         }),
       });
 
@@ -124,15 +219,15 @@ export default function ProfilePage() {
 
       console.log('Registro exitoso:', data);
       setIsRegistered(true);
-      setNotification("✅ Configuración actualizada con éxito."); // Notificación de éxito
+      setNotification('✅ Configuración actualizada con éxito.'); // Notificación de éxito
 
       // Limpia la notificación después de 5 segundos
       setTimeout(() => {
-        setNotification("");
+        setNotification('');
       }, 5000);
     } catch (error) {
       console.error('Error al registrar:', error);
-      setNotification("❌ Error al actualizar la configuración."); // Notificación de error
+      setNotification('❌ Error al actualizar la configuración.'); // Notificación de error
     } finally {
       setLoading(false);
     }
@@ -152,7 +247,7 @@ export default function ProfilePage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-4 md:p-8">
       {/* Header con efecto retro */}
-      <div className="max-w-7xl mx-auto mb-8">
+      <div className="max-w-7xl mx-auto mb-8 relative z-50">
         <div className="bg-gradient-to-r from-cyan-500 to-purple-600 p-1 rounded-lg shadow-2xl">
           <div className="bg-slate-900 rounded-lg p-6">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -161,16 +256,73 @@ export default function ProfilePage() {
                   🎮 Player Profile
                 </h1>
                 <p className="text-cyan-300 mt-2 text-sm md:text-base text-center md:text-left">
-                  {session?.user?.email || "Skater"}
+                  {session?.user?.email || 'Skater'}
                 </p>
               </div>
-              {session?.user?.email && (
-                <Link
-                  href={`/dashboard/profile/${session.user.email}`}
-                  className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-400 hover:to-orange-400 text-white font-black py-3 px-6 rounded-lg border-4 border-white uppercase tracking-wider text-sm shadow-lg shadow-yellow-500/30 transform hover:scale-105 transition-all text-center"
-                >
-                  👁️ Ver Perfil Público
-                </Link>
+              {session?.user?.username && (
+                <div className="flex flex-col md:flex-row gap-3 w-full md:w-auto relative z-50">
+                  <Link
+                    href={`/profile/${session.user.username}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-400 hover:to-orange-400 text-white font-black py-3 px-6 rounded-lg border-4 border-white uppercase tracking-wider text-sm shadow-lg shadow-yellow-500/30 transform hover:scale-105 transition-all text-center whitespace-nowrap relative z-50"
+                  >
+                    👁️ Ver Perfil Público
+                  </Link>
+                  <div className="relative share-menu-container z-50">
+                    <button
+                      type="button"
+                      onClick={() => setShowShareMenu(!showShareMenu)}
+                      className="w-full md:w-auto bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-400 hover:to-purple-400 text-white font-black py-3 px-6 rounded-lg border-4 border-white uppercase tracking-wider text-sm shadow-lg shadow-pink-500/30 transform hover:scale-105 transition-all whitespace-nowrap relative z-50"
+                    >
+                      🔗 Compartir
+                    </button>
+                    {showShareMenu && (
+                      <div className="absolute left-0 md:right-0 md:left-auto mt-2 w-56 bg-slate-800 border-4 border-purple-500 rounded-lg shadow-2xl z-[60] overflow-hidden">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            shareOnFacebook();
+                            setShowShareMenu(false);
+                          }}
+                          className="w-full text-left px-4 py-3 text-white hover:bg-blue-600 transition-colors flex items-center gap-3 font-bold"
+                        >
+                          📘 Facebook
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            shareOnTwitter();
+                            setShowShareMenu(false);
+                          }}
+                          className="w-full text-left px-4 py-3 text-white hover:bg-sky-500 transition-colors flex items-center gap-3 font-bold"
+                        >
+                          𝕏 Twitter/X
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            shareOnWhatsApp();
+                            setShowShareMenu(false);
+                          }}
+                          className="w-full text-left px-4 py-3 text-white hover:bg-green-600 transition-colors flex items-center gap-3 font-bold"
+                        >
+                          💬 WhatsApp
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            handleShareProfile();
+                            setShowShareMenu(false);
+                          }}
+                          className="w-full text-left px-4 py-3 text-white hover:bg-purple-600 transition-colors flex items-center gap-3 font-bold border-t-2 border-purple-500"
+                        >
+                          📋 Copiar Link
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
               )}
             </div>
           </div>
@@ -217,10 +369,14 @@ export default function ProfilePage() {
 
       {/* Notificación flotante */}
       {notification && (
-        <div className={`max-w-7xl mx-auto mb-6 animate-pulse ${
-          notification.includes("✅") ? "bg-green-500" : "bg-red-500"
-        } border-4 border-white rounded-lg p-4 shadow-2xl`}>
-          <p className="text-white font-bold text-center text-sm md:text-base">{notification}</p>
+        <div
+          className={`max-w-7xl mx-auto mb-6 animate-pulse ${
+            notification.includes('✅') ? 'bg-green-500' : 'bg-red-500'
+          } border-4 border-white rounded-lg p-4 shadow-2xl`}
+        >
+          <p className="text-white font-bold text-center text-sm md:text-base">
+            {notification}
+          </p>
         </div>
       )}
 
@@ -249,11 +405,14 @@ export default function ProfilePage() {
                   🌐 Conecta tus redes
                 </h2>
 
-                <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
+                <form
+                  onSubmit={handleSubmit}
+                  className="space-y-4 md:space-y-6"
+                >
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                     {/* Facebook */}
                     <div className="group">
-                      <label className="block text-cyan-400 font-bold mb-2 uppercase tracking-wide text-sm md:text-base flex items-center gap-2">
+                      <label className="text-cyan-400 font-bold mb-2 uppercase tracking-wide text-sm md:text-base flex items-center gap-2">
                         <span className="text-xl">📘</span> Facebook
                       </label>
                       <input
@@ -269,7 +428,7 @@ export default function ProfilePage() {
 
                     {/* Instagram */}
                     <div className="group">
-                      <label className="block text-cyan-400 font-bold mb-2 uppercase tracking-wide text-sm md:text-base flex items-center gap-2">
+                      <label className="text-cyan-400 font-bold mb-2 uppercase tracking-wide text-sm md:text-base flex items-center gap-2">
                         <span className="text-xl">📷</span> Instagram
                       </label>
                       <input
@@ -285,7 +444,7 @@ export default function ProfilePage() {
 
                     {/* TikTok */}
                     <div className="group">
-                      <label className="block text-cyan-400 font-bold mb-2 uppercase tracking-wide text-sm md:text-base flex items-center gap-2">
+                      <label className="text-cyan-400 font-bold mb-2 uppercase tracking-wide text-sm md:text-base flex items-center gap-2">
                         <span className="text-xl">🎵</span> TikTok
                       </label>
                       <input
@@ -301,7 +460,7 @@ export default function ProfilePage() {
 
                     {/* Twitter/X */}
                     <div className="group">
-                      <label className="block text-cyan-400 font-bold mb-2 uppercase tracking-wide text-sm md:text-base flex items-center gap-2">
+                      <label className="text-cyan-400 font-bold mb-2 uppercase tracking-wide text-sm md:text-base flex items-center gap-2">
                         <span className="text-xl">𝕏</span> Twitter / X
                       </label>
                       <input
@@ -323,7 +482,7 @@ export default function ProfilePage() {
                       type="submit"
                       disabled={loading}
                     >
-                      {loading ? "⏳ GUARDANDO..." : "💾 GUARDAR"}
+                      {loading ? '⏳ GUARDANDO...' : '💾 GUARDAR'}
                     </button>
                   </div>
                 </form>

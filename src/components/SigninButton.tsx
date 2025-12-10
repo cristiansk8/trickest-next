@@ -1,14 +1,13 @@
-'use client'
+'use client';
 
-import { signIn, signOut, useSession } from "next-auth/react";
-import { useState, useEffect } from "react";
-import SkateProfileCompletionModal from "./SkateProfileCompletionModal";
-import SetPasswordModal from "./SetPasswordModal";
-import LoginEmailForm from "./LoginEmailForm";
-import RegisterEmailForm from "./RegisterEmailForm";
-import UserScoreBadge from "./UserScoreBadge";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { signIn, signOut, useSession } from 'next-auth/react';
+import { usePathname } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import LoginEmailForm from './LoginEmailForm';
+import RegisterEmailForm from './RegisterEmailForm';
+import SetPasswordModal from './SetPasswordModal';
+import SkateProfileCompletionModal from './SkateProfileCompletionModal';
+import UserScoreBadge from './UserScoreBadge';
 
 type MenuOption = {
   label: string;
@@ -19,7 +18,7 @@ type MenuOption = {
 
 const SigninButton = () => {
   const pathname = usePathname();
-  if (pathname !== "/") return null;
+  if (pathname !== '/') return null;
 
   const { data: session } = useSession();
   const [openModal, setModal] = useState(false);
@@ -50,19 +49,79 @@ const SigninButton = () => {
     }
   }, [session, hasPassword]);
 
+  // Función para hacer scroll a partners
+  const scrollToPartners = () => {
+    const partnersSection = document.getElementById('team');
+    if (partnersSection) {
+      partnersSection.scrollIntoView({ behavior: 'smooth' });
+    }
+    handleMenu();
+  };
+
   // Menú de opciones estilo PS2
   const menuOptions: MenuOption[] = session?.user
     ? [
-        { label: isProfileComplete ? "🎮 CONTINUAR" : "⚠️ COMPLETAR PERFIL", action: () => { handleMenu(); isProfileComplete ? window.location.href = '/dashboard/skaters/profile' : handleModal(); } },
-        { label: "❓ CÓMO JUGAR", action: () => { handleMenu(); handleVideoModal(); } },
-        { label: "👤 " + (session.user.name?.toUpperCase() || "JUGADOR"), action: null, isHeader: true },
-        { label: "🚪 SALIR", action: () => { handleMenu(); signOut(); } },
+        {
+          label: isProfileComplete ? '🎮 CONTINUAR' : '⚠️ COMPLETAR PERFIL',
+          action: () => {
+            handleMenu();
+            isProfileComplete
+              ? (window.location.href = '/dashboard/skaters/profile')
+              : handleModal();
+          },
+        },
+        { label: '🤝 PARTNERS', action: scrollToPartners },
+        {
+          label: '❓ CÓMO JUGAR',
+          action: () => {
+            handleMenu();
+            handleVideoModal();
+          },
+        },
+        {
+          label: '👤 ' + (session.user.name?.toUpperCase() || 'JUGADOR'),
+          action: null,
+          isHeader: true,
+        },
+        {
+          label: '🚪 SALIR',
+          action: () => {
+            handleMenu();
+            signOut();
+          },
+        },
       ]
     : [
-        { label: "🔐 LOGIN CON GOOGLE", action: () => { handleMenu(); signIn("google"); }, isPrimary: true },
-        { label: "📧 LOGIN CON EMAIL", action: () => { handleMenu(); setShowLoginForm(true); } },
-        { label: "✍️ CREAR CUENTA", action: () => { handleMenu(); setShowRegisterForm(true); } },
-        { label: "❓ CÓMO JUGAR", action: () => { handleMenu(); handleVideoModal(); } },
+        {
+          label: '🔐 LOGIN CON GOOGLE',
+          action: () => {
+            handleMenu();
+            signIn('google');
+          },
+          isPrimary: true,
+        },
+        {
+          label: '📧 LOGIN CON EMAIL',
+          action: () => {
+            handleMenu();
+            setShowLoginForm(true);
+          },
+        },
+        {
+          label: '✍️ CREAR CUENTA',
+          action: () => {
+            handleMenu();
+            setShowRegisterForm(true);
+          },
+        },
+        { label: '🤝 PARTNERS', action: scrollToPartners },
+        {
+          label: '❓ CÓMO JUGAR',
+          action: () => {
+            handleMenu();
+            handleVideoModal();
+          },
+        },
       ];
 
   useEffect(() => {
@@ -78,9 +137,13 @@ const SigninButton = () => {
       // Navegación de menú solo si está abierto y no hay otros modales
       if (openMenu && !openModal && !openVideoModal) {
         if (e.key === 'ArrowUp') {
-          setSelectedOption((prev) => (prev > 0 ? prev - 1 : menuOptions.length - 1));
+          setSelectedOption((prev) =>
+            prev > 0 ? prev - 1 : menuOptions.length - 1
+          );
         } else if (e.key === 'ArrowDown') {
-          setSelectedOption((prev) => (prev < menuOptions.length - 1 ? prev + 1 : 0));
+          setSelectedOption((prev) =>
+            prev < menuOptions.length - 1 ? prev + 1 : 0
+          );
         } else if (e.key === 'Enter') {
           const option = menuOptions[selectedOption];
           if (option.action && !option.isHeader) option.action();
@@ -103,18 +166,21 @@ const SigninButton = () => {
       {/* Indicador de tecla Space - Izquierda */}
       <div className="fixed bottom-6 left-6 z-40 bg-slate-800 px-3 py-2 rounded-lg border-2 border-cyan-500 shadow-lg">
         <p className="text-cyan-300 text-xs md:text-sm uppercase tracking-wide animate-pulse font-bold">
-          ⌨️ Presiona <span className="bg-cyan-500 text-white px-2 py-1 rounded">SPACE</span>
+          ⌨️ Presiona{' '}
+          <span className="bg-cyan-500 text-white px-2 py-1 rounded">
+            SPACE
+          </span>
         </p>
       </div>
 
       {/* Botón Flotante Principal - Esquina inferior derecha */}
       <div className="fixed bottom-6 right-6 z-40 bg-slate-800 px-3 py-2 rounded-lg border-2 border-cyan-500 shadow-lg">
-        <button
-          onClick={handleMenu}
-          className="group"
-        >
+        <button onClick={handleMenu} className="group">
           <p className="text-cyan-300 text-xs md:text-sm uppercase tracking-wide animate-pulse font-bold group-hover:text-cyan-100 transition-colors">
-            ▶️ <span className="bg-cyan-500 text-white px-2 py-1 rounded group-hover:bg-cyan-400">PRESS START</span>
+            ▶️{' '}
+            <span className="bg-cyan-500 text-white px-2 py-1 rounded group-hover:bg-cyan-400">
+              PRESS START
+            </span>
           </p>
         </button>
       </div>
@@ -126,11 +192,14 @@ const SigninButton = () => {
             {/* Header del menú */}
             <div className="bg-gradient-to-r from-cyan-600 to-blue-600 p-4 md:p-6 rounded-t-lg border-b-4 border-cyan-300">
               <h2 className="text-2xl md:text-3xl font-black text-white uppercase tracking-widest text-center animate-pulse">
-                {session?.user ? "JUGADOR ACTIVO" : "MAIN MENU"}
+                {session?.user ? 'JUGADOR ACTIVO' : 'MAIN MENU'}
               </h2>
               {session?.user && (
                 <p className="text-cyan-200 text-xs md:text-sm mt-2 text-center">
-                  ⚡ {profileStatus === 'complete' ? 'PERFIL COMPLETO' : 'PERFIL BÁSICO'}
+                  ⚡{' '}
+                  {profileStatus === 'complete'
+                    ? 'PERFIL COMPLETO'
+                    : 'PERFIL BÁSICO'}
                 </p>
               )}
             </div>
@@ -153,7 +222,9 @@ const SigninButton = () => {
                 return (
                   <button
                     key={index}
-                    onClick={() => !isHeader && option.action && option.action()}
+                    onClick={() =>
+                      !isHeader && option.action && option.action()
+                    }
                     onMouseEnter={() => setSelectedOption(index)}
                     disabled={isHeader}
                     className={`w-full text-left px-4 py-3 md:py-4 rounded-lg font-black uppercase tracking-wider transition-all duration-200 ${
@@ -169,11 +240,18 @@ const SigninButton = () => {
                     } text-sm md:text-base`}
                   >
                     <div className="flex items-center justify-between">
-                      <span className={isSelected && !isHeader ? 'animate-pulse' : ''}>
-                        {isSelected && !isHeader ? '▶ ' : '　'}{option.label}
+                      <span
+                        className={
+                          isSelected && !isHeader ? 'animate-pulse' : ''
+                        }
+                      >
+                        {isSelected && !isHeader ? '▶ ' : '　'}
+                        {option.label}
                       </span>
                       {isSelected && !isHeader && (
-                        <span className="text-xs md:text-sm opacity-75">ENTER</span>
+                        <span className="text-xs md:text-sm opacity-75">
+                          ENTER
+                        </span>
                       )}
                     </div>
                   </button>
@@ -184,7 +262,8 @@ const SigninButton = () => {
             {/* Footer con controles */}
             <div className="p-4 border-t-4 border-slate-700 bg-slate-900/50 rounded-b-lg text-center">
               <p className="text-cyan-300 text-[10px] md:text-xs uppercase tracking-wide">
-                ⌨️ Use ↑↓ para navegar　|　Enter para seleccionar　|　ESC para cerrar
+                ⌨️ Use ↑↓ para navegar　|　Enter para seleccionar　|　ESC para
+                cerrar
               </p>
             </div>
           </div>
@@ -212,7 +291,10 @@ const SigninButton = () => {
 
             {/* Contenido del modal */}
             <div className="p-6">
-              <SkateProfileCompletionModal openModal={openModal} handleModal={handleModal} />
+              <SkateProfileCompletionModal
+                openModal={openModal}
+                handleModal={handleModal}
+              />
             </div>
           </div>
         </div>
@@ -239,7 +321,10 @@ const SigninButton = () => {
 
             {/* Contenido del modal */}
             <div className="p-6">
-              <div className="relative w-full" style={{ paddingBottom: "56.25%" }}>
+              <div
+                className="relative w-full"
+                style={{ paddingBottom: '56.25%' }}
+              >
                 <video
                   className="absolute top-0 left-0 w-full h-full rounded-lg border-4 border-slate-700"
                   src="/demo.mp4"
@@ -303,4 +388,3 @@ const SigninButton = () => {
 };
 
 export default SigninButton;
-

@@ -98,17 +98,19 @@ export const authOptions: NextAuthOptions = {
           // Lazy load prisma
           const prisma = (await import('@/app/lib/prisma')).default;
 
-          const dbUser = await prisma.user.findUnique({
-            where: { email: token.email as string },
-            select: {
-              profileStatus: true,
-              password: true,
-              role: true,
-            },
-          });
-          token.profileStatus = dbUser?.profileStatus || 'basic';
-          token.hasPassword = !!dbUser?.password; // true si tiene contraseña
-          token.role = dbUser?.role || 'skater';
+           const dbUser = await prisma.user.findUnique({
+             where: { email: token.email as string },
+             select: {
+               profileStatus: true,
+               password: true,
+               role: true,
+               username: true,
+             },
+           });
+           token.profileStatus = dbUser?.profileStatus || 'basic';
+           token.hasPassword = !!dbUser?.password; // true si tiene contraseña
+           token.role = dbUser?.role || 'skater';
+            token.username = dbUser?.username || undefined;
         } catch (error) {
           console.error('Error obteniendo datos del usuario:', error);
         }
@@ -121,6 +123,7 @@ export const authOptions: NextAuthOptions = {
         session.user.profileStatus = token.profileStatus as string;
         session.user.hasPassword = token.hasPassword as boolean;
         session.user.role = token.role as string;
+        session.user.username = token.username as string;
       }
       return session;
     },
