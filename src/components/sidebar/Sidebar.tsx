@@ -1,9 +1,8 @@
 'use client'
 import React, { useMemo, useEffect, useState } from 'react'
 import Image from 'next/image'
-import { IoLogoReact } from "react-icons/io5"
 import { SidebarMenuItem } from './SidebarMenuItem';
-import { MdOutlineSkateboarding, MdGavel, MdAdminPanelSettings } from "react-icons/md";
+import { MdOutlineSkateboarding, MdGavel, MdAdminPanelSettings, MdLeaderboard, MdGroups } from "react-icons/md";
 import { GiSkateboard } from "react-icons/gi";
 import { GiTrophy } from "react-icons/gi";
 import { FaVideo } from "react-icons/fa";
@@ -14,63 +13,99 @@ import Link from 'next/link';
 const skaterMenuItems = [
   {
     path: '/dashboard/skaters/profile',
-    icon: <MdOutlineSkateboarding size={40} />,
+    icon: <MdOutlineSkateboarding size={28} />,
     title: 'Perfil',
     subTitle: 'editar perfil'
   },
   {
     path: '/dashboard/skaters/tricks',
-    icon: <GiSkateboard size={40} />,
+    icon: <GiSkateboard size={28} />,
     title: 'Trucos',
     subTitle: 'trucos en curso'
   },
   {
     path: '/dashboard/skaters/submissions',
-    icon: <FaVideo size={40} />,
-    title: 'Mis Submissions',
-    subTitle: 'historial y estado'
+    icon: <FaVideo size={28} />,
+    title: 'Submissions',
+    subTitle: 'historial'
+  },
+  {
+    path: '/dashboard/leaderboard',
+    icon: <MdLeaderboard size={28} />,
+    title: 'Ranking',
+    subTitle: 'top skaters'
+  },
+  {
+    path: '/dashboard/teams',
+    icon: <MdGroups size={28} />,
+    title: 'Equipos',
+    subTitle: 'mi equipo'
   },
   {
     path: '/dashboard/skaters/logros',
-    icon: <GiTrophy size={40} />,
+    icon: <GiTrophy size={28} />,
     title: 'Logros',
-    subTitle: 'editar logros'
+    subTitle: 'achievements'
   }
 ]
 
 const judgeMenuItems = [
   {
     path: '/dashboard/judges/evaluate',
-    icon: <MdGavel size={40} />,
+    icon: <MdGavel size={28} />,
     title: 'Evaluar',
-    subTitle: 'calificar submissions'
+    subTitle: 'calificar'
+  },
+  {
+    path: '/dashboard/leaderboard',
+    icon: <MdLeaderboard size={28} />,
+    title: 'Ranking',
+    subTitle: 'top skaters'
+  },
+  {
+    path: '/dashboard/teams',
+    icon: <MdGroups size={28} />,
+    title: 'Equipos',
+    subTitle: 'mi equipo'
   },
   {
     path: '/dashboard/judges/history',
-    icon: <GiTrophy size={40} />,
+    icon: <GiTrophy size={28} />,
     title: 'Historial',
-    subTitle: 'evaluaciones realizadas'
+    subTitle: 'evaluaciones'
   }
 ]
 
 const adminMenuItems = [
   {
     path: '/dashboard/admin/users',
-    icon: <MdAdminPanelSettings size={40} />,
+    icon: <MdAdminPanelSettings size={28} />,
     title: 'Usuarios',
-    subTitle: 'gestionar usuarios'
+    subTitle: 'gestionar'
   },
   {
     path: '/dashboard/admin/challenges',
-    icon: <GiSkateboard size={40} />,
+    icon: <GiSkateboard size={28} />,
     title: 'Desafíos',
-    subTitle: 'gestionar desafíos'
+    subTitle: 'gestionar'
   },
   {
     path: '/dashboard/judges/evaluate',
-    icon: <MdGavel size={40} />,
+    icon: <MdGavel size={28} />,
     title: 'Evaluar',
-    subTitle: 'calificar submissions'
+    subTitle: 'calificar'
+  },
+  {
+    path: '/dashboard/leaderboard',
+    icon: <MdLeaderboard size={28} />,
+    title: 'Ranking',
+    subTitle: 'top skaters'
+  },
+  {
+    path: '/dashboard/teams',
+    icon: <MdGroups size={28} />,
+    title: 'Equipos',
+    subTitle: 'gestionar'
   }
 ]
 
@@ -115,66 +150,104 @@ export const Sidebar = () => {
     const userRole = session?.user?.role || 'skater';
 
     if (userRole === 'admin') {
-      return <span className="text-xs bg-red-500 text-white px-2 py-1 rounded-full font-bold">ADMIN</span>;
+      return (
+        <span className="text-xs bg-gradient-to-r from-red-500 to-orange-500 text-white px-3 py-1 rounded-full font-black uppercase tracking-wider shadow-lg shadow-red-500/50">
+          ADMIN
+        </span>
+      );
     } else if (userRole === 'judge') {
-      return <span className="text-xs bg-yellow-500 text-black px-2 py-1 rounded-full font-bold">JUEZ</span>;
+      return (
+        <span className="text-xs bg-gradient-to-r from-yellow-500 to-amber-500 text-black px-3 py-1 rounded-full font-black uppercase tracking-wider shadow-lg shadow-yellow-500/50">
+          JUEZ
+        </span>
+      );
     }
-    return null;
+    return (
+      <span className="text-xs bg-gradient-to-r from-cyan-500 to-blue-500 text-white px-3 py-1 rounded-full font-black uppercase tracking-wider shadow-lg shadow-cyan-500/50">
+        SKATER
+      </span>
+    );
   };
 
   return (
-    <div id="menu"
-      className="bg-gray-900 min-h-auto lg:min-h-screen z-10 text-slate-300 w-full lg:w-64 left-0 overflow-y-auto">
-
-      {/* Logo y Título */}
-
-        <div id="logo" className="my-4 px-4 md:px-6 cursor-pointer">
+    <div
+      id="menu"
+      className="bg-slate-900 min-h-auto lg:min-h-screen z-10 text-slate-300 w-full lg:w-72 left-0 overflow-y-auto border-r-4 border-slate-800"
+    >
+      {/* Logo Header con estilo arcade */}
+      <div className="p-4">
         <Link href="/">
-          <h1 className="flex items-center text-lg md:text-2xl font-bold text-white">
-            <IoLogoReact className="text-blue-500 w-6 h-6 md:w-8 md:h-8 mr-2" />
-            <span>Trickest</span>
-            <span className="text-blue-500">2025 Skaters</span>
-          </h1>
-          </Link>
-          <span className="text-blue-500 text-sm text-lg md:text-2xl font-bold">
-            Score = {totalScore}
-          </span>
-        </div>
+          <div className="bg-gradient-to-r from-cyan-500 to-purple-600 p-[3px] rounded-lg shadow-lg shadow-cyan-500/30 hover:shadow-cyan-500/50 transition-all cursor-pointer">
+            <div className="bg-slate-900 rounded-lg p-4">
+              <h1 className="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400 uppercase tracking-wider text-center">
+                🛹 TRICKEST
+              </h1>
+              <p className="text-cyan-400 text-xs text-center font-bold uppercase tracking-wider mt-1">
+                2025 Skaters
+              </p>
+            </div>
+          </div>
+        </Link>
+      </div>
 
+      {/* Score Card */}
+      <div className="px-4 mb-4">
+        <div className="bg-gradient-to-r from-yellow-500 to-orange-500 p-[3px] rounded-lg">
+          <div className="bg-slate-900 rounded-lg p-3 text-center">
+            <p className="text-slate-400 text-xs uppercase font-bold tracking-wider">Tu Score</p>
+            <p className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-400">
+              {totalScore}
+            </p>
+          </div>
+        </div>
+      </div>
 
       {/* Perfil del usuario */}
-      <div id="profile" className="px-4 md:px-6 py-6 md:py-10">
-        <p className="text-slate-500 text-sm md:text-base">Bienvenido,</p>
-        <a href="#" className="inline-flex space-x-2 items-center">
-          {status === "loading" ? (
-            <p>Cargando...</p> // Evita errores de hidratación
-          ) : (
-            <>
-              <Image
-                className="rounded-full w-10 h-10 md:w-12 md:h-12"
-                src={session?.user?.image || "/logo.png"}
-                alt="User avatar"
-                width={50}
-                height={50}
-              />
-              <div className="flex flex-col">
-                <span className="text-sm md:text-base font-bold">
-                  {session?.user?.name}
-                </span>
-                {getRoleBadge()}
+      <div className="px-4 mb-6">
+        <div className="bg-gradient-to-r from-purple-500 to-pink-500 p-[3px] rounded-lg">
+          <div className="bg-slate-900 rounded-lg p-4">
+            <p className="text-slate-500 text-xs uppercase font-bold tracking-wider mb-2">
+              Bienvenido
+            </p>
+            {status === "loading" ? (
+              <div className="flex items-center justify-center py-2">
+                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-purple-400"></div>
               </div>
-            </>
-          )}
-        </a>
+            ) : (
+              <div className="flex items-center gap-3">
+                <div className="relative">
+                  <div className="absolute inset-0 bg-gradient-to-r from-cyan-500 to-purple-600 rounded-full blur-sm"></div>
+                  <Image
+                    className="relative rounded-full w-12 h-12 border-2 border-white"
+                    src={session?.user?.image || "/logo.png"}
+                    alt="User avatar"
+                    width={48}
+                    height={48}
+                  />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <span className="text-sm font-black text-white uppercase tracking-wide truncate max-w-[140px]">
+                    {session?.user?.name || 'Skater'}
+                  </span>
+                  {getRoleBadge()}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* Menú de navegación */}
-      <div id="nav" className="w-full px-4 md:px-6">
-        {menuItems.map(item => (
-          <SidebarMenuItem key={item.path} {...item} />
-        ))}
+      <div className="px-4 pb-4">
+        <p className="text-slate-500 text-xs uppercase font-bold tracking-wider mb-3 px-2">
+          Navegación
+        </p>
+        <div className="space-y-2">
+          {menuItems.map(item => (
+            <SidebarMenuItem key={item.path} {...item} />
+          ))}
+        </div>
       </div>
     </div>
-
   )
 }

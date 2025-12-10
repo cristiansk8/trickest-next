@@ -50,21 +50,30 @@
 | **Judge History** | 🔄 30% | Referenciada en sidebar, no existe page |
 | **Notificaciones** | 🔄 30% | Solo toast básico, no sistema completo |
 
-### 1.4 Features NO Implementadas (❌ 0%)
+### 1.4 Features Recién Implementadas (✅ FASE 1 COMPLETADA - Dic 2024)
 
 | Feature | Estado | Descripción |
 |---------|--------|-------------|
-| **Sistema de Teams** | ❌ | Schema existe, 0 endpoints, 0 UI |
-| **Leaderboard Global** | ❌ | No endpoint, no page |
-| **Leaderboard Teams** | ❌ | Requiere team scoring system |
+| **Sistema de Teams** | ✅ 100% | CRUD completo + join/leave + scoring agregado |
+| **Leaderboard Global** | ✅ 100% | Ranking usuarios con paginación |
+| **Leaderboard Teams** | ✅ 100% | Ranking equipos con score agregado |
+| **Cleanup Rutas** | ✅ 100% | Eliminadas rutas /judge y /jueces duplicadas |
+| **Perfiles Públicos** | 🔄 50% | En desarrollo por otro dev |
+
+### 1.5 Features NO Implementadas (❌ 0%)
+
+| Feature | Estado | Descripción |
+|---------|--------|-------------|
+| **Admin Panel** | ❌ | Gestión usuarios/challenges/submissions |
 | **Achievements/Badges** | ❌ | Schema no existe, 0 lógica |
-| **Admin Panel** | ❌ | Gestión usuarios/challenges |
 | **Features Sociales** | ❌ | Comentarios, follows, mensajes |
+| **Votación Comunidad** | ❌ | Sistema de votos para submissions |
 | **Video Upload Propio** | ❌ | Solo YouTube URLs |
 | **Real-time Updates** | ❌ | Sin WebSocket o polling |
 | **Analytics** | ❌ | Sin tracking de engagement |
+| **Eventos/Sponsors** | ❌ | Sistema de eventos temporales |
 
-### 1.5 Matriz de Implementación
+### 1.6 Matriz de Implementación (ACTUALIZADA DIC 2024)
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -78,11 +87,14 @@
 │ Submissions             │ ✅ 100%  │ ✅       │ ✅          │
 │ Judge Evaluation        │ ✅ 100%  │ ✅       │ ✅          │
 │ Individual Scoring      │ ✅ 100%  │ ✅       │ ✅          │
-│ Teams                   │ 🔄 20%   │ ❌       │ ❌          │
-│ Team Leaderboard        │ ❌ 0%    │ ❌       │ ❌          │
-│ Global Leaderboard      │ ❌ 0%    │ ❌       │ ❌          │
-│ Achievements            │ ❌ 0%    │ ❌       │ ❌          │
+│ Teams                   │ ✅ 100%  │ ✅       │ ✅          │
+│ Team Leaderboard        │ ✅ 100%  │ ✅       │ ✅          │
+│ Global Leaderboard      │ ✅ 100%  │ ✅       │ ✅          │
+│ Routes Cleanup          │ ✅ 100%  │ N/A      │ ✅          │
+│ Perfiles Públicos       │ 🔄 50%   │ 🔄       │ 🔄          │
 │ Admin Panel             │ ❌ 0%    │ ❌       │ ❌          │
+│ Achievements            │ ❌ 0%    │ ❌       │ ❌          │
+│ Votación Comunidad      │ ❌ 0%    │ ❌       │ ❌          │
 │ Notifications           │ 🔄 30%   │ ❌       │ 🔄          │
 │ Real-time Updates       │ ❌ 0%    │ ❌       │ ❌          │
 └─────────────────────────┴──────────┴──────────┴─────────────┘
@@ -880,26 +892,26 @@ SOLUCIÓN: Integrar con endpoints reales o eliminar
 
 ## 8. ROADMAP AJUSTADO
 
-### 8.1 Fase 1: Core Competitivo (2-3 semanas)
+### 8.1 Fase 1: Core Competitivo ✅ COMPLETADA (Dic 2024)
 
-**Objetivo:** Tener la base competitiva funcionando
+**Objetivo:** ✅ Tener la base competitiva funcionando
 
-| Task | Prioridad | Estimado |
-|------|-----------|----------|
-| Leaderboard global de usuarios | 🔴 Crítica | 2-3 días |
-| Cleanup rutas duplicadas | 🔴 Crítica | 1 día |
-| Sistema de Teams (endpoints) | 🔴 Crítica | 3-4 días |
-| UI de Teams (crear, unirse, ver) | 🔴 Crítica | 3-4 días |
-| Leaderboard de Teams | 🟡 Alta | 2 días |
-| Perfiles públicos básicos | 🟡 Alta | 2-3 días |
+| Task | Estado | Completado |
+|------|--------|------------|
+| Leaderboard global de usuarios | ✅ | Dic 2024 |
+| Cleanup rutas duplicadas | ✅ | Dic 2024 |
+| Sistema de Teams (endpoints) | ✅ | Dic 2024 |
+| UI de Teams (crear, unirse, ver) | ✅ | Dic 2024 |
+| Leaderboard de Teams | ✅ | Dic 2024 |
+| Perfiles públicos básicos | 🔄 | En desarrollo |
 
-**Entregables:**
-- `/api/leaderboards/users` - Top 100 usuarios
-- `/api/leaderboards/teams` - Top teams
-- `/api/teams/*` - CRUD completo
-- `/dashboard/leaderboards` - Vista de rankings
-- `/dashboard/teams` - Gestión de equipos
-- `/profile/[email]` - Perfil público
+**Entregables Completados:**
+- ✅ `/api/leaderboards/users` - Top 100 usuarios con paginación
+- ✅ `/api/leaderboards/teams` - Top teams con score agregado
+- ✅ `/api/teams/*` - CRUD completo (GET, POST, join, leave, my-team)
+- ✅ `/dashboard/leaderboard` - Vista de rankings con tabs users/teams
+- ✅ `/dashboard/teams` - Gestión de equipos
+- 🔄 `/profile/[email]` - Perfil público (en desarrollo)
 
 ---
 

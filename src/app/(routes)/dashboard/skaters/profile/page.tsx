@@ -5,6 +5,7 @@ import LocationSelector from '../../../../../components/LocationSelector';
 import { useSession } from "next-auth/react";
 import GeneralInfoForm from './general_info_form';
 import SkateSetupPage from './dream_setup';
+import Link from 'next/link';
 
 export default function ProfilePage() {
   const [loading, setLoading] = useState(false);
@@ -154,12 +155,24 @@ export default function ProfilePage() {
       <div className="max-w-7xl mx-auto mb-8">
         <div className="bg-gradient-to-r from-cyan-500 to-purple-600 p-1 rounded-lg shadow-2xl">
           <div className="bg-slate-900 rounded-lg p-6">
-            <h1 className="text-3xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400 uppercase tracking-wider text-center md:text-left">
-              🎮 Player Profile
-            </h1>
-            <p className="text-cyan-300 mt-2 text-sm md:text-base text-center md:text-left">
-              {session?.user?.email || "Skater"}
-            </p>
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+              <div>
+                <h1 className="text-3xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400 uppercase tracking-wider text-center md:text-left">
+                  🎮 Player Profile
+                </h1>
+                <p className="text-cyan-300 mt-2 text-sm md:text-base text-center md:text-left">
+                  {session?.user?.email || "Skater"}
+                </p>
+              </div>
+              {session?.user?.email && (
+                <Link
+                  href={`/dashboard/profile/${session.user.email}`}
+                  className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-400 hover:to-orange-400 text-white font-black py-3 px-6 rounded-lg border-4 border-white uppercase tracking-wider text-sm shadow-lg shadow-yellow-500/30 transform hover:scale-105 transition-all text-center"
+                >
+                  👁️ Ver Perfil Público
+                </Link>
+              )}
+            </div>
           </div>
         </div>
       </div>

@@ -13,19 +13,56 @@ interface Props {
 export const SidebarMenuItem = ({ path, icon, title, subTitle }: Props) => {
 
     const currentPath = usePathname();
+    const isActive = currentPath === path;
 
     return (
-        <Link href={path} className={`w-full px-2 inline-flex space-x-2 items-center border-b border-slate-700 py-3  hover:bg-white/5 transition ease-linear duration-150 ${currentPath === path ? 'bg-blue-800' : ''}`}>
-            <div>
-                <div>
-                    {
-                        icon
-                    }
+        <Link
+            href={path}
+            className={`block rounded-lg transition-all duration-200 ${
+                isActive
+                    ? 'bg-gradient-to-r from-cyan-500 to-purple-600 p-[2px] shadow-lg shadow-cyan-500/30'
+                    : 'hover:bg-slate-800'
+            }`}
+        >
+            <div
+                className={`flex items-center gap-3 px-3 py-3 rounded-lg ${
+                    isActive
+                        ? 'bg-slate-900'
+                        : ''
+                }`}
+            >
+                {/* Icono */}
+                <div
+                    className={`${
+                        isActive
+                            ? 'text-cyan-400'
+                            : 'text-slate-500 group-hover:text-cyan-400'
+                    }`}
+                >
+                    {icon}
                 </div>
-            </div>
-            <div className="flex flex-col">
-                <span className="text-lg font-bold leading-5 text-white">{title}</span>
-                <span className="text-sm text-white/50 hidden md:block">{subTitle}</span>
+
+                {/* Texto */}
+                <div className="flex flex-col">
+                    <span
+                        className={`text-sm font-black uppercase tracking-wide ${
+                            isActive
+                                ? 'text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400'
+                                : 'text-slate-300'
+                        }`}
+                    >
+                        {title}
+                    </span>
+                    <span
+                        className={`text-xs ${
+                            isActive
+                                ? 'text-cyan-300'
+                                : 'text-slate-500'
+                        } hidden md:block`}
+                    >
+                        {subTitle}
+                    </span>
+                </div>
             </div>
         </Link>
     )
