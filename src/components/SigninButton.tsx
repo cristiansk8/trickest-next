@@ -10,6 +10,13 @@ import UserScoreBadge from "./UserScoreBadge";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+type MenuOption = {
+  label: string;
+  action: (() => void) | null;
+  isHeader?: boolean;
+  isPrimary?: boolean;
+};
+
 const SigninButton = () => {
   const pathname = usePathname();
   if (pathname !== "/") return null;
@@ -44,7 +51,7 @@ const SigninButton = () => {
   }, [session, hasPassword]);
 
   // Menú de opciones estilo PS2
-  const menuOptions = session?.user
+  const menuOptions: MenuOption[] = session?.user
     ? [
         { label: isProfileComplete ? "🎮 CONTINUAR" : "⚠️ COMPLETAR PERFIL", action: () => { handleMenu(); isProfileComplete ? window.location.href = '/dashboard/skaters/profile' : handleModal(); } },
         { label: "❓ CÓMO JUGAR", action: () => { handleMenu(); handleVideoModal(); } },
