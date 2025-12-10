@@ -44,7 +44,8 @@ const SigninButton = () => {
 
   // Mostrar modal de contraseña si el usuario está autenticado pero no tiene contraseña
   useEffect(() => {
-    if (session?.user && hasPassword === false) {
+    // Solo mostrar si hay sesión válida Y el hasPassword es explícitamente false
+    if (session?.user?.email && hasPassword === false) {
       setOpenSetPasswordModal(true);
     }
   }, [session, hasPassword]);
