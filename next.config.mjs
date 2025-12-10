@@ -1,5 +1,12 @@
+import { randomBytes } from 'crypto';
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  generateBuildId: async () => {
+    // Fix for Node v22 compatibility issue with nanoid
+    return randomBytes(16).toString('hex');
+  },
+
   eslint: {
     ignoreDuringBuilds: true,
   },
