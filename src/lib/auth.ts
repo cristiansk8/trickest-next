@@ -1,8 +1,6 @@
 import { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
-import prisma from '@/app/lib/prisma';
-import bcrypt from 'bcrypt';
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -17,6 +15,10 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" }
       },
       async authorize(credentials) {
+        // Lazy load dependencies
+        const prisma = (await import('@/app/lib/prisma')).default;
+        const bcrypt = await import('bcrypt');
+
         if (!credentials?.email || !credentials?.password) {
           throw new Error('Email y contraseña son requeridos');
         }
@@ -51,10 +53,13 @@ export const authOptions: NextAuthOptions = {
     strategy: 'jwt',
   },
   callbacks: {
-    async signIn({ user, account, profile }) {
+    async signIn({ user, account }) {
       // Auto-crear usuario en BD cuando hace login con Google
       if (account?.provider === 'google' && user.email) {
         try {
+          // Lazy load prisma
+          const prisma = (await import('@/app/lib/prisma')).default;
+
           // Verificar si el usuario ya existe
           const existingUser = await prisma.user.findUnique({
             where: { email: user.email },
@@ -90,6 +95,9 @@ export const authOptions: NextAuthOptions = {
       // Obtener profileStatus, hasPassword y role de la BD
       if (token.email) {
         try {
+          // Lazy load prisma
+          const prisma = (await import('@/app/lib/prisma')).default;
+
           const dbUser = await prisma.user.findUnique({
             where: { email: token.email as string },
             select: {
