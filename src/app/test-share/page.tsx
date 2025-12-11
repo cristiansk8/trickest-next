@@ -1,6 +1,9 @@
+'use client';
+
 export default function TestSharePage() {
   const handleShare = () => {
-    const profileUrl = typeof window !== 'undefined' ? window.location.href : '';
+    const profileUrl =
+      typeof window !== 'undefined' ? window.location.href : '';
     const shareText = '¡Mira este perfil increíble en Trickest! 🛹✨';
 
     if (navigator.share) {
@@ -30,9 +33,12 @@ export default function TestSharePage() {
         </button>
 
         <div className="mt-8 p-4 bg-slate-800 rounded-lg">
-          <h2 className="text-white font-bold mb-2">Meta Tags para compartir:</h2>
+          <h2 className="text-white font-bold mb-2">
+            Meta Tags para compartir:
+          </h2>
           <p className="text-slate-300 text-sm">
-            Cuando compartas este enlace en redes sociales, se verá una card atractiva con:
+            Cuando compartas este enlace en redes sociales, se verá una card
+            atractiva con:
           </p>
           <ul className="text-slate-400 text-sm mt-2 list-disc list-inside">
             <li>Título: "Test Compartir - Perfil Trickest"</li>
