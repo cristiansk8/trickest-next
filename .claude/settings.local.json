@@ -18,7 +18,8 @@
       "Bash(curl:*)",
       "Bash(npx prisma:*)",
       "Bash(node:*)",
-      "Bash(npm --version:*)"
+      "Bash(npm --version:*)",
+      "Bash(cat:*)"
     ],
     "deny": [],
     "ask": []
