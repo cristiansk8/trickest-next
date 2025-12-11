@@ -1,5 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/app/lib/prisma';
+import { NextRequest, NextResponse } from 'next/server';
+
+export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
   try {
@@ -78,14 +80,25 @@ export async function GET(request: NextRequest) {
     });
 
     // Calculate stats for each skater
-    const skatersWithStats = skaters.map(skater => {
-      const totalScore = skater.submissions.reduce((acc, sub) => acc + (sub.score || 0), 0);
+    const skatersWithStats = skaters.map((skater) => {
+      const totalScore = skater.submissions.reduce(
+        (acc, sub) => acc + (sub.score || 0),
+        0
+      );
       const approvedSubmissions = skater.submissions.length;
-      const avgScore = approvedSubmissions > 0 ? Math.round(totalScore / approvedSubmissions) : 0;
+      const avgScore =
+        approvedSubmissions > 0
+          ? Math.round(totalScore / approvedSubmissions)
+          : 0;
 
       // Build location string
-      const locationParts = [skater.ciudad, skater.departamento, skater.estado].filter(Boolean);
-      const location = locationParts.length > 0 ? locationParts.join(', ') : null;
+      const locationParts = [
+        skater.ciudad,
+        skater.departamento,
+        skater.estado,
+      ].filter(Boolean);
+      const location =
+        locationParts.length > 0 ? locationParts.join(', ') : null;
 
       return {
         id: skater.id,
@@ -119,9 +132,11 @@ export async function GET(request: NextRequest) {
         hasMore: offset + limit < totalCount,
       },
     });
-
   } catch (error) {
     console.error('Error fetching public skaters:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
   }
 }

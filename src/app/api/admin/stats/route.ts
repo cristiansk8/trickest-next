@@ -1,14 +1,16 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth/next';
+import prisma from '@/app/lib/prisma';
 import { authOptions } from '@/lib/auth';
 import { isAdmin } from '@/lib/auth-helpers';
-import prisma from '@/app/lib/prisma';
+import { getServerSession } from 'next-auth/next';
+import { NextRequest, NextResponse } from 'next/server';
+
+export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
 
-    if (!session?.user?.email || !await isAdmin(session.user.email)) {
+    if (!session?.user?.email || !(await isAdmin(session.user.email))) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -23,7 +25,7 @@ export async function GET(request: NextRequest) {
       adminCount,
       pendingSubmissions,
       approvedSubmissions,
-      rejectedSubmissions
+      rejectedSubmissions,
     ] = await Promise.all([
       prisma.user.count(),
       prisma.submission.count(),
@@ -34,7 +36,7 @@ export async function GET(request: NextRequest) {
       prisma.user.count({ where: { role: 'admin' } }),
       prisma.submission.count({ where: { status: 'pending' } }),
       prisma.submission.count({ where: { status: 'approved' } }),
-      prisma.submission.count({ where: { status: 'rejected' } })
+      prisma.submission.count({ where: { status: 'rejected' } }),
     ]);
 
     return NextResponse.json({
@@ -47,11 +49,13 @@ export async function GET(request: NextRequest) {
       adminCount,
       pendingSubmissions,
       approvedSubmissions,
-      rejectedSubmissions
+      rejectedSubmissions,
     });
-
   } catch (error) {
     console.error('Error fetching admin stats:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
   }
 }
