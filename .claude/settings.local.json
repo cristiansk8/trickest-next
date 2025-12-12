@@ -19,7 +19,9 @@
       "Bash(npx prisma:*)",
       "Bash(node:*)",
       "Bash(npm --version:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(npm cache clean:*)",
+      "Bash(git pull:*)"
     ],
     "deny": [],
     "ask": []

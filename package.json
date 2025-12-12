@@ -33,7 +33,7 @@
     "swiper": "^11.0.6"
   },
   "devDependencies": {
-    "@types/node": "^20.19.26",
+    "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "autoprefixer": "^10.4.22",
