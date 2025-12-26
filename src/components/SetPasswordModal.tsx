@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 
 interface SetPasswordModalProps {
@@ -15,6 +15,18 @@ export default function SetPasswordModal({ isOpen, onClose, onSuccess }: SetPass
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  // Cerrar con tecla ESC
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) {
+        onClose();
+      }
+    };
+
+    window.addEventListener('keydown', handleEscape);
+    return () => window.removeEventListener('keydown', handleEscape);
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
@@ -73,6 +85,15 @@ export default function SetPasswordModal({ isOpen, onClose, onSuccess }: SetPass
           </p>
         </div>
 
+        {/* Botón de cerrar */}
+        <button
+          onClick={onClose}
+          className="absolute top-2 right-2 z-10 bg-red-600 hover:bg-red-700 text-white font-bold w-10 h-10 rounded-full border-4 border-white shadow-lg transform hover:scale-110 transition-all"
+          type="button"
+        >
+          ✖
+        </button>
+
         {/* Contenido */}
         <form onSubmit={handleSubmit} className="p-6">
           {error && (
@@ -122,15 +143,30 @@ export default function SetPasswordModal({ isOpen, onClose, onSuccess }: SetPass
             </p>
           </div>
 
-          {/* Botón */}
-          <div className="flex justify-center mt-6">
+          {/* Botones */}
+          <div className="flex flex-col gap-3 mt-6">
             <button
               type="submit"
               disabled={loading}
-              className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-400 hover:to-orange-400 text-white font-black py-4 px-12 rounded-lg border-4 border-white uppercase tracking-wider text-lg shadow-2xl transform hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-400 hover:to-orange-400 text-white font-black py-4 px-12 rounded-lg border-4 border-white uppercase tracking-wider text-lg shadow-2xl transform hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? '⏳ GUARDANDO...' : '💾 ESTABLECER CONTRASEÑA'}
             </button>
+
+            <button
+              type="button"
+              onClick={onClose}
+              className="w-full bg-slate-700 hover:bg-slate-600 text-white font-bold py-3 px-8 rounded-lg border-4 border-slate-500 uppercase tracking-wide text-sm shadow-lg transform hover:scale-105 transition-all"
+            >
+              ⚠️ OMITIR POR AHORA
+            </button>
+          </div>
+
+          {/* Ayuda */}
+          <div className="mt-4 text-center">
+            <p className="text-slate-400 text-xs uppercase tracking-wide">
+              ⌨️ Presiona ESC para cerrar
+            </p>
           </div>
         </form>
       </div>

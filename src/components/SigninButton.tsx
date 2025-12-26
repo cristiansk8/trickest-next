@@ -20,7 +20,7 @@ const SigninButton = () => {
   const pathname = usePathname();
   if (pathname !== '/') return null;
 
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const [openModal, setModal] = useState(false);
   const [openVideoModal, setOpenVideoModal] = useState(false);
   const [openMenu, setOpenMenu] = useState(false);
@@ -44,10 +44,11 @@ const SigninButton = () => {
 
   // Mostrar modal de contraseña si el usuario está autenticado pero no tiene contraseña
   useEffect(() => {
-    if (session?.user && hasPassword === false) {
+    // Solo mostrar si hay sesión válida, email confirmado, estado autenticado y hasPassword es explícitamente false
+    if (status === 'authenticated' && session?.user?.email && hasPassword === false) {
       setOpenSetPasswordModal(true);
     }
-  }, [session, hasPassword]);
+  }, [session, hasPassword, status]);
 
   // Función para hacer scroll a partners
   const scrollToPartners = () => {

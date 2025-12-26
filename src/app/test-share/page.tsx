@@ -1,3 +1,5 @@
+'use client';
+
 export default function TestSharePage() {
   const handleShare = () => {
     const profileUrl = typeof window !== 'undefined' ? window.location.href : '';
