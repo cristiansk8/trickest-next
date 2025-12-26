@@ -194,19 +194,121 @@ async function main() {
   }
 
   console.log('✅ Challenges creados');
+
+  // 3. Crear usuarios skaters de prueba
+  console.log('🛹 Creando skaters de prueba...');
+
+  const skaters = [
+    {
+      email: 'skater1@trickest.com',
+      username: 'tony_hawk_jr',
+      name: 'Antonio Rodríguez',
+      password: defaultPassword,
+      role: 'skater',
+      profileStatus: 'complete',
+    },
+    {
+      email: 'skater2@trickest.com',
+      username: 'street_rider',
+      name: 'Laura Martínez',
+      password: defaultPassword,
+      role: 'skater',
+      profileStatus: 'complete',
+    },
+    {
+      email: 'skater3@trickest.com',
+      username: 'flip_master',
+      name: 'Diego Santos',
+      password: defaultPassword,
+      role: 'skater',
+      profileStatus: 'complete',
+    },
+    {
+      email: 'skater4@trickest.com',
+      username: 'gnar_shredder',
+      name: 'Sofía Gómez',
+      password: defaultPassword,
+      role: 'skater',
+      profileStatus: 'complete',
+    },
+    {
+      email: 'skater5@trickest.com',
+      username: 'vert_legend',
+      name: 'Miguel Ángel Ruiz',
+      password: defaultPassword,
+      role: 'skater',
+      profileStatus: 'complete',
+    },
+  ];
+
+  const createdSkaters = [];
+  for (const skaterData of skaters) {
+    const skater = await prisma.user.upsert({
+      where: { email: skaterData.email },
+      update: { password: defaultPassword },
+      create: skaterData,
+    });
+    createdSkaters.push(skater);
+  }
+
+  console.log('✅ Skaters creados');
+
+  // 4. Crear submissions de prueba (pending)
+  console.log('📹 Creando submissions pendientes...');
+
+  // URLs de videos de ejemplo (skateboarding tricks reales de YouTube)
+  const videoUrls = [
+    'https://www.youtube.com/watch?v=339ZL9Z7uGk', // Ollie tutorial
+    'https://www.youtube.com/watch?v=GkXXQT1Z5U8', // Kickflip
+    'https://www.youtube.com/watch?v=G-R50KqYy1I', // Pop Shove-it
+    'https://www.youtube.com/watch?v=DJGbSwWTp1Y', // Heelflip
+    'https://www.youtube.com/watch?v=8B8K_VGCrzk', // Varial Kickflip
+  ];
+
+  // Obtener los primeros 5 challenges
+  const firstChallenges = await prisma.challenge.findMany({
+    where: { isBonus: false },
+    take: 5,
+    orderBy: { level: 'asc' },
+  });
+
+  const submissions = [];
+  for (let i = 0; i < createdSkaters.length && i < firstChallenges.length; i++) {
+    const submission = await prisma.submission.create({
+      data: {
+        userId: createdSkaters[i].username!,
+        challengeId: firstChallenges[i].id,
+        videoUrl: videoUrls[i],
+        status: 'pending',
+        submittedAt: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000), // Últimos 7 días
+      },
+    });
+    submissions.push(submission);
+  }
+
+  console.log(`✅ ${submissions.length} submissions pendientes creadas`);
+
   console.log('🎉 Seed completado exitosamente!');
   console.log('\n📊 Resumen:');
   console.log(`- 1 Admin: ${admin.email}`);
   console.log(`- 3 Jueces: ${judge1.email}, ${judge2.email}, ${judge3.email}`);
+  console.log(`- 5 Skaters de prueba`);
   console.log(`- 10 Niveles de trucos + 1 Bonus`);
+  console.log(`- 5 Submissions pendientes para evaluar`);
   console.log('\n🔐 Credenciales de Prueba:');
   console.log('================================');
-  console.log('📧 Emails:');
+  console.log('📧 Admin/Jueces:');
   console.log('  - admin@trickest.com (Admin)');
   console.log('  - judge1@trickest.com (Juez)');
   console.log('  - judge2@trickest.com (Juez)');
   console.log('  - judge3@trickest.com (Juez)');
-  console.log('🔑 Contraseña para todos: password123');
+  console.log('\n📧 Skaters:');
+  console.log('  - skater1@trickest.com (@tony_hawk_jr)');
+  console.log('  - skater2@trickest.com (@street_rider)');
+  console.log('  - skater3@trickest.com (@flip_master)');
+  console.log('  - skater4@trickest.com (@gnar_shredder)');
+  console.log('  - skater5@trickest.com (@vert_legend)');
+  console.log('\n🔑 Contraseña para todos: password123');
   console.log('================================');
 }
 
