@@ -1,15 +1,25 @@
-import { getServerSession } from "next-auth/next";
-import { redirect } from "next/navigation";
-import { authOptions } from "@/lib/auth";
-import { isAdmin } from "@/lib/auth-helpers";
-import { Card, CardBody, CardHeader } from "@nextui-org/react";
-import { MdPeople, MdVideoLibrary, MdSportsKabaddi, MdAdminPanelSettings } from "react-icons/md";
+import { authOptions } from '@/lib/auth';
+import { isAdmin } from '@/lib/auth-helpers';
+import { Card, CardBody, CardHeader } from '@nextui-org/react';
+import { getServerSession } from 'next-auth/next';
+import { redirect } from 'next/navigation';
+import {
+  MdAdminPanelSettings,
+  MdPeople,
+  MdSportsKabaddi,
+  MdVideoLibrary,
+} from 'react-icons/md';
+
+export const dynamic = 'force-dynamic';
 
 async function getAdminStats() {
   try {
-    const response = await fetch(`${process.env.NEXTAUTH_URL}/api/admin/stats`, {
-      cache: 'no-store'
-    });
+    const response = await fetch(
+      `${process.env.NEXTAUTH_URL}/api/admin/stats`,
+      {
+        cache: 'no-store',
+      }
+    );
     if (response.ok) {
       return await response.json();
     }
@@ -22,7 +32,7 @@ async function getAdminStats() {
 export default async function AdminDashboard() {
   const session = await getServerSession(authOptions);
 
-  if (!session?.user?.email || !await isAdmin(session.user.email)) {
+  if (!session?.user?.email || !(await isAdmin(session.user.email))) {
     redirect('/dashboard');
   }
 
@@ -47,7 +57,9 @@ export default async function AdminDashboard() {
             <div className="flex items-center gap-3">
               <MdPeople size={32} className="text-white" />
               <div>
-                <p className="text-white text-sm font-bold uppercase tracking-wider">Usuarios Totales</p>
+                <p className="text-white text-sm font-bold uppercase tracking-wider">
+                  Usuarios Totales
+                </p>
               </div>
             </div>
           </CardHeader>
@@ -63,7 +75,9 @@ export default async function AdminDashboard() {
             <div className="flex items-center gap-3">
               <MdVideoLibrary size={32} className="text-white" />
               <div>
-                <p className="text-white text-sm font-bold uppercase tracking-wider">Submissions</p>
+                <p className="text-white text-sm font-bold uppercase tracking-wider">
+                  Submissions
+                </p>
               </div>
             </div>
           </CardHeader>
@@ -79,7 +93,9 @@ export default async function AdminDashboard() {
             <div className="flex items-center gap-3">
               <MdSportsKabaddi size={32} className="text-white" />
               <div>
-                <p className="text-white text-sm font-bold uppercase tracking-wider">Challenges</p>
+                <p className="text-white text-sm font-bold uppercase tracking-wider">
+                  Challenges
+                </p>
               </div>
             </div>
           </CardHeader>
@@ -95,7 +111,9 @@ export default async function AdminDashboard() {
             <div className="flex items-center gap-3">
               <MdAdminPanelSettings size={32} className="text-white" />
               <div>
-                <p className="text-white text-sm font-bold uppercase tracking-wider">Jueces Activos</p>
+                <p className="text-white text-sm font-bold uppercase tracking-wider">
+                  Jueces Activos
+                </p>
               </div>
             </div>
           </CardHeader>
@@ -117,16 +135,28 @@ export default async function AdminDashboard() {
           </CardHeader>
           <CardBody className="space-y-4">
             <div className="flex justify-between items-center p-3 bg-yellow-500/10 rounded-lg border border-yellow-500/20">
-              <span className="text-yellow-400 font-bold uppercase tracking-wider">Pendientes</span>
-              <span className="text-2xl font-black text-yellow-400">{stats?.pendingSubmissions || 0}</span>
+              <span className="text-yellow-400 font-bold uppercase tracking-wider">
+                Pendientes
+              </span>
+              <span className="text-2xl font-black text-yellow-400">
+                {stats?.pendingSubmissions || 0}
+              </span>
             </div>
             <div className="flex justify-between items-center p-3 bg-green-500/10 rounded-lg border border-green-500/20">
-              <span className="text-green-400 font-bold uppercase tracking-wider">Aprobadas</span>
-              <span className="text-2xl font-black text-green-400">{stats?.approvedSubmissions || 0}</span>
+              <span className="text-green-400 font-bold uppercase tracking-wider">
+                Aprobadas
+              </span>
+              <span className="text-2xl font-black text-green-400">
+                {stats?.approvedSubmissions || 0}
+              </span>
             </div>
             <div className="flex justify-between items-center p-3 bg-red-500/10 rounded-lg border border-red-500/20">
-              <span className="text-red-400 font-bold uppercase tracking-wider">Rechazadas</span>
-              <span className="text-2xl font-black text-red-400">{stats?.rejectedSubmissions || 0}</span>
+              <span className="text-red-400 font-bold uppercase tracking-wider">
+                Rechazadas
+              </span>
+              <span className="text-2xl font-black text-red-400">
+                {stats?.rejectedSubmissions || 0}
+              </span>
             </div>
           </CardBody>
         </Card>
@@ -139,16 +169,28 @@ export default async function AdminDashboard() {
           </CardHeader>
           <CardBody className="space-y-4">
             <div className="flex justify-between items-center p-3 bg-cyan-500/10 rounded-lg border border-cyan-500/20">
-              <span className="text-cyan-400 font-bold uppercase tracking-wider">Skaters</span>
-              <span className="text-2xl font-black text-cyan-400">{stats?.skaterCount || 0}</span>
+              <span className="text-cyan-400 font-bold uppercase tracking-wider">
+                Skaters
+              </span>
+              <span className="text-2xl font-black text-cyan-400">
+                {stats?.skaterCount || 0}
+              </span>
             </div>
             <div className="flex justify-between items-center p-3 bg-yellow-500/10 rounded-lg border border-yellow-500/20">
-              <span className="text-yellow-400 font-bold uppercase tracking-wider">Jueces</span>
-              <span className="text-2xl font-black text-yellow-400">{stats?.judgeCount || 0}</span>
+              <span className="text-yellow-400 font-bold uppercase tracking-wider">
+                Jueces
+              </span>
+              <span className="text-2xl font-black text-yellow-400">
+                {stats?.judgeCount || 0}
+              </span>
             </div>
             <div className="flex justify-between items-center p-3 bg-red-500/10 rounded-lg border border-red-500/20">
-              <span className="text-red-400 font-bold uppercase tracking-wider">Admins</span>
-              <span className="text-2xl font-black text-red-400">{stats?.adminCount || 0}</span>
+              <span className="text-red-400 font-bold uppercase tracking-wider">
+                Admins
+              </span>
+              <span className="text-2xl font-black text-red-400">
+                {stats?.adminCount || 0}
+              </span>
             </div>
           </CardBody>
         </Card>

@@ -1,5 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Removed custom generateBuildId - using patch script instead for Node v22 compat
+
   eslint: {
     ignoreDuringBuilds: true,
   },
