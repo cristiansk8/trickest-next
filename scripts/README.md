@@ -39,15 +39,30 @@ Esto creará:
 
 Si necesitas agregar más submissions de prueba después del seed:
 
+### Para un usuario específico:
 ```bash
+node scripts/add-test-submissions.js <username>
+```
+
+Ejemplo:
+```bash
+# Crear 5 submissions para el usuario tony_hawk_jr
+node scripts/add-test-submissions.js tony_hawk_jr
+```
+
+### Para múltiples skaters:
+```bash
+# Sin argumentos, crea 1 submission por skater
 node scripts/add-test-submissions.js
 ```
 
-Este script:
-- Busca usuarios tipo "skater" existentes
-- Busca challenges existentes
-- Crea 5 submissions pendientes con videos de ejemplo
-- Asigna fechas aleatorias de los últimos 7 días
+El script:
+- ✅ Verifica que no existan submissions duplicadas
+- ✅ Crea submissions con videos reales de YouTube
+- ✅ Asigna fechas aleatorias de los últimos 7 días
+- ✅ Muestra el progreso detallado
+
+**Importante:** Si especificas un username, creará 5 submissions para ese usuario específicamente. Esto es útil cuando quieres probar cómo se ve el dashboard de submissions de un skater en particular.
 
 ---
 
