@@ -35,24 +35,13 @@ Esto creará:
 
 ---
 
-## Migrar usernames (IMPORTANTE si tienes usuarios sin username)
+## ⚠️ Sistema de Identificación
 
-Si tienes usuarios existentes que fueron creados antes de la implementación de auto-generación de usernames, necesitas ejecutar este script:
+Este proyecto usa **email** como identificador único para todas las relaciones de usuario (submissions, votes, follows, etc.).
 
-```bash
-node scripts/migrate-usernames.js
-```
+**No se necesitan usernames para el funcionamiento** - Todo funciona con email automáticamente.
 
-Este script:
-- ✅ Busca usuarios sin username asignado
-- ✅ Genera usernames únicos automáticamente
-- ✅ Actualiza la base de datos
-- ✅ Muestra progreso detallado
-
-**¿Cuándo ejecutarlo?**
-- Después de actualizar a la versión con auto-generación de usernames
-- Si los usuarios no pueden ver challenges
-- Si aparece error "No autenticado" al acceder a submissions
+El campo `username` existe en el modelo User pero es opcional y solo se usa para perfiles públicos (futuro).
 
 ---
 
@@ -62,13 +51,13 @@ Si necesitas agregar más submissions de prueba después del seed:
 
 ### Para un usuario específico:
 ```bash
-node scripts/add-test-submissions.js <username>
+node scripts/add-test-submissions.js <email>
 ```
 
 Ejemplo:
 ```bash
-# Crear 5 submissions para el usuario tony_hawk_jr
-node scripts/add-test-submissions.js tony_hawk_jr
+# Crear 5 submissions para el usuario skater1@trickest.com
+node scripts/add-test-submissions.js skater1@trickest.com
 ```
 
 ### Para múltiples skaters:
@@ -83,7 +72,7 @@ El script:
 - ✅ Asigna fechas aleatorias de los últimos 7 días
 - ✅ Muestra el progreso detallado
 
-**Importante:** Si especificas un username, creará 5 submissions para ese usuario específicamente. Esto es útil cuando quieres probar cómo se ve el dashboard de submissions de un skater en particular.
+**Importante:** Si especificas un email, creará 5 submissions para ese usuario específicamente. Esto es útil cuando quieres probar cómo se ve el dashboard de submissions de un skater en particular.
 
 ---
 
