@@ -67,14 +67,9 @@ export const authOptions: NextAuthOptions = {
 
           // Si no existe, crearlo con datos de Google (sin contraseña aún)
           if (!existingUser) {
-            // Generar username único
-            const { generateUniqueUsername } = await import('./generate-username');
-            const username = await generateUniqueUsername(user.name, user.email);
-
             await prisma.user.create({
               data: {
                 email: user.email,
-                username,
                 name: user.name || '',
                 photo: user.image || '',
                 profileStatus: 'basic', // Solo tiene datos de Google
@@ -82,7 +77,7 @@ export const authOptions: NextAuthOptions = {
                 createdAt: new Date(),
               },
             });
-            console.log(`✅ Usuario creado automáticamente: ${user.email} (@${username})`);
+            console.log(`✅ Usuario creado automáticamente: ${user.email}`);
           }
           // Si existe pero no tiene contraseña, el modal se mostrará en el cliente
         } catch (error) {
