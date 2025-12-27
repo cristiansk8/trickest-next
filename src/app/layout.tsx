@@ -5,9 +5,10 @@ import Navbar from "@/components/navbar";
 import Header from "@/components/header";
 
 
-import 'swiper/css';
-import 'swiper/css/pagination';
-import 'swiper/css/scrollbar';
+// Temporalmente comentado por error de webpack
+// import 'swiper/css';
+// import 'swiper/css/pagination';
+// import 'swiper/css/scrollbar';
 import { Providers } from "./providers";
 
 const urbanist = Urbanist({ subsets: ["latin"] });
