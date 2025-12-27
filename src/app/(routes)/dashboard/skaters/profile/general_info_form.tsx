@@ -85,40 +85,52 @@ export default function ProfilePage() {
     setLoading(true);
     setNotification(''); // Reiniciar notificación antes de enviar
 
-    if (!session?.user) {
-      setNotification('⚠️ No estás autenticado.');
+    console.log('📝 Iniciando actualización de perfil...');
+    console.log('👤 Session user:', session?.user);
+    console.log('📦 Form data:', formData);
+
+    if (!session?.user?.email) {
+      console.error('❌ No hay email en la sesión:', session?.user);
+      setNotification('⚠️ No estás autenticado o falta email.');
       setLoading(false);
       return;
     }
 
     try {
+      const payload = {
+        email: session.user.email,
+        name: formData.name,
+        phone: formData.phone,
+        photo: formData.photo,
+        ciudad: formData.ciudad,
+        departamento: formData.departamento,
+        estado: formData.estado,
+        birthdate: formData.birthdate,
+        birthskate: formData.birthskate,
+      };
+
+      console.log('📤 Enviando payload:', payload);
+
       const response = await fetch('/api/skate_profiles/general_info', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: session.user.email,
-          name: formData.name, // ✅ Usar el nombre del formulario, no de la sesión
-          phone: formData.phone,
-          photo: formData.photo,
-          ciudad: formData.ciudad,
-          departamento: formData.departamento,
-          estado: formData.estado,
-          birthdate: formData.birthdate,
-          birthskate: formData.birthskate,
-        }),
+        body: JSON.stringify(payload),
       });
 
+      console.log('📥 Response status:', response.status);
       const data = await response.json();
+      console.log('📥 Response data:', data);
+
       if (data.error) throw new Error(data.error);
 
-      setNotification('✅ Perfil actualizado con éxito.'); // Mensaje de éxito
-      // Desaparece la notificación en 5 segundos
+      setNotification('✅ Perfil actualizado con éxito.');
       setTimeout(() => {
         setNotification('');
       }, 5000);
     } catch (error) {
-      setNotification('❌ Error al actualizar el perfil. Inténtalo de nuevo.');
-      console.error('Error al registrar:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
+      console.error('❌ Error al actualizar perfil:', error);
+      setNotification(`❌ Error: ${errorMessage}`);
     } finally {
       setLoading(false);
     }
