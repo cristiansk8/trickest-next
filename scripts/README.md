@@ -35,6 +35,27 @@ Esto creará:
 
 ---
 
+## Migrar usernames (IMPORTANTE si tienes usuarios sin username)
+
+Si tienes usuarios existentes que fueron creados antes de la implementación de auto-generación de usernames, necesitas ejecutar este script:
+
+```bash
+node scripts/migrate-usernames.js
+```
+
+Este script:
+- ✅ Busca usuarios sin username asignado
+- ✅ Genera usernames únicos automáticamente
+- ✅ Actualiza la base de datos
+- ✅ Muestra progreso detallado
+
+**¿Cuándo ejecutarlo?**
+- Después de actualizar a la versión con auto-generación de usernames
+- Si los usuarios no pueden ver challenges
+- Si aparece error "No autenticado" al acceder a submissions
+
+---
+
 ## Agregar más submissions (standalone)
 
 Si necesitas agregar más submissions de prueba después del seed:

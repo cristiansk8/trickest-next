@@ -21,7 +21,10 @@
       "Bash(npm --version:*)",
       "Bash(cat:*)",
       "Bash(npm cache clean:*)",
-      "Bash(git pull:*)"
+      "Bash(git pull:*)",
+      "Bash(node scripts/check_db_user.js:*)",
+      "Bash(node scripts/add-test-submissions.js:*)",
+      "Bash(grep:*)"
     ],
     "deny": [],
     "ask": []

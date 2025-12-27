@@ -17,38 +17,43 @@ export async function GET(req: Request) {
       ],
     });
 
-    // Si el usuario está autenticado, enriquecer con sus submissions
+    // Si el usuario está autenticado Y tiene username, enriquecer con sus submissions
     if (session?.user?.username) {
-      const userSubmissions = await prisma.submission.findMany({
-        where: {
-          userId: session.user.username,
-        },
-        select: {
-          id: true,
-          challengeId: true,
-          status: true,
-          score: true,
-          videoUrl: true,
-          submittedAt: true,
-          feedback: true,
-        },
-      });
+      try {
+        const userSubmissions = await prisma.submission.findMany({
+          where: {
+            userId: session.user.username,
+          },
+          select: {
+            id: true,
+            challengeId: true,
+            status: true,
+            score: true,
+            videoUrl: true,
+            submittedAt: true,
+            feedback: true,
+          },
+        });
 
-      // Crear un mapa de submissions por challengeId
-      const submissionsMap = new Map(
-        userSubmissions.map(sub => [sub.challengeId, sub])
-      );
+        // Crear un mapa de submissions por challengeId
+        const submissionsMap = new Map(
+          userSubmissions.map(sub => [sub.challengeId, sub])
+        );
 
-      // Enriquecer challenges con datos de submissions del usuario
-      const enrichedChallenges = challenges.map(challenge => ({
-        ...challenge,
-        userSubmission: submissionsMap.get(challenge.id) || null,
-      }));
+        // Enriquecer challenges con datos de submissions del usuario
+        const enrichedChallenges = challenges.map(challenge => ({
+          ...challenge,
+          userSubmission: submissionsMap.get(challenge.id) || null,
+        }));
 
-      return NextResponse.json({ challenges: enrichedChallenges });
+        return NextResponse.json({ challenges: enrichedChallenges });
+      } catch (submissionError) {
+        console.error('Error obteniendo submissions del usuario:', submissionError);
+        // Si falla obtener submissions, devolver challenges sin submissions
+      }
     }
 
-    // Si no está autenticado, devolver solo los challenges
+    // Si no está autenticado o no tiene username, devolver solo los challenges
     const challengesWithoutSubmissions = challenges.map(challenge => ({
       ...challenge,
       userSubmission: null,
