@@ -25,7 +25,9 @@
       "Bash(node scripts/check_db_user.js:*)",
       "Bash(node scripts/add-test-submissions.js:*)",
       "Bash(grep:*)",
-      "Bash(node scripts/migrate-usernames.js:*)"
+      "Bash(node scripts/migrate-usernames.js:*)",
+      "Bash(npx prisma migrate dev:*)",
+      "Bash(npx prisma db push)"
     ],
     "deny": [],
     "ask": []

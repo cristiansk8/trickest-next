@@ -84,7 +84,7 @@ async function main() {
         // Verificar si ya existe una submission para este challenge
         const existing = await prisma.submission.findFirst({
           where: {
-            userId: user.username,
+            userId: user.email,
             challengeId: challenge.id
           }
         });
@@ -96,26 +96,26 @@ async function main() {
 
         const submission = await prisma.submission.create({
           data: {
-            userId: user.username,
+            userId: user.email,
             challengeId: challenge.id,
             videoUrl: videoUrl,
             status: 'pending',
             submittedAt: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000) // Últimos 7 días
           },
           include: {
-            user: { select: { name: true, username: true } },
+            user: { select: { name: true, email: true } },
             challenge: { select: { name: true, level: true } }
           }
         });
 
         submissions.push(submission);
         console.log(`✅ Submission creada:`);
-        console.log(`   👤 Usuario: ${submission.user.name} (@${submission.user.username})`);
+        console.log(`   👤 Usuario: ${submission.user.name} (${submission.user.email})`);
         console.log(`   🎯 Challenge: ${submission.challenge.name} (Nivel ${submission.challenge.level})`);
         console.log(`   📹 Video: ${submission.videoUrl}`);
         console.log(`   📅 Enviado: ${submission.submittedAt.toLocaleDateString()}\n`);
       } catch (error) {
-        console.error(`❌ Error creando submission para ${user.username}:`, error.message);
+        console.error(`❌ Error creando submission para ${user.email}:`, error.message);
       }
     }
   }

@@ -84,7 +84,7 @@ model Challenge {
 
 model Submission {
   id           Int      @id @default(autoincrement())
-  userId       String // Username del usuario
+  userId       String // Email del usuario
   challengeId  Int // ID del reto
   videoUrl     String // URL del video de YouTube del usuario
   status       String   @default("pending") // "pending", "approved", "rejected"
@@ -92,7 +92,7 @@ model Submission {
   feedback     String? // Comentarios del equipo evaluador
   submittedAt  DateTime @default(now())
   evaluatedAt  DateTime? // Fecha de evaluación
-  evaluatedBy  String? // Username del juez que evaluó
+  evaluatedBy  String? // Email del juez que evaluó
 
   // Campos de votación comunitaria
   upvotes          Int      @default(0) // Total de votos positivos
@@ -101,9 +101,9 @@ model Submission {
   communityApproved Boolean @default(false) // Si fue aprobado por la comunidad
   autoApprovedAt   DateTime? // Fecha de auto-aprobación por comunidad
 
-  user      User      @relation(fields: [userId], references: [username])
+  user      User      @relation(fields: [userId], references: [email])
   challenge Challenge @relation(fields: [challengeId], references: [id])
-  judge     User?     @relation("JudgeEvaluations", fields: [evaluatedBy], references: [username])
+  judge     User?     @relation("JudgeEvaluations", fields: [evaluatedBy], references: [email])
   votes     Vote[] // Relación con los votos
 
   @@index([userId, challengeId])
@@ -134,13 +134,13 @@ model Team {
 model Vote {
   id           Int      @id @default(autoincrement())
   submissionId Int // ID de la submission votada
-  userId       String // Username del usuario que vota
+  userId       String // Email del usuario que vota
   voteType     String // "upvote" o "downvote"
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
   submission Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
-  user       User       @relation(fields: [userId], references: [username])
+  user       User       @relation(fields: [userId], references: [email])
 
   @@unique([submissionId, userId]) // Un usuario solo puede votar una vez por submission
   @@index([submissionId])
@@ -150,12 +150,12 @@ model Vote {
 
 model Follow {
   id          Int      @id @default(autoincrement())
-  followerId  String // Username del usuario que sigue
-  followingId String // Username del usuario seguido
+  followerId  String // Email del usuario que sigue
+  followingId String // Email del usuario seguido
   createdAt   DateTime @default(now())
 
-  follower  User @relation("UserFollowers", fields: [followerId], references: [username])
-  following User @relation("UserFollowing", fields: [followingId], references: [username])
+  follower  User @relation("UserFollowers", fields: [followerId], references: [email])
+  following User @relation("UserFollowing", fields: [followingId], references: [email])
 
   @@unique([followerId, followingId]) // Un usuario no puede seguir al mismo usuario dos veces
   @@index([followerId])

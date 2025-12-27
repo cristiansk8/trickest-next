@@ -276,7 +276,7 @@ async function main() {
   for (let i = 0; i < createdSkaters.length && i < firstChallenges.length; i++) {
     const submission = await prisma.submission.create({
       data: {
-        userId: createdSkaters[i].username!,
+        userId: createdSkaters[i].email,
         challengeId: firstChallenges[i].id,
         videoUrl: videoUrls[i],
         status: 'pending',

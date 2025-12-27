@@ -17,12 +17,12 @@ export async function GET(req: Request) {
       ],
     });
 
-    // Si el usuario está autenticado Y tiene username, enriquecer con sus submissions
-    if (session?.user?.username) {
+    // Si el usuario está autenticado, enriquecer con sus submissions
+    if (session?.user?.email) {
       try {
         const userSubmissions = await prisma.submission.findMany({
           where: {
-            userId: session.user.username,
+            userId: session.user.email,
           },
           select: {
             id: true,
@@ -53,7 +53,7 @@ export async function GET(req: Request) {
       }
     }
 
-    // Si no está autenticado o no tiene username, devolver solo los challenges
+    // Si no está autenticado o no tiene email, devolver solo los challenges
     const challengesWithoutSubmissions = challenges.map(challenge => ({
       ...challenge,
       userSubmission: null,

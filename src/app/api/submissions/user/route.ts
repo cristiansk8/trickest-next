@@ -10,14 +10,14 @@ export async function GET(req: Request) {
     const session = await getServerSession(authOptions);
 
     // Verificar autenticación
-    if (!session?.user?.username) {
+    if (!session?.user?.email) {
       return NextResponse.json({ error: 'No autenticado' }, { status: 401 });
     }
 
     // Obtener todas las submissions del usuario
     const submissions = await prisma.submission.findMany({
       where: {
-        userId: session.user.username,
+        userId: session.user.email,
       },
       include: {
         challenge: {
@@ -60,10 +60,10 @@ export async function GET(req: Request) {
 
         if (submission.evaluatedBy) {
           const judgeUser = await prisma.user.findUnique({
-            where: { username: submission.evaluatedBy },
+            where: { email: submission.evaluatedBy },
             select: {
               name: true,
-              username: true,
+              email: true,
             },
           });
           judge = judgeUser;
