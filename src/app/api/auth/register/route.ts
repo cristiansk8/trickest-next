@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/app/lib/prisma';
 import bcrypt from 'bcrypt';
+import { generateUniqueUsername } from '@/lib/generate-username';
 
 export async function POST(req: Request) {
   try {
@@ -27,10 +28,14 @@ export async function POST(req: Request) {
     // Hashear contraseña
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    // Generar username único
+    const username = await generateUniqueUsername(name, email);
+
     // Crear usuario
     const user = await prisma.user.create({
       data: {
         email,
+        username,
         password: hashedPassword,
         name: name || '',
         profileStatus: 'basic',

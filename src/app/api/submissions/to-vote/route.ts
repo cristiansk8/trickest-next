@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
 
-    if (!session?.user?.email) {
+    if (!session?.user?.username) {
       return NextResponse.json({ error: 'No autenticado' }, { status: 401 });
     }
 
@@ -24,11 +24,11 @@ export async function GET(request: NextRequest) {
     const whereClause: any = {
       status: 'pending', // Solo submissions pendientes
       userId: {
-        not: session.user.email, // No incluir propias submissions
+        not: session.user.username, // No incluir propias submissions
       },
       votes: {
         none: {
-          userId: session.user.email, // No incluir submissions ya votadas
+          userId: session.user.username, // No incluir submissions ya votadas
         },
       },
     };
@@ -44,7 +44,7 @@ export async function GET(request: NextRequest) {
       include: {
         user: {
           select: {
-            email: true,
+            username: true,
             name: true,
             photo: true,
           },

@@ -18,10 +18,10 @@ export async function GET(req: Request) {
     });
 
     // Si el usuario está autenticado, enriquecer con sus submissions
-    if (session?.user?.email) {
+    if (session?.user?.username) {
       const userSubmissions = await prisma.submission.findMany({
         where: {
-          userId: session.user.email,
+          userId: session.user.username,
         },
         select: {
           id: true,
